@@ -1,0 +1,71 @@
+BLOCKMON SINGLE NODE INSTALLATION INSTRUCTIONS
+==============================================
+
+To compile blockmon you will need gcc version 4.4.3 or higher as well as
+cmake 2.8 or higher. In addition, you will need the pugixml library
+(http://code.google.com/p/pugixml/) which you should put in lib/external/
+and libpcap (for the sniffer block)
+
+PORTABILITY
+-------------
+In theory should build on various systems including Linux and Windows, though
+so far this has only been tested on the former.
+
+PF_RING
+--------------
+Blockmon supports pf_ring (http://www.ntop.org/PF_RING.html), a new type of 
+network socket that dramatically improves the packet capture speed, as a block
+called MQPfring. By default this block will not be built; if you'd like to enable 
+it you'll have to give the -DWITH_PFRING=ON to cmake (see below). 
+
+Note that in order for this to build properly you'll need to have installed PF_RING
+on your system. To do this you can retrieve the sources from svn (see URL above) and
+follow the install instructions given. Of importance is running "make install" in the
+userland/lib directory and the kernel directory; this will install the necessary
+files needed for Blockmon to build.
+
+IPFIX
+--------------
+Blockmon supports IPFIX (http://datatracker.ietf.org/wg/ipfix/charter/) through a block
+called IpfixExportBlock. In order to build it, you will need to have the boost libraries
+installed (http://www.boost.org/), and you will need to run cmake with -DWITH_IPFIX=ON
+(see below).
+
+COMBO SZE2
+--------------
+Blockmon supports SZE2 interface for high speed data transfer from INVEA-TECH [1]
+hardware acceleratorion cards COMBO. In order to build it, you will need to have
+the NetCOPE development platform [2] and COMBO card [3] installed, and you will
+need to run cmake with -DWITH_COMBO=ON (see below).
+
+[1] http://www.invea-tech.com/
+[2] http://www.invea-tech.com/products-and-services/netcope-fpga-platform
+[3] http://www.invea-tech.com/products-and-services/combo-fpga-boards
+
+INSTALL
+--------------
+On the main directory type
+
+cmake .
+
+If you would like to build optional features (or remove them) the syntax is
+
+cmake -D<feature>=ON|OFF
+
+Currently supported features are:
+
+WITH_PFRING : Support pf_ring-based capture block
+WITH_IPFIX:   Support for IPFIX-based export block
+WITH_COMBO : Support for COMBO acceleration cards
+
+Note that option passed with -D will persist across independent runs of cmake. For
+instance, if you first run cmake with -DWITH_PFRING=ON and then run it without it,
+the second run will also have -DWITH_PFRING=ON even if not explicitly given on the 
+command line. To revert this you would have to run cmake with -DWITH_PFRING=OFF; 
+subsequent runs will keep this value implicitly.
+
+When cmake is finished, type
+
+make
+
+That's it!

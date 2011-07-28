@@ -1,0 +1,153 @@
+BLOCKMON
+================================
+Blockmon is software allowing construction of flexible monitoring and data
+analisys nodes, where a node can be for example a hardware probe or a PC. Block
+is based around the notion of blocks, which are small units of processing
+(e.g., packet counting). Blocks are connected and communicate via gates, and
+the set of inter-connected blocks represents a composition, where compositions
+are expressed in terms of an XML file.
+
+DIRECTORY STRUCTURE
+------------------------
+.
+|-- base  Basic blockmon files
+|-- doc   Documentation files
+|-- etc   Misc files
+|-- lib   Libraries
+|-- tests Test executables
+`-- usr   User-specific blocks
+
+DOCUMENTATION
+------------------------
+The documentation is generated through doxygen. To generate, go to the doc
+directory and run
+
+doxygen blockmondoc.cfg
+
+This will generate HTML documentation for all the code; the index page can be
+found under doc/blockmon/html/index.html
+
+In addition to the code documentation, classes implementing blocks include
+additional information regarding the block's functionality, parameters and
+gates. To see this go to the "Files" tab on the HTML documentation, and click
+on the block's filename (for intance, for a block called PktCounter click on
+PktCounter.hpp)
+
+COMPOSITION FILES
+------------------------
+A very simple composition file consists of a set of blocks (with parameters)
+and their connections. One such file is shown below:
+
+<composition id="dummy" app_id="boh">
+ <install>
+  <block id="sniffer" type="pcap_sniffer" sched_type="active" threadpool="sniffer_thread"> 
+   <params>
+    <source type="live" name="eth0"/>
+    <!--bpf_filter expression="!tcp"/--> 
+   </params>
+  </block>
+  <block id="tcp-counter" type="counter"  thread_safe_mode="off" > 
+   <params>
+   </params>
+  </block>
+  <block id="other-counter" type="counter"  thread_safe_mode="off" > 
+   <params>
+   </params>
+  </block>
+  <block id="demux" type="demux"  thread_safe_mode="off" > 
+   <params>
+   </params>
+  </block>
+
+  <connection src_block="sniffer" src_gate="sniffer_out" dst_block="demux" dst_gate="in_pkt"/>
+  <connection src_block="demux" src_gate="out_other" dst_block="other-counter" dst_gate="in_pkt"/>
+  <connection src_block="demux" src_gate="out_tcp" dst_block="tcp-counter" dst_gate="in_pkt"/>
+
+ </install>
+
+</composition>
+
+Compositions also allow configuration of how many threads are in a thread pool,
+and how a threadpool is allocated to CPU cores; some examples are below:
+
+  <!-- scheduler lets OS decide how to schedule threads over the specified cores -->
+  <threadpool id="pool1" num_threads="10" cores="0-2,4">
+  <!-- core-specific thread -->
+  <threadpool id="pool1" num_threads="1" cores="2">
+  <!-- scheduler assigns to cores as it sees fit -->
+  <threadpool id="pool1" num_threads="10">
+
+In addition, it is possible to modify existing compositions, updating parts of
+them, adding to them, or deleting from them:
+
+  <!-- IDEA: everything listed here is updated (except for unmutables like block id, type, etc) -->
+  <update>
+    <threadpool id="pool2" num_threads="2" cores="3,5">
+
+    <!-- THIS NEEDS LOTS MORE WORK TO COVER MORE CASES -->
+    <block id="pkt_filter" threadpool="pool5"> 
+      <params>
+        <filter proto="tcp" port="8088" />
+      </params>
+  </update>
+
+  <delete>
+    <block id="fw_block" />
+    <connection begin_block="aggr_topology_in" begin_gate="in_topology" end_block="pkt_filter" end_gate="data"/>
+  </delete>
+
+NOTE: this last functionality (updating/deleting) is not yet supported
+
+See usr/app_dumm_test for a couple of sample composition XML files.
+
+RUNNING AN APPLICATION
+------------------------
+To run an application from the main directory simply run
+
+./blockmon [composition file1] [composition file2] ...
+
+For example:
+
+sudo ./blockmon usr/app_dumm_test/sniffer.xml usr/app_dumm_test/counter.xml
+
+It is of course possible to place an entire composition in a single file. Also
+note that to run the above sudo is needed because it accesses a local
+interface.
+
+ADDING APPLICATIONS
+------------------------
+To create a new application, please add a subdirectory under 
+
+/usr 
+
+with the name 
+
+app_[your_app_name]
+
+Place any composition files in this directory. Also, under this directory
+create a further subdirectory called blocks and another one called messages.
+
+Finally, make sure to re-run "cmake ." in order to include the new files into
+the project.
+
+CREATING BLOCKS
+------------------------
+The easiest way is to start with an existing simple block such as
+app_dumm_test/blocks/PktCounter.[hpp|cpp] and copy it. Please make sure to
+document, at the top of the file, what the block does, what its gates are and
+what parameters it takes, as well as an XML snippet showing how a composition
+file might configure the block (again, refer to PktCounter.hpp for an example).
+
+PF_RING
+------------------------
+Blockmon supports pf_ring (http://www.ntop.org/PF_RING.html), a new type of
+network socket that dramatically improves the packet capture speed, as a block
+called MQPfring. See the INSTALL file for instructions on how to build this.
+
+CODE COMMENTING
+------------------------
+Please follow the format used in usr/app_dumm_test/blocks/PktCounter.[hpp|cpp]
+
+BUGS & QUESTIONS
+------------------------
+Please write to blockmon-dev@tid.es

@@ -1,0 +1,342 @@
+<!--
+Composition for SYN flooding detection with a parallelization of 12 SynCounter blocks.
+It has input external gates called raw_packets1, raw_packets2...
+It may not be used without connecting at least one of these gates.
+-->
+
+<composition id="syn_flooding12" app_id="syn_flood_det">
+	<install>
+	
+		<threadpool id="syn_threads" num_threads="1" >
+			<core number="0"/>
+		</threadpool>
+			
+		<block id="syn_synchronizer" type="syn_synchronizer"  sched_type="active" threadpool="syn_threads"> 
+			<params>
+			    <sketch width="4096" depth="8" />
+			</params>
+		</block>
+			
+		<block id="tuple_parser1" type="tuple_parser"> 
+			<params>
+			</params>
+		</block>
+	
+		<block id="tuple_parser2" type="tuple_parser"> 
+			<params>
+			</params>
+		</block>
+	
+		<block id="tuple_parser3" type="tuple_parser"> 
+			<params>
+			</params>
+		</block>
+	
+		<block id="tuple_parser4" type="tuple_parser"> 
+			<params>
+			</params>
+		</block>
+	
+		<block id="tuple_parser5" type="tuple_parser"> 
+			<params>
+			</params>
+		</block>
+	
+		<block id="tuple_parser6" type="tuple_parser"> 
+			<params>
+			</params>
+		</block>
+	
+		<block id="tuple_parser7" type="tuple_parser"> 
+			<params>
+			</params>
+		</block>
+	
+		<block id="tuple_parser8" type="tuple_parser"> 
+			<params>
+			</params>
+		</block>
+	
+		<block id="tuple_parser9" type="tuple_parser"> 
+			<params>
+			</params>
+		</block>
+	
+		<block id="tuple_parser10" type="tuple_parser"> 
+			<params>
+			</params>
+		</block>
+	
+		<block id="tuple_parser11" type="tuple_parser"> 
+			<params>
+			</params>
+		</block>
+	
+		<block id="tuple_parser12" type="tuple_parser"> 
+			<params>
+			</params>
+		</block>
+		
+		<block id="tuple_demux1" type="tuple_demux" > 
+			<params>
+			  <gate_tcp state="on" />
+			  <gate_udp state="off" />
+			  <gate_other state="off" />
+			</params>
+		</block>
+		
+		<block id="tuple_demux2" type="tuple_demux" > 
+			<params>
+			  <gate_tcp state="on" />
+			  <gate_udp state="off" />
+			  <gate_other state="off" />
+			</params>
+		</block>
+		
+		<block id="tuple_demux3" type="tuple_demux" > 
+			<params>
+			  <gate_tcp state="on" />
+			  <gate_udp state="off" />
+			  <gate_other state="off" />
+			</params>
+		</block>
+		
+		<block id="tuple_demux4" type="tuple_demux" > 
+			<params>
+			  <gate_tcp state="on" />
+			  <gate_udp state="off" />
+			  <gate_other state="off" />
+			</params>
+		</block>
+		
+		<block id="tuple_demux5" type="tuple_demux" > 
+			<params>
+			  <gate_tcp state="on" />
+			  <gate_udp state="off" />
+			  <gate_other state="off" />
+			</params>
+		</block>
+		
+		<block id="tuple_demux6" type="tuple_demux" > 
+			<params>
+			  <gate_tcp state="on" />
+			  <gate_udp state="off" />
+			  <gate_other state="off" />
+			</params>
+		</block>
+		
+		<block id="tuple_demux7" type="tuple_demux" > 
+			<params>
+			  <gate_tcp state="on" />
+			  <gate_udp state="off" />
+			  <gate_other state="off" />
+			</params>
+		</block>
+		
+		<block id="tuple_demux8" type="tuple_demux" > 
+			<params>
+			  <gate_tcp state="on" />
+			  <gate_udp state="off" />
+			  <gate_other state="off" />
+			</params>
+		</block>
+		
+		<block id="tuple_demux9" type="tuple_demux" > 
+			<params>
+			  <gate_tcp state="on" />
+			  <gate_udp state="off" />
+			  <gate_other state="off" />
+			</params>
+		</block>
+		
+		<block id="tuple_demux10" type="tuple_demux" > 
+			<params>
+			  <gate_tcp state="on" />
+			  <gate_udp state="off" />
+			  <gate_other state="off" />
+			</params>
+		</block>
+		
+		<block id="tuple_demux11" type="tuple_demux" > 
+			<params>
+			  <gate_tcp state="on" />
+			  <gate_udp state="off" />
+			  <gate_other state="off" />
+			</params>
+		</block>
+		
+		<block id="tuple_demux12" type="tuple_demux" > 
+			<params>
+			  <gate_tcp state="on" />
+			  <gate_udp state="off" />
+			  <gate_other state="off" />
+			</params>
+		</block>
+		
+		<block id="syn_counter1" type="syn_counter"> 
+			<params>
+			    <export period="500000" />
+			</params>
+		</block>
+		
+		<block id="syn_counter2" type="syn_counter"> 
+			<params>
+			    <export period="500000" />
+			</params>
+		</block>
+		
+		<block id="syn_counter3" type="syn_counter"> 
+			<params>
+			    <export period="500000" />
+			</params>
+		</block>
+		
+		<block id="syn_counter4" type="syn_counter"> 
+			<params>
+			    <export period="500000" />
+			</params>
+		</block>
+		
+		<block id="syn_counter5" type="syn_counter"> 
+			<params>
+			    <export period="500000" />
+			</params>
+		</block>
+		
+		<block id="syn_counter6" type="syn_counter"> 
+			<params>
+			    <export period="500000" />
+			</params>
+		</block>
+		
+		<block id="syn_counter7" type="syn_counter"> 
+			<params>
+			    <export period="500000" />
+			</params>
+		</block>
+		
+		<block id="syn_counter8" type="syn_counter"> 
+			<params>
+			    <export period="500000" />
+			</params>
+		</block>
+		
+		<block id="syn_counter9" type="syn_counter"> 
+			<params>
+			    <export period="500000" />
+			</params>
+		</block>
+		
+		<block id="syn_counter10" type="syn_counter"> 
+			<params>
+			    <export period="500000" />
+			</params>
+		</block>
+		
+		<block id="syn_counter11" type="syn_counter"> 
+			<params>
+			    <export period="500000" />
+			</params>
+		</block>
+		
+		<block id="syn_counter12" type="syn_counter"> 
+			<params>
+			    <export period="500000" />
+			</params>
+		</block>
+		
+		<block id="cms_merger" type="cms_merger"> 
+			<params>
+			    <merge number="12" />
+			</params>
+		</block>
+		
+		<block id="syn_flooding_detection" type="syn_flooding_detection"> 
+			<params>
+			    <cusum threshold="50" offset="10" mean_window="20" />
+			</params>
+		</block>
+
+		<connection src_block="syn_synchronizer" src_gate="out_sketch_proto" dst_block="syn_counter1" dst_gate="in_sketch_proto" />
+		<connection src_block="syn_synchronizer" src_gate="out_sketch_proto" dst_block="syn_counter2" dst_gate="in_sketch_proto" />
+		<connection src_block="syn_synchronizer" src_gate="out_sketch_proto" dst_block="syn_counter3" dst_gate="in_sketch_proto" />
+		<connection src_block="syn_synchronizer" src_gate="out_sketch_proto" dst_block="syn_counter4" dst_gate="in_sketch_proto" />
+		<connection src_block="syn_synchronizer" src_gate="out_sketch_proto" dst_block="syn_counter5" dst_gate="in_sketch_proto" />
+		<connection src_block="syn_synchronizer" src_gate="out_sketch_proto" dst_block="syn_counter6" dst_gate="in_sketch_proto" />
+		<connection src_block="syn_synchronizer" src_gate="out_sketch_proto" dst_block="syn_counter7" dst_gate="in_sketch_proto" />
+		<connection src_block="syn_synchronizer" src_gate="out_sketch_proto" dst_block="syn_counter8" dst_gate="in_sketch_proto" />
+		<connection src_block="syn_synchronizer" src_gate="out_sketch_proto" dst_block="syn_counter9" dst_gate="in_sketch_proto" />
+		<connection src_block="syn_synchronizer" src_gate="out_sketch_proto" dst_block="syn_counter10" dst_gate="in_sketch_proto" />
+		<connection src_block="syn_synchronizer" src_gate="out_sketch_proto" dst_block="syn_counter11" dst_gate="in_sketch_proto" />
+		<connection src_block="syn_synchronizer" src_gate="out_sketch_proto" dst_block="syn_counter12" dst_gate="in_sketch_proto" />
+		
+		<connection src_block="tuple_parser1" src_gate="out_pkt" dst_block="tuple_demux1" dst_gate="in_pkt" />
+		<connection src_block="tuple_parser2" src_gate="out_pkt" dst_block="tuple_demux2" dst_gate="in_pkt" />
+		<connection src_block="tuple_parser3" src_gate="out_pkt" dst_block="tuple_demux3" dst_gate="in_pkt" />
+		<connection src_block="tuple_parser4" src_gate="out_pkt" dst_block="tuple_demux4" dst_gate="in_pkt" />
+		<connection src_block="tuple_parser5" src_gate="out_pkt" dst_block="tuple_demux5" dst_gate="in_pkt" />
+		<connection src_block="tuple_parser6" src_gate="out_pkt" dst_block="tuple_demux6" dst_gate="in_pkt" />
+		<connection src_block="tuple_parser7" src_gate="out_pkt" dst_block="tuple_demux7" dst_gate="in_pkt" />
+		<connection src_block="tuple_parser8" src_gate="out_pkt" dst_block="tuple_demux8" dst_gate="in_pkt" />
+		<connection src_block="tuple_parser9" src_gate="out_pkt" dst_block="tuple_demux9" dst_gate="in_pkt" />
+		<connection src_block="tuple_parser10" src_gate="out_pkt" dst_block="tuple_demux10" dst_gate="in_pkt" />
+		<connection src_block="tuple_parser11" src_gate="out_pkt" dst_block="tuple_demux11" dst_gate="in_pkt" />
+		<connection src_block="tuple_parser12" src_gate="out_pkt" dst_block="tuple_demux12" dst_gate="in_pkt" />
+		
+		<connection src_block="tuple_demux1" src_gate="out_pkt_tcp" dst_block="syn_counter1" dst_gate="in_pkt" />
+		<connection src_block="tuple_demux2" src_gate="out_pkt_tcp" dst_block="syn_counter2" dst_gate="in_pkt" />
+		<connection src_block="tuple_demux3" src_gate="out_pkt_tcp" dst_block="syn_counter3" dst_gate="in_pkt" />
+		<connection src_block="tuple_demux4" src_gate="out_pkt_tcp" dst_block="syn_counter4" dst_gate="in_pkt" />
+		<connection src_block="tuple_demux5" src_gate="out_pkt_tcp" dst_block="syn_counter5" dst_gate="in_pkt" />
+		<connection src_block="tuple_demux6" src_gate="out_pkt_tcp" dst_block="syn_counter6" dst_gate="in_pkt" />
+		<connection src_block="tuple_demux7" src_gate="out_pkt_tcp" dst_block="syn_counter7" dst_gate="in_pkt" />
+		<connection src_block="tuple_demux8" src_gate="out_pkt_tcp" dst_block="syn_counter8" dst_gate="in_pkt" />
+		<connection src_block="tuple_demux9" src_gate="out_pkt_tcp" dst_block="syn_counter9" dst_gate="in_pkt" />
+		<connection src_block="tuple_demux10" src_gate="out_pkt_tcp" dst_block="syn_counter10" dst_gate="in_pkt" />
+		<connection src_block="tuple_demux11" src_gate="out_pkt_tcp" dst_block="syn_counter11" dst_gate="in_pkt" />
+		<connection src_block="tuple_demux12" src_gate="out_pkt_tcp" dst_block="syn_counter12" dst_gate="in_pkt" />
+		
+		<connection src_block="syn_counter1" src_gate="out_sketch" dst_block="cms_merger" dst_gate="in_sketch" />
+		<connection src_block="syn_counter2" src_gate="out_sketch" dst_block="cms_merger" dst_gate="in_sketch" />
+		<connection src_block="syn_counter3" src_gate="out_sketch" dst_block="cms_merger" dst_gate="in_sketch" />
+		<connection src_block="syn_counter4" src_gate="out_sketch" dst_block="cms_merger" dst_gate="in_sketch" />
+		<connection src_block="syn_counter5" src_gate="out_sketch" dst_block="cms_merger" dst_gate="in_sketch" />
+		<connection src_block="syn_counter6" src_gate="out_sketch" dst_block="cms_merger" dst_gate="in_sketch" />
+		<connection src_block="syn_counter7" src_gate="out_sketch" dst_block="cms_merger" dst_gate="in_sketch" />
+		<connection src_block="syn_counter8" src_gate="out_sketch" dst_block="cms_merger" dst_gate="in_sketch" />
+		<connection src_block="syn_counter9" src_gate="out_sketch" dst_block="cms_merger" dst_gate="in_sketch" />
+		<connection src_block="syn_counter10" src_gate="out_sketch" dst_block="cms_merger" dst_gate="in_sketch" />
+		<connection src_block="syn_counter11" src_gate="out_sketch" dst_block="cms_merger" dst_gate="in_sketch" />
+		<connection src_block="syn_counter12" src_gate="out_sketch" dst_block="cms_merger" dst_gate="in_sketch" />
+		
+		<connection src_block="cms_merger" src_gate="out_sketch" dst_block="syn_flooding_detection" dst_gate="in_sketch" />
+
+		<connection src_block="syn_flooding_detection" src_gate="out_alert" dst_block="syn_counter1" dst_gate="in_alert" />
+		<connection src_block="syn_flooding_detection" src_gate="out_alert" dst_block="syn_counter2" dst_gate="in_alert" />
+		<connection src_block="syn_flooding_detection" src_gate="out_alert" dst_block="syn_counter3" dst_gate="in_alert" />
+		<connection src_block="syn_flooding_detection" src_gate="out_alert" dst_block="syn_counter4" dst_gate="in_alert" />
+		<connection src_block="syn_flooding_detection" src_gate="out_alert" dst_block="syn_counter5" dst_gate="in_alert" />
+		<connection src_block="syn_flooding_detection" src_gate="out_alert" dst_block="syn_counter6" dst_gate="in_alert" />
+		<connection src_block="syn_flooding_detection" src_gate="out_alert" dst_block="syn_counter7" dst_gate="in_alert" />
+		<connection src_block="syn_flooding_detection" src_gate="out_alert" dst_block="syn_counter8" dst_gate="in_alert" />
+		<connection src_block="syn_flooding_detection" src_gate="out_alert" dst_block="syn_counter9" dst_gate="in_alert" />
+		<connection src_block="syn_flooding_detection" src_gate="out_alert" dst_block="syn_counter10" dst_gate="in_alert" />
+		<connection src_block="syn_flooding_detection" src_gate="out_alert" dst_block="syn_counter11" dst_gate="in_alert" />
+		<connection src_block="syn_flooding_detection" src_gate="out_alert" dst_block="syn_counter12" dst_gate="in_alert" />
+
+        <ext_gate direction="in" block="tuple_parser1" gate="in_pkt" ext_name="raw_packets1" />
+        <ext_gate direction="in" block="tuple_parser2" gate="in_pkt" ext_name="raw_packets2" />
+        <ext_gate direction="in" block="tuple_parser3" gate="in_pkt" ext_name="raw_packets3" />
+        <ext_gate direction="in" block="tuple_parser4" gate="in_pkt" ext_name="raw_packets4" />
+        <ext_gate direction="in" block="tuple_parser5" gate="in_pkt" ext_name="raw_packets5" />
+        <ext_gate direction="in" block="tuple_parser6" gate="in_pkt" ext_name="raw_packets6" />
+        <ext_gate direction="in" block="tuple_parser7" gate="in_pkt" ext_name="raw_packets7" />
+        <ext_gate direction="in" block="tuple_parser8" gate="in_pkt" ext_name="raw_packets8" />
+        <ext_gate direction="in" block="tuple_parser9" gate="in_pkt" ext_name="raw_packets9" />
+        <ext_gate direction="in" block="tuple_parser10" gate="in_pkt" ext_name="raw_packets10" />
+        <ext_gate direction="in" block="tuple_parser11" gate="in_pkt" ext_name="raw_packets11" />
+        <ext_gate direction="in" block="tuple_parser12" gate="in_pkt" ext_name="raw_packets12" />
+
+	</install>
+
+</composition>

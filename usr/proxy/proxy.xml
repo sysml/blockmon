@@ -1,0 +1,43 @@
+<composition id="sniffer_proxy" app_id="test_proxy2">
+	<install>
+               <threadpool id="sniffer_thread" num_threads="1" >
+			<core number="0"/>
+		</threadpool>
+
+		<block id="sniffer" type="pcap_sniffer" sched_type="active" threadpool="sniffer_thread">
+			<params>
+				<source type="live" name="lo"/>
+				<bpf_filter expression="!udp"/>
+			</params>
+		</block>
+
+
+
+
+                <block id="proxy2" type="proxy">
+			<params>
+
+                            <out>
+                                <address port="31">127.0.0.1</address>
+                            </out>
+
+			</params>
+		</block>
+                
+
+		<connection src_block="sniffer" src_gate="sniffer_out" dst_block="proxy2" dst_gate="proxy_in"/>
+
+
+
+
+	</install>
+
+</composition>
+
+
+
+
+
+
+
+				

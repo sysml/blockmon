@@ -1,0 +1,35 @@
+<composition id="simple_cms_counter" app_id="cms_counter">
+	<install>
+	
+		<block id="tuple_parser" type="tuple_parser"> 
+			<params>
+			</params>
+		</block>
+		
+		<block id="tuple_demux" type="tuple_demux"> 
+			<params>
+			  <gate_tcp state="on" />
+			  <gate_udp state="off" />
+			  <gate_other state="off" />
+			</params>
+		</block>
+		
+		<block id="counter_cms" type="counter_cms"> 
+			<params>
+			    <sketch width="4096" depth="8" />
+			    <flow src_ip="on" dst_ip="on" src_port="on" dst_port="on" protocol="on" />
+			</params>
+		</block>
+
+		<blockref local_block_id="sniffer" ext_composition_id="arch_input" ext_block_id="sniffer"/>
+
+		<connection src_block="sniffer" src_gate="sniffer_out" dst_block="tuple_parser" dst_gate="in_pkt"/>
+		<connection src_block="tuple_parser" src_gate="out_pkt" dst_block="tuple_demux" dst_gate="in_pkt"/>
+		<connection src_block="tuple_demux" src_gate="out_pkt_tcp" dst_block="counter_cms" dst_gate="in_pkt"/>
+
+	</install>
+
+</composition>
+
+
+				
