@@ -1,0 +1,17 @@
+[DEFAULT]
+bm_basepath = /home/blockmon/sigcommdemo/blockmon
+
+[MAIN]
+bm_process_exec = %(bm_basepath)s/daemon/core/bmprocess.py
+logging_dir = /home/blockmon/sigcommdemo/blockmon/log
+tmp_dir = /home/blockmon/sigcommdemo/blockmon/tmp
+
+[NETWORK]
+listening_port = 7080
+#bc_ipaddr = 127.0.0.1
+#bc_listening_port = 7090
+#iface = eth0
+
+[BLOCKS]
+block_ext = .cpp
+blocks_path = %(bm_basepath)s/blocks

@@ -1,0 +1,204 @@
+<composition id="bypassfraud" app_id="app_bypassfraud">
+  <general>
+      <clock type="wall"/>
+  </general>
+
+  <install>
+
+    <threadpool id="src_thread" num_threads="1" >
+      <core number="0"/>
+    </threadpool>
+
+    <threadpool id="tbf_thread" num_threads="1" >
+      <core number="2"/>
+    </threadpool>
+
+    <threadpool id="gng_thread" num_threads="1" >
+       <core number="1"/>
+    </threadpool>
+
+    <block id="src" type="CDRSource" sched_type="active" threadpool="src_thread"> 
+      <params>
+        <source type="offline" name="/tmp/temporary_Min/0401t3.dat"/>
+      </params>
+    </block>
+
+    <block id="memchecker" type="BFMembershipChecker">
+      <params>
+        <source_key name="src_dst"/>
+        <result_key name="new_callee"/>
+        <hashsize value="8"/>
+        <filtersize value="20"/>
+      </params>
+    </block>
+
+    <block id="boolC_out" type="BooleanCombiner">
+      <params>
+        <operation type="and"/>
+        <source fields="out,call,established"/>
+        <result_key name="bool_out"/>
+      </params>
+    </block>     
+    
+    <block id="boolC_fail" type="BooleanCombiner">
+      <params>
+        <operation type="and"/>
+        <source fields="fail,out,call,established"/>
+        <result_key name="bool_fail"/>
+      </params>
+    </block> 
+    
+    <block id="boolC_new" type="BooleanCombiner">
+      <params>
+        <operation type="and"/>
+        <source fields="new_callee,out,call,established"/>
+        <result_key name="bool_new"/>
+      </params>
+    </block> 
+    
+        
+    <block id="boolC_sms" type="BooleanCombiner">
+      <params>
+        <operation type="not"/>
+        <source fields="call"/>
+        <result_key name="bool_sms"/>
+      </params>
+    </block> 
+    
+    <block id="call_in" type="BooleanCombiner">
+		      <params>
+        <operation type="not"/>
+        <source fields="out"/>
+        <result_key name="in"/>
+      </params>
+    </block> 
+    
+    <block id="boolC_in" type="BooleanCombiner">
+      <params>
+        <operation type="and"/>
+        <source fields="in,call,established"/>
+        <result_key name="bool_in"/>
+      </params>
+    </block> 
+    
+    <block id="boolC_gng" type="BooleanCombiner">
+      <params>
+        <operation type="and"/>
+        <source fields="out,call"/>
+        <result_key name="bool_gng"/>
+      </params>
+    </block> 
+
+    <block id="tbf_out" type="TBloomFilter" sched_type="active" threadpool="tbf_thread">
+      <params>
+        <id_key name="src_id"/>
+        <count_key name="src_id"/>
+        <result_key name="tbfout"/>
+        <add_key name="bool_out"/>
+        <timewindow value="21600"/>
+        <basewindow value="360"/>
+        <hashsize value="8"/>
+        <filtersize value="20"/>
+        <addvalue type="static" value="1"/>
+      </params>
+    </block> 
+
+    <block id="tbf_in" type="TBloomFilter" sched_type="active" threadpool="tbf_thread">
+      <params>
+        <id_key name="src_id"/>
+        <count_key name="src_id"/>
+        <result_key name="tbfin"/>
+        <add_key name="bool_in"/>
+        <timewindow value="21600"/>
+        <basewindow value="360"/>
+        <hashsize value="8"/>
+        <filtersize value="20"/>
+        <addvalue type="static" value="1"/>
+      </params>
+    </block> 
+
+    <block id="tbf_failed" type="TBloomFilter" sched_type="active" threadpool="tbf_thread">
+      <params>
+        <id_key name="src_id"/>
+        <count_key name="src_id"/>
+        <result_key name="tbffail"/>
+        <add_key name="bool_fail"/>
+        <timewindow value="21600"/>
+        <basewindow value="360"/>
+        <hashsize value="8"/>
+        <filtersize value="20"/>
+        <addvalue type="static" value="1"/>
+      </params>
+    </block> 
+
+    <block id="tbf_new" type="TBloomFilter" sched_type="active" threadpool="tbf_thread">
+      <params>
+        <id_key name="src_id"/>
+        <count_key name="dst_id"/>
+        <result_key name="tbfnew"/>
+        <add_key name="bool_new"/>
+        <timewindow value="86400"/>
+        <basewindow value="360"/>
+        <hashsize value="8"/>
+        <filtersize value="20"/>
+        <addvalue type="static" value="1"/>
+      </params>
+    </block> 
+
+    <block id="tbf_sms" type="TBloomFilter" sched_type="active" threadpool="tbf_thread">
+      <params>
+        <id_key name="src_id"/>
+        <count_key name="src_id"/>
+        <result_key name="tbfsms"/>
+        <add_key name="bool_sms"/>
+        <timewindow value="86400"/>
+        <basewindow value="360"/>
+        <hashsize value="8"/>
+        <filtersize value="20"/>
+        <addvalue type="static" value="1"/>
+      </params>
+    </block> 
+    
+    <block id="thr_sms" type="ThresholdComparator">
+      <params>
+	<result_key name="sms"/>
+	<field name="tbfsms"/>
+	<threshold value="0"/>
+      </params>
+    </block> 
+
+    <block id="thr_in" type="ThresholdComparator">
+      <params>
+	<result_key name="in"/>
+	<field name="tbfin"/>
+	<threshold value="0"/>
+      </params>
+    </block>
+    
+    <block id="gng" type="f_gng" sched_type="active" threadpool="gng_thread">
+      <params>
+        <id_key name="src_id"/>
+	 <result_key name="gng_res"/>
+        <add_key name="bool_gng"/>
+      </params>
+    </block> 
+
+    <connection src_block="src" src_gate="source_out" dst_block="memchecker" dst_gate="in_bfmcheck"/> 
+    <connection src_block="memchecker" src_gate="out_bfmcheck" dst_block="boolC_out" dst_gate="in_boolcombiner"/>
+    <connection src_block="boolC_out" src_gate="out_boolcombiner" dst_block="boolC_fail" dst_gate="in_boolcombiner"/>
+    <connection src_block="boolC_fail" src_gate="out_boolcombiner" dst_block="boolC_new" dst_gate="in_boolcombiner"/>
+    <connection src_block="boolC_new" src_gate="out_boolcombiner" dst_block="boolC_gng" dst_gate="in_boolcombiner"/>
+    <connection src_block="boolC_gng" src_gate="out_boolcombiner" dst_block="boolC_sms" dst_gate="in_boolcombiner"/>
+    <connection src_block="boolC_sms" src_gate="out_boolcombiner" dst_block="call_in" dst_gate="in_boolcombiner"/>
+    <connection src_block="call_in" src_gate="out_boolcombiner" dst_block="boolC_in" dst_gate="in_boolcombiner"/>
+    <connection src_block="boolC_in" src_gate="out_boolcombiner" dst_block="tbf_out" dst_gate="in_tbf"/> 
+    <connection src_block="tbf_out" src_gate="out_tbf" dst_block="tbf_in" dst_gate="in_tbf"/>
+    <connection src_block="tbf_in" src_gate="out_tbf" dst_block="tbf_failed" dst_gate="in_tbf"/>
+    <connection src_block="tbf_failed" src_gate="out_tbf" dst_block="tbf_new" dst_gate="in_tbf"/>
+    <connection src_block="tbf_new" src_gate="out_tbf" dst_block="tbf_sms" dst_gate="in_tbf"/>
+    <connection src_block="tbf_sms" src_gate="out_tbf" dst_block="thr_sms" dst_gate="in_thcomparator"/>
+    <connection src_block="thr_sms" src_gate="out_thcomparator" dst_block="thr_in" dst_gate="in_thcomparator"/>
+    <connection src_block="thr_in" src_gate="out_thcomparator" dst_block="gng" dst_gate="in_gng"/>
+
+  </install>
+</composition>

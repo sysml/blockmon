@@ -1,0 +1,27 @@
+body,p,h1,h2,h3,h4,table,td,th,ul,ol,textarea,input
+{
+font-family:verdana,helvetica,arial,sans-serif;
+}
+
+table.reference
+{
+background-color:#ffffff;
+border:1px solid #c3c3c3;
+border-collapse:collapse;
+width:100%;
+}
+
+table.reference th
+{
+background-color:#e5eecc;
+border:1px solid #c3c3c3;
+padding:3px;
+vertical-align:top;
+}
+
+table.reference td 
+{
+border:1px solid #c3c3c3;
+padding:3px;
+vertical-align:top;
+}

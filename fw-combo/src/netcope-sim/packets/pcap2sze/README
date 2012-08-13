@@ -1,0 +1,11 @@
+pcap2txt
+-------
+
+usage:
+
+pcap2txt trace-file.pcap
+
+description:
+
+reads first packet from trace-file and generates txt SZE2 format of the packet
+that can be loaded into NetCOPE simulation

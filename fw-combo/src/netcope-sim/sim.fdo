@@ -1,0 +1,220 @@
+# -----------------------------------------------------------------------
+#
+#   Company: INVEA-TECH a.s.
+#
+#   Project: IPFIX design
+#
+# -----------------------------------------------------------------------
+#
+#   (c) Copyright 2011 INVEA-TECH a.s.
+#   All rights reserved.
+#
+#   Please review the terms of the license agreement before using this
+#   file. If you are not an authorized user, please destroy this
+#   source code file and notify INVEA-TECH a.s. immediately that you
+#   inadvertently received an unauthorized copy.
+#
+# -----------------------------------------------------------------------
+#
+
+# simulate.fdo: NetCOPE function simulation file
+# Copyright (C) 2009 CESNET
+# Author: Viktor Pus <pus@liberouter.org>
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions
+# are met:
+# 1. Redistributions of source code must retain the above copyright
+#    notice, this list of conditions and the following disclaimer.
+# 2. Redistributions in binary form must reproduce the above copyright
+#    notice, this list of conditions and the following disclaimer in
+#    the documentation and/or other materials provided with the
+#    distribution.
+# 3. Neither the name of the Company nor the names of its contributors
+#    may be used to endorse or promote products derived from this
+#    software without specific prior written permission.
+#
+# This software is provided ``as is'', and any express or implied
+# warranties, including, but not limited to, the implied warranties of
+# merchantability and fitness for a particular purpose are disclaimed.
+# In no event shall the company or contributors be liable for any
+# direct, indirect, incidental, special, exemplary, or consequential
+# damages (including, but not limited to, procurement of substitute
+# goods or services; loss of use, data, or profits; or business
+# interruption) however caused and on any theory of liability, whether
+# in contract, strict liability, or tort (including negligence or
+# otherwise) arising in any way out of the use of this software, even
+# if advised of the possibility of such damage.
+#
+# $Id: simulate.fdo 12037 2011-04-15 13:17:09Z kastovsky $
+#
+quit -sim
+
+vlib work
+vdel -all
+vlib work
+
+vcom -93 -explicit -work work synth_models/gics_ib_endpoint_synth.vhd
+vcom -93 -explicit -work work synth_models/tsu_async.vhd
+vcom -93 -explicit -work work ../src/pkgs/math_pack.vhd
+vcom -93 -explicit -work work ../src/pkgs/combov2_core_const.vhd
+vcom -93 -explicit -work work ../src/pkgs/combov2_user_const.vhd
+vcom -93 -explicit -work work ../src/pkgs/ibuf_general_pkg.vhd
+vcom -93 -explicit -work work ../src/pkgs/fifo_pkg.vhd
+vcom -93 -explicit -work work ../src/pkgs/network_10g2_64_const.vhd
+vcom -93 -explicit -work work ../src/pkgs/addr_space.vhd
+vcom -93 -explicit -work work ../src/pkgs/fl_pkg.vhd
+vcom -93 -explicit -work work ../src/pacodag/pcd_tsu_64b_ent.vhd
+vcom -93 -explicit -work work ../src/pacodag/pcd_tsu_64b.vhd
+vcom -93 -explicit -work work ../src/pacodag/pcd_tsu_t64.vhd
+vcom -93 -explicit -work work ../src/pacodag/pcd_tsu_top2_t64.vhd
+vcom -93 -explicit -work work ../src/application_ent.vhd
+vcom -93 -explicit -work work ../src/applications/application.vhd
+vcom -93 -explicit -work work models/ib_pkg.vhd
+vcom -93 -explicit -work work models/ib_bfm_pkg.vhd
+vcom -93 -explicit -work work models/ib_bfm_rdy_pkg.vhd
+vcom -93 -explicit -work work models/ib_bfm.vhd
+vcom -93 -explicit -work work models/mi_bfm_pkg.vhd
+vcom -93 -explicit -work work models/mi_bfm.vhd
+vcom -93 -explicit -work work models/fl_bfm_rdy_pkg.vhd
+vcom -93 -explicit -work work models/fl_bfm_pkg.vhd
+vcom -93 -explicit -work work models/fl_bfm.vhd
+vcom -93 -explicit -work work testbench.vhd
+
+exec vmake > Makefile
+
+vsim -t 1ps -L xilinxcorelib -lib work testbench
+set  StdArithNoWarnings 1
+
+exec make
+view wave
+delete wave *
+
+add wave -divider "Clock and reset"
+add wave -label CLK /testbench/clk
+add wave -label RESET /testbench/reset
+
+add wave -divider "Internal Bus"
+add wave -hex -label IB_UP_DATA     /testbench/ib_up_data            
+add wave -label IB_UP_SOP_N         /testbench/ib_up_sop_n       
+add wave -label IB_UP_EOP_N         /testbench/ib_up_eop_n       
+add wave -label IB_UP_SRC_RDY_N     /testbench/ib_up_src_rdy_n   
+add wave -label IB_UP_DST_RDY_N     /testbench/ib_up_dst_rdy_n   
+add wave -hex -label IB_DOWN_DATA   /testbench/ib_down_data      
+add wave -label IB_DOWN_SOP_N       /testbench/ib_down_sop_n     
+add wave -label IB_DOWN_EOP_N       /testbench/ib_down_eop_n     
+add wave -label IB_DOWN_SRC_RDY_N   /testbench/ib_down_src_rdy_n 
+add wave -label IB_DOWN_DST_RDY_N   /testbench/ib_down_dst_rdy_n 
+
+add wave -divider "Application internal signals - IB"
+add wave -hex -label WR_ADDR /testbench/uut/IB_ENDPOINT_I/wr_addr
+add wave -hex -label WR_DATA /testbench/uut/IB_ENDPOINT_I/wr_data
+add wave -label WR_REQ       /testbench/uut/IB_ENDPOINT_I/wr_req
+add wave -hex -label RD_ADDR /testbench/uut/IB_ENDPOINT_I/rd_addr
+add wave -label RD_REQ       /testbench/uut/IB_ENDPOINT_I/rd_req
+add wave -label RD_SRC_RDY   /testbench/uut/IB_ENDPOINT_I/rd_src_rdy
+add wave -hex -label RD_DATA /testbench/uut/IB_ENDPOINT_I/rd_data
+add wave -label RD_DST_RDY   /testbench/uut/IB_ENDPOINT_I/rd_dst_rdy
+
+add wave -divider "MI32 Bus"
+add wave -hex -label MI32_ADDR    /testbench/mi32_addr
+add wave -hex -label MI32_DWR     /testbench/mi32_dwr
+add wave -label MI32_RD           /testbench/mi32_rd
+add wave -label MI32_WR           /testbench/mi32_wr
+add wave -label MI32_BE           /testbench/mi32_be
+add wave -hex -label MI32_DRD     /testbench/mi32_drd
+add wave -label MI32_ARDY         /testbench/mi32_ardy
+add wave -label MI32_DRDY         /testbench/mi32_drdy
+
+add wave -divider "Application internal signals - MI32"
+add wave -label CS_BRAM          /testbench/uut/cs_bram
+# add wave -label CS_EXPERIMENT0   /testbench/uut/cs_experiment0
+# add wave -label CS_EXPERIMENT1   /testbench/uut/cs_experiment1
+# add wave -label CS_EXPERIMENT2   /testbench/uut/cs_experiment2
+# add wave -label WE_EXPERIMENT0   /testbench/uut/we_experiment0
+# add wave -label WE_EXPERIMENT1   /testbench/uut/we_experiment1
+# add wave -label WE_EXPERIMENT2   /testbench/uut/we_experiment2
+add wave -hex -label REG_EXPERIMENT0   /testbench/uut/reg_experiment0
+add wave -hex -label REG_EXPERIMENT1   /testbench/uut/reg_experiment1
+add wave -hex -label REG_EXPERIMENT2   /testbench/uut/reg_experiment2
+add wave -hex -label REG_DO   /testbench/uut/reg_do
+
+add wave -divider "Network -> Application"
+add wave -hex -label NETWORK_RX0_DATA      /testbench/network_rx0_data
+add wave -label NETWORK_RX0_DREM      /testbench/network_rx0_drem
+add wave -label NETWORK_RX0_SOF_N     /testbench/network_rx0_sof_n
+add wave -label NETWORK_RX0_EOF_N     /testbench/network_rx0_eof_n
+add wave -label NETWORK_RX0_SOP_N     /testbench/network_rx0_sop_n
+add wave -label NETWORK_RX0_EOP_N     /testbench/network_rx0_eop_n
+add wave -label NETWORK_RX0_SRC_RDY_N /testbench/network_rx0_src_rdy_n
+add wave -label NETWORK_RX0_DST_RDY_N /testbench/network_rx0_dst_rdy_n
+                                       
+add wave -hex -label NETWORK_RX1_DATA      /testbench/network_rx1_data
+add wave -label NETWORK_RX1_DREM      /testbench/network_rx1_drem
+add wave -label NETWORK_RX1_SOF_N     /testbench/network_rx1_sof_n
+add wave -label NETWORK_RX1_EOF_N     /testbench/network_rx1_eof_n
+add wave -label NETWORK_RX1_SOP_N     /testbench/network_rx1_sop_n
+add wave -label NETWORK_RX1_EOP_N     /testbench/network_rx1_eop_n
+add wave -label NETWORK_RX1_SRC_RDY_N /testbench/network_rx1_src_rdy_n
+add wave -label NETWORK_RX1_DST_RDY_N /testbench/network_rx1_dst_rdy_n
+
+add wave -divider "Application -> DMA"
+add wave -hex -label DMA_RX0_DATA      /testbench/dma_rx0_data
+add wave -label DMA_RX0_DREM      /testbench/dma_rx0_drem
+add wave -label DMA_RX0_SOF_N     /testbench/dma_rx0_sof_n
+add wave -label DMA_RX0_EOF_N     /testbench/dma_rx0_eof_n
+add wave -label DMA_RX0_SOP_N     /testbench/dma_rx0_sop_n
+add wave -label DMA_RX0_EOP_N     /testbench/dma_rx0_eop_n
+add wave -label DMA_RX0_SRC_RDY_N /testbench/dma_rx0_src_rdy_n
+add wave -label DMA_RX0_DST_RDY_N /testbench/dma_rx0_dst_rdy_n
+                                       
+add wave -hex -label DMA_RX1_DATA      /testbench/dma_rx1_data
+add wave -label DMA_RX1_DREM      /testbench/dma_rx1_drem
+add wave -label DMA_RX1_SOF_N     /testbench/dma_rx1_sof_n
+add wave -label DMA_RX1_EOF_N     /testbench/dma_rx1_eof_n
+add wave -label DMA_RX1_SOP_N     /testbench/dma_rx1_sop_n
+add wave -label DMA_RX1_EOP_N     /testbench/dma_rx1_eop_n
+add wave -label DMA_RX1_SRC_RDY_N /testbench/dma_rx1_src_rdy_n
+add wave -label DMA_RX1_DST_RDY_N /testbench/dma_rx1_dst_rdy_n
+
+add wave -divider "DMA -> Application"
+add wave -hex -label DMA_TX0_DATA      /testbench/dma_tx0_data
+add wave -label DMA_TX0_DREM      /testbench/dma_tx0_drem
+add wave -label DMA_TX0_SOF_N     /testbench/dma_tx0_sof_n
+add wave -label DMA_TX0_EOF_N     /testbench/dma_tx0_eof_n
+add wave -label DMA_TX0_SOP_N     /testbench/dma_tx0_sop_n
+add wave -label DMA_TX0_EOP_N     /testbench/dma_tx0_eop_n
+add wave -label DMA_TX0_SRC_RDY_N /testbench/dma_tx0_src_rdy_n
+add wave -label DMA_TX0_DST_RDY_N /testbench/dma_tx0_dst_rdy_n
+                                       
+add wave -hex -label DMA_TX1_DATA      /testbench/dma_tx1_data
+add wave -label DMA_TX1_DREM      /testbench/dma_tx1_drem
+add wave -label DMA_TX1_SOF_N     /testbench/dma_tx1_sof_n
+add wave -label DMA_TX1_EOF_N     /testbench/dma_tx1_eof_n
+add wave -label DMA_TX1_SOP_N     /testbench/dma_tx1_sop_n
+add wave -label DMA_TX1_EOP_N     /testbench/dma_tx1_eop_n
+add wave -label DMA_TX1_SRC_RDY_N /testbench/dma_tx1_src_rdy_n
+add wave -label DMA_TX1_DST_RDY_N /testbench/dma_tx1_dst_rdy_n
+
+add wave -divider "Application -> Network"
+add wave -hex -label NETWORK_TX0_DATA      /testbench/network_tx0_data
+add wave -label NETWORK_TX0_DREM      /testbench/network_tx0_drem
+add wave -label NETWORK_TX0_SOF_N     /testbench/network_tx0_sof_n
+add wave -label NETWORK_TX0_EOF_N     /testbench/network_tx0_eof_n
+add wave -label NETWORK_TX0_SOP_N     /testbench/network_tx0_sop_n
+add wave -label NETWORK_TX0_EOP_N     /testbench/network_tx0_eop_n
+add wave -label NETWORK_TX0_SRC_RDY_N /testbench/network_tx0_src_rdy_n
+add wave -label NETWORK_TX0_DST_RDY_N /testbench/network_tx0_dst_rdy_n
+                                       
+add wave -hex -label NETWORK_TX1_DATA      /testbench/network_tx1_data
+add wave -label NETWORK_TX1_DREM      /testbench/network_tx1_drem
+add wave -label NETWORK_TX1_SOF_N     /testbench/network_tx1_sof_n
+add wave -label NETWORK_TX1_EOF_N     /testbench/network_tx1_eof_n
+add wave -label NETWORK_TX1_SOP_N     /testbench/network_tx1_sop_n
+add wave -label NETWORK_TX1_EOP_N     /testbench/network_tx1_eop_n
+add wave -label NETWORK_TX1_SRC_RDY_N /testbench/network_tx1_src_rdy_n
+add wave -label NETWORK_TX1_DST_RDY_N /testbench/network_tx1_dst_rdy_n
+
+
+restart -f
+run 2 us

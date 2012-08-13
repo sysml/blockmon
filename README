@@ -1,26 +1,48 @@
 BLOCKMON
 ================================
-Blockmon is software allowing construction of flexible monitoring and data
-analisys nodes, where a node can be for example a hardware probe or a PC. Block
-is based around the notion of blocks, which are small units of processing
-(e.g., packet counting). Blocks are connected and communicate via gates, and
-the set of inter-connected blocks represents a composition, where compositions
-are expressed in terms of an XML file.
+Blockmon is software allowing construction of flexible and high performance
+(rates in the 10Gb range) monitoring and data analisys nodes, where a node 
+can be for example a hardware probe or a PC. Blockmon is based around the 
+notion of blocks, which are small units of processing (e.g., packet counting). 
+Blocks are connected and communicate via gates, and the set of inter-connected 
+blocks represents a composition, where compositions are expressed in terms of 
+an XML file.
+
+In order to control blockmon, a number of options exist:
+
+1. CLI: python-based, run it with "python daemon/cli.py" (run it as root if
+   for instance capturing from a network interface). At the prompt type
+   "help" for a list of commands. Users are expected to write XML composition
+   files by hand.
+
+2. Daemon: a json-rpc, python-based daemon. Exposes the same functionality as
+   the CLI, but allows for programmability. If using it, make sure to first
+   edit the "daemon/config" file; run it with "python bmdaemon.py config" (as
+   root if needed). Users are expected to write XML composition files by hand,
+   or to write code that generates them. Also, make sure that core/bmprocess.py
+   is executable (e.g., chmod u+x core/bmprocess.py).
+
+3. GUI: [NOT YET READY!!] a Javascript based GUI that not only controls blockmon
+   but allows users to graphically create compositions. Run it with...
+
 
 DIRECTORY STRUCTURE
 ------------------------
 .
-|-- base  Basic blockmon files
-|-- doc   Documentation files
-|-- etc   Misc files
-|-- lib   Libraries
-|-- tests Test executables
-`-- usr   User-specific blocks
+├── bin       blockmon executable
+├── blocks    blocks
+├── core      core files
+├── daemon    daemon files
+├── doc       documentation
+├── lib       libraries
+├── messages  message files
+├── tests     test files
+└── usr       user blocks, msgs, compositions
 
 DOCUMENTATION
 ------------------------
 The documentation is generated through doxygen. To generate, go to the doc
-directory and run
+directory and run:
 
 doxygen blockmondoc.cfg
 
@@ -28,43 +50,42 @@ This will generate HTML documentation for all the code; the index page can be
 found under doc/blockmon/html/index.html
 
 In addition to the code documentation, classes implementing blocks include
-additional information regarding the block's functionality, parameters and
-gates. To see this go to the "Files" tab on the HTML documentation, and click
-on the block's filename (for intance, for a block called PktCounter click on
-PktCounter.hpp)
+additional information regarding the block's functionality. To generate this
+documentation, go to the doc directory and run:
+
+python blocksdoc.py
+
+The environment variable PYTHONPATH has to be set to Blockmon's main directory
+(i.e., "node") for this to work.
 
 COMPOSITION FILES
 ------------------------
-A very simple composition file consists of a set of blocks (with parameters)
-and their connections. One such file is shown below:
+A very simple composition file consists of a set of blocks and their connections, 
+all in XML format. One such file is shown below:
 
-<composition id="dummy" app_id="boh">
- <install>
-  <block id="sniffer" type="pcap_sniffer" sched_type="active" threadpool="sniffer_thread"> 
-   <params>
-    <source type="live" name="eth0"/>
-    <!--bpf_filter expression="!tcp"/--> 
-   </params>
-  </block>
-  <block id="tcp-counter" type="counter"  thread_safe_mode="off" > 
-   <params>
-   </params>
-  </block>
-  <block id="other-counter" type="counter"  thread_safe_mode="off" > 
-   <params>
-   </params>
-  </block>
-  <block id="demux" type="demux"  thread_safe_mode="off" > 
-   <params>
-   </params>
-  </block>
+<composition id="mysnifferctr" app_id="boh">
+  <install>
 
-  <connection src_block="sniffer" src_gate="sniffer_out" dst_block="demux" dst_gate="in_pkt"/>
-  <connection src_block="demux" src_gate="out_other" dst_block="other-counter" dst_gate="in_pkt"/>
-  <connection src_block="demux" src_gate="out_tcp" dst_block="tcp-counter" dst_gate="in_pkt"/>
+    <threadpool id="sniffer_thread" num_threads="2" >
+      <core number="0"/>
+    </threadpool>
 
- </install>
+    <block id="sniffer" type="PcapSource" sched_type="active" threadpool="sniffer_thread"> 
+      <params>
+        <source type="live" name="eth0"/>
+        <!--bpf_filter expression="!tcp"/--> 
+      </params>
+    </block>
 
+    <!-- NOTE: passive blocks shouldn't have a threadpool assigned to them -->
+    <block id="counter" type="PktCounter" sched_type="passive"> 
+      <params>
+      </params>
+    </block>
+
+    <connection src_block="sniffer" src_gate="sniffer_out" dst_block="counter" dst_gate="in_pkt"/>
+
+  </install>
 </composition>
 
 Compositions also allow configuration of how many threads are in a thread pool,
@@ -80,41 +101,47 @@ and how a threadpool is allocated to CPU cores; some examples are below:
 In addition, it is possible to modify existing compositions, updating parts of
 them, adding to them, or deleting from them:
 
-  <!-- IDEA: everything listed here is updated (except for unmutables like block id, type, etc) -->
+<composition id="mysnifferctr">
   <update>
-    <threadpool id="pool2" num_threads="2" cores="3,5">
 
-    <!-- THIS NEEDS LOTS MORE WORK TO COVER MORE CASES -->
-    <block id="pkt_filter" threadpool="pool5"> 
-      <params>
-        <filter proto="tcp" port="8088" />
-      </params>
+<!--
+    These sections are optional
+    <delete>
+    </delete>
+
+    <add>
+    </add>-->
+
+    <reconf>
+     <!-- note: id, sched_type and threadpool are MANDATORY even if they don't change -->
+      <block id="sniffer" sched_type="active" threadpool="sniffer_thread"> 
+        <params>
+          <source type="live" name="wlan0" />
+        </params>
+      </block>
+    </reconf>
+
   </update>
+</composition>
 
-  <delete>
-    <block id="fw_block" />
-    <connection begin_block="aggr_topology_in" begin_gate="in_topology" end_block="pkt_filter" end_gate="data"/>
-  </delete>
+Note that blockmon does not support reconfiguration of connections. The user must delete and add
+connections to emulate the equivalent of a connection reconfiguration.
 
-NOTE: this last functionality (updating/deleting) is not yet supported
-
-See usr/app_dumm_test for a couple of sample composition XML files.
-
-RUNNING AN APPLICATION
+RUNNING A COMPOSITION
 ------------------------
-To run an application from the main directory simply run
+To run a composition via the CLI simply run:
 
-./blockmon [composition file1] [composition file2] ...
+sudo python daemon/cli.py
+BM shell: start [composition file]
 
-For example:
+And stop it with:
 
-sudo ./blockmon usr/app_dumm_test/sniffer.xml usr/app_dumm_test/counter.xml
+BM shell: stop
 
-It is of course possible to place an entire composition in a single file. Also
-note that to run the above sudo is needed because it accesses a local
+Also note that to run the above, sudo is needed to access a local
 interface.
 
-ADDING APPLICATIONS
+ADDING COMPOSITIONS
 ------------------------
 To create a new application, please add a subdirectory under 
 
@@ -133,21 +160,44 @@ the project.
 CREATING BLOCKS
 ------------------------
 The easiest way is to start with an existing simple block such as
-app_dumm_test/blocks/PktCounter.[hpp|cpp] and copy it. Please make sure to
-document, at the top of the file, what the block does, what its gates are and
-what parameters it takes, as well as an XML snippet showing how a composition
-file might configure the block (again, refer to PktCounter.hpp for an example).
+blocks/PktCounter.[hpp|cpp] and copy it. Please make sure to
+document, at the top of the *cpp* file, what the block does; again, follow
+the format in PktCounter.cpp. 
 
-PF_RING
+If you are only going to have one file for your block, please make sure it is
+a cpp file and not an hpp one.
+
+For more details, please refer to the doxygen documentation of Block.hpp.
+
+Once you're done creating the block, run
+
+python core/blockinfoparser.py config
+
+to let the CLI and daemon know about the new block.
+
+
+MESSAGE TYPES
 ------------------------
-Blockmon supports pf_ring (http://www.ntop.org/PF_RING.html), a new type of
-network socket that dramatically improves the packet capture speed, as a block
-called MQPfring. See the INSTALL file for instructions on how to build this.
+Blockmon supports the ability for developers to add custom message types by 
+putting message files under /usr/app_[your_app_name]/messages. However, note 
+that in most cases the standard message types provided should be sufficient.
+
+Packet: represents a packet captured from the wire and provides access to 
+fields of the parsed packet.
+
+Flow: represents a flow keyed by five-tuple, counting bytes and packets.
+
+PairMsg: represents a message carrying a generic (key, value) pair.
+
+Each block can append a Tag to an existing Message (see documentation about 
+the TagRegistry class for details). Note that you must first register the tag 
+before creating a message or appending the tag to an existing message.
 
 CODE COMMENTING
 ------------------------
-Please follow the format used in usr/app_dumm_test/blocks/PktCounter.[hpp|cpp]
+Please follow the format used in blocks/PktCounter.[hpp|cpp]
 
 BUGS & QUESTIONS
 ------------------------
-Please write to blockmon-dev@tid.es
+Please write to request@blockmon-demons.org 
+

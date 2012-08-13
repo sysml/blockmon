@@ -1,0 +1,313 @@
+<composition id="myAnDet_online_UL" app_id="AD">
+  <general>
+      <clock type="wall" />
+  </general>
+  
+  <install>
+
+    <threadpool id="sniffer_thread" num_threads="4" >
+      <core number="0"/>
+    </threadpool>
+
+    
+    <block id="snifferUL" type="PcapSource" invocation="async" threadpool="sniffer_thread">
+      <params> 
+        <source type="live" name="eth0"/>         
+          <bpf_filter expression= "tcp and src net 192" /> 
+      </params>
+    </block>
+
+    <block id="FeatExtrUL" type="FeaturesExtractor" invocation="direct">
+      <params>
+          <direction type = "uplink"/>
+          <features>
+
+              <Feat_1>
+                <layer4 prot="TCP"/>  
+                <flags name="SYN"/>
+                <port num="80"/>
+                <mode packets="on"
+                      bytes="on"
+                      ServPorts="off"
+                      ServIPs="off" />
+              </Feat_1>
+
+              <Feat_2>
+                <layer4 prot="TCP"/>  
+                <flags name="SYN"/>
+                <port num="65535"/>
+                <mode packets="on"
+                      bytes="on"
+                      ServPorts="off"
+                      ServIPs="off" />
+              </Feat_2>
+
+
+              <Feat_3>
+                <layer4 prot="TCP"/>  
+                <flags name="ACK"/>
+                <port num="80"/>
+                <mode packets="on"
+                      bytes="on"
+                      ServPorts="off"
+                      ServIPs="off" />
+              </Feat_3>
+
+          </features>
+      </params>
+    </block>
+
+
+    <block id="Per_User_Counter_0_1" type="PerUserCounter" invocation="direct">
+        <params>
+            <timescales in_ts  = "0"
+                        out_ts = "1" />        
+        </params>
+    </block>
+    
+    <block id="Per_User_Counter_1_5" type="PerUserCounter" invocation="direct">
+        <params>
+            <timescales in_ts  = "1"
+                        out_ts = "5" />        
+        </params>
+    </block>
+    
+    <block id="Per_User_Counter_5_15" type="PerUserCounter" invocation="direct">
+        <params>
+            <timescales in_ts  = "5"
+                        out_ts = "15" />        
+        </params>
+    </block>
+    
+    <block id="Per_User_Counter_15_30" type="PerUserCounter" invocation="direct">
+        <params>
+            <timescales in_ts  = "15"
+                        out_ts = "30" />        
+        </params>
+    </block>
+    
+    <block id="Per_User_Counter_30_60" type="PerUserCounter" invocation="direct">
+        <params>
+            <timescales in_ts  = "30"
+                        out_ts = "60" />        
+        </params>
+    </block>
+    
+
+<block id="Histo_Calc_1" type="HistoCalc" invocation="direct">
+        <params>  
+               <timescale val = "1"/>  
+               <max_nr_bins val = "80"/>  
+               <flag0 val = "on"/>                
+               <features_max_values>
+                       <feature_1 featID = "UL_SYN_packets_p_80"
+                                  max_val = "3000000" />
+                       <feature_2 featID = "UL_SYN_bytes_p_80"
+                                  max_val = "40000000" />
+                       <feature_3 featID = "UL_SYN_packets_p_65535"
+                                  max_val = "50000" />
+                       <feature_4 featID = "UL_SYN_bytes_p_65535"
+                                  max_val = "10000000" />
+                       <feature_5 featID = "UL_ACK_packets_p_80"
+                                  max_val = "50000000" />
+                       <feature_6 featID = "UL_ACK_bytes_p_80"
+                                  max_val = "500000000" /> 
+               </features_max_values>                      
+        </params>
+    </block>
+    
+    <block id="Histo_Calc_5" type="HistoCalc" invocation="direct">
+        <params>  
+               <timescale val = "5"/>  
+               <max_nr_bins val = "80"/>  
+               <flag0 val = "on"/>                
+               <features_max_values>
+                       <feature_1 featID = "UL_SYN_packets_p_80"
+                                  max_val = "300000000" />
+                       <feature_2 featID = "UL_SYN_bytes_p_80"
+                                  max_val = "400000000" />
+                       <feature_3 featID = "UL_SYN_packets_p_65535"
+                                  max_val = "500000000" />
+                       <feature_4 featID = "UL_SYN_bytes_p_65535"
+                                  max_val = "1000000000" />
+                       <feature_5 featID = "UL_ACK_packets_p_80"
+                                  max_val = "50000000" />
+                       <feature_6 featID = "UL_ACK_bytes_p_80"
+                                  max_val = "500000000" /> 
+               </features_max_values>                      
+        </params>
+    </block>
+
+    <block id="Histo_Calc_15" type="HistoCalc" invocation="direct">
+        <params>  
+               <timescale val = "15"/>  
+               <max_nr_bins val = "80"/>  
+               <flag0 val = "on"/>                
+               <features_max_values>
+                       <feature_1 featID = "UL_SYN_packets_p_80"
+                                  max_val = "300000000" />
+                       <feature_2 featID = "UL_SYN_bytes_p_80"
+                                  max_val = "400000000" />
+                       <feature_3 featID = "UL_SYN_packets_p_65535"
+                                  max_val = "500000000" />
+                       <feature_4 featID = "UL_SYN_bytes_p_65535"
+                                  max_val = "1000000000" />
+                       <feature_5 featID = "UL_ACK_packets_p_80"
+                                  max_val = "50000000" />
+                       <feature_6 featID = "UL_ACK_bytes_p_80"
+                                  max_val = "500000000" />
+               </features_max_values>                    
+        </params>
+    </block>
+    
+    <block id="Histo_Calc_30" type="HistoCalc" invocation="direct">
+        <params>  
+               <timescale val = "30"/>  
+               <max_nr_bins val = "80"/>  
+               <flag0 val = "on"/>                
+               <features_max_values>
+                       <feature_1 featID = "UL_SYN_packets_p_80"
+                                  max_val = "3000000000" />
+                       <feature_2 featID = "UL_SYN_bytes_p_80"
+                                  max_val = "4000000000" />
+                       <feature_3 featID = "UL_SYN_packets_p_65535"
+                                  max_val = "5000000000" />
+                       <feature_4 featID = "UL_SYN_bytes_p_65535"
+                                  max_val = "10000000000" />
+                       <feature_5 featID = "UL_ACK_packets_p_80"
+                                  max_val = "500000000" />
+                       <feature_6 featID = "UL_ACK_bytes_p_80"
+                                  max_val = "5000000000" />
+               </features_max_values>                      
+        </params>
+    </block>
+
+    <block id="Histo_Calc_60" type="HistoCalc" invocation="direct">
+        <params>  
+               <timescale val = "60"/>  
+               <max_nr_bins val = "80"/>  
+               <flag0 val = "on"/>                
+               <features_max_values>
+                       <feature_1 featID = "UL_SYN_packets_p_80"
+                                  max_val = "3000000000" />
+                       <feature_2 featID = "UL_SYN_bytes_p_80"
+                                  max_val = "4000000000" />
+                       <feature_3 featID = "UL_SYN_packets_p_65535"
+                                  max_val = "5000000000" />
+                       <feature_4 featID = "UL_SYN_bytes_p_65535"
+                                  max_val = "10000000000" />
+                       <feature_5 featID = "UL_ACK_packets_p_80"
+                                  max_val = "5000000000" />
+                       <feature_6 featID = "UL_ACK_bytes_p_80"
+                                  max_val = "50000000000" />
+               </features_max_values>                      
+        </params>
+    </block>
+
+    <block id="AnomDet_Test_1" type="ADTest" invocation="direct">
+        <params>
+            <timescale val = "1"/> <!-- mins -->
+            <learning_window duration = "7"/> <!--days-->
+            <guard_period duration = "22"/> <!-- hours -->
+            <min_nr_active_users val = "10"/>
+            <detection_start_time val = "1340229600"/><!-- 2012-06-14 00:00:00 -->
+            <detection_stop_time val = "1344981600"/> <!-- 2012-08-15 00:00:00 -->
+            <res_output_file name = "UL_AnDet_Res_1_min.txt"/>
+            <anom_output_file name = "UL_AnDet_Anomal_1_min.txt"/>
+        </params>
+    </block>
+    
+    <block id="AnomDet_Test_5" type="ADTest" invocation="direct">
+        <params>
+            <timescale val = "5"/> <!-- mins -->
+            <learning_window duration = "7"/> <!--days-->
+            <guard_period duration = "22"/> <!-- hours -->
+            <min_nr_active_users val = "10"/>
+            <detection_start_time val = "1340229600"/><!-- 2012-06-14 00:00:00 -->
+            <detection_stop_time val = "1344981600"/> <!-- 2012-08-15 00:00:00 -->
+            <res_output_file name = "UL_AnDet_Res_5_min.txt"/>
+            <anom_output_file name = "UL_AnDet_Anomal_5_min.txt"/>
+        </params>
+    </block>
+    
+    <block id="AnomDet_Test_15" type="ADTest" invocation="direct">
+        <params>
+            <timescale val = "15"/> <!-- mins -->
+            <learning_window duration = "14"/> <!--days-->
+            <guard_period duration = "22"/> <!-- hours -->
+            <min_nr_active_users val = "10"/>
+            <detection_start_time val = "1340229600"/><!-- 2012-06-21 00:00:00 -->
+            <detection_stop_time val = "1344981600"/> <!-- 2012-08-15 00:00:00 -->
+            <res_output_file name = "UL_AnDet_Res_15_min.txt"/>
+            <anom_output_file name = "UL_AnDet_Anomal_15_min.txt"/>
+        </params>
+    </block>
+    
+    <block id="AnomDet_Test_30" type="ADTest" invocation="direct">
+        <params>
+            <timescale val = "30"/> <!-- mins -->
+            <learning_window duration = "14"/> <!--days-->
+            <guard_period duration = "22"/> <!-- hours -->
+            <min_nr_active_users val = "10"/>
+            <detection_start_time val = "1340229600"/><!-- 2012-06-21 00:00:00 -->
+            <detection_stop_time val = "1344981600"/> <!-- 2012-08-15 00:00:00 -->
+            <res_output_file name = "UL_AnDet_Res_30_min.txt"/>
+            <anom_output_file name = "UL_AnDet_Anomal_30_min.txt"/>
+        </params>
+    </block>
+    
+    <block id="AnomDet_Test_60" type="ADTest" invocation="direct">
+        <params>
+            <timescale val = "60"/> <!-- mins -->
+            <learning_window duration = "14"/> <!--days-->
+            <guard_period duration = "22"/> <!-- hours -->
+            <min_nr_active_users val = "10"/>
+            <detection_start_time val = "1340229600"/><!-- 2012-06-21 00:00:00 -->
+            <detection_stop_time val = "1344981600"/> <!-- 2012-08-15 00:00:00 -->
+            <res_output_file name = "UL_AnDet_Res_60_min.txt"/>
+            <anom_output_file name = "UL_AnDet_Anomal_60_min.txt"/>
+        </params>
+    </block>
+    
+    
+
+    <block id="Null_Block" type="Null" invocation="Direct">
+        <params>     
+        </params>
+    </block>
+
+
+    <connection src_block="snifferUL" src_gate="source_out" dst_block="FeatExtrUL" dst_gate="in_pkt"/>
+
+    <connection src_block="FeatExtrUL" src_gate="out_tckt" dst_block="Per_User_Counter_0_1" dst_gate="in_tckt"/>
+    
+    <connection src_block="Per_User_Counter_0_1" src_gate="out_tckt" dst_block="Per_User_Counter_1_5" dst_gate="in_tckt"/>
+    <connection src_block="Per_User_Counter_0_1" src_gate="out_tckt" dst_block="Histo_Calc_1" dst_gate="in_tckt"/>    
+    <connection src_block="Per_User_Counter_1_5" src_gate="out_tckt" dst_block="Per_User_Counter_5_15" dst_gate="in_tckt"/>
+    <connection src_block="Per_User_Counter_1_5" src_gate="out_tckt" dst_block="Histo_Calc_5" dst_gate="in_tckt"/>
+    <connection src_block="Per_User_Counter_5_15" src_gate="out_tckt" dst_block="Per_User_Counter_15_30" dst_gate="in_tckt"/>
+    <connection src_block="Per_User_Counter_5_15" src_gate="out_tckt" dst_block="Histo_Calc_15" dst_gate="in_tckt"/>    
+    <connection src_block="Per_User_Counter_15_30" src_gate="out_tckt" dst_block="Per_User_Counter_30_60" dst_gate="in_tckt"/>
+    <connection src_block="Per_User_Counter_15_30" src_gate="out_tckt" dst_block="Histo_Calc_30" dst_gate="in_tckt"/>
+    <connection src_block="Per_User_Counter_30_60" src_gate="out_tckt" dst_block="Null_Block" dst_gate="in_msg"/>
+	<connection src_block="Per_User_Counter_30_60" src_gate="out_tckt" dst_block="Histo_Calc_60" dst_gate="in_tckt"/>
+	
+	<connection src_block="Histo_Calc_1" src_gate="out_histo" dst_block="AnomDet_Test_1" dst_gate="in_histo"/>
+    <connection src_block="Histo_Calc_5" src_gate="out_histo" dst_block="AnomDet_Test_5" dst_gate="in_histo"/>
+    <connection src_block="Histo_Calc_15" src_gate="out_histo" dst_block="AnomDet_Test_15" dst_gate="in_histo"/>
+    <connection src_block="Histo_Calc_30" src_gate="out_histo" dst_block="AnomDet_Test_30" dst_gate="in_histo"/>
+    <connection src_block="Histo_Calc_60" src_gate="out_histo" dst_block="AnomDet_Test_60" dst_gate="in_histo"/>
+    
+    <connection src_block="AnomDet_Test_1" src_gate="out_res" dst_block="Null_Block" dst_gate="in_msg"/>
+    <connection src_block="AnomDet_Test_1" src_gate="out_anom" dst_block="Null_Block" dst_gate="in_msg"/>
+    <connection src_block="AnomDet_Test_5" src_gate="out_res" dst_block="Null_Block" dst_gate="in_msg"/>
+    <connection src_block="AnomDet_Test_5" src_gate="out_anom" dst_block="Null_Block" dst_gate="in_msg"/>
+    <connection src_block="AnomDet_Test_15" src_gate="out_res" dst_block="Null_Block" dst_gate="in_msg"/>
+    <connection src_block="AnomDet_Test_15" src_gate="out_anom" dst_block="Null_Block" dst_gate="in_msg"/>
+    <connection src_block="AnomDet_Test_30" src_gate="out_res" dst_block="Null_Block" dst_gate="in_msg"/>
+    <connection src_block="AnomDet_Test_30" src_gate="out_anom" dst_block="Null_Block" dst_gate="in_msg"/>
+    <connection src_block="AnomDet_Test_60" src_gate="out_res" dst_block="Null_Block" dst_gate="in_msg"/>
+    <connection src_block="AnomDet_Test_60" src_gate="out_anom" dst_block="Null_Block" dst_gate="in_msg"/>
+	
+  </install>
+</composition>

@@ -4,63 +4,115 @@ project(BlockMon)
 #############################################################
 # File scan
 #############################################################
-file(GLOB BASE_OBJ base/*.cpp)
-file(GLOB EXT_OBJ lib/external/*.cpp)
-file(GLOB LIB_OBJ lib/*.cpp)
-file(GLOB LIB_OBJ_D lib/*/*.cpp)
-file(GLOB LIB_HASH_C lib/hash/C/*.c)
-file(GLOB MES_OBJ  base/*/*.cpp)
-file(GLOB USR_OBJ usr/*/blocks/*.cpp)
-file(GLOB USR_INCL usr/*/blocks/)
-file(GLOB USR_MES_INCL usr/*/messages/)
-file(GLOB PYTHON_BINDINGS python_bindings/*.cpp)
+# core
+file(GLOB_RECURSE CORE_OBJ core/*.cpp)
+
+# libs
+file(GLOB_RECURSE LIB_OBJ_CPP lib/*.cpp)
+file(GLOB_RECURSE LIB_OBJ_HPP lib/*.hpp)
+file(GLOB_RECURSE LIB_OBJ_C lib/*.c)
+list(APPEND LIB_OBJ ${LIB_OBJ_CPP} ${LIB_OBJ_HPP} ${LIB_OBJ_C})
+
+# blocks
+file(GLOB BLOCKS_OBJ blocks/*.cpp)
+
+# messages
+file(GLOB MSG_OBJ messages/*.cpp)
+
+# ipfix bridge
+file(GLOB IPFIX_OBJ ipfix/*.cpp)
+
+# user files
+#file(GLOB USR_OBJ usr/*/blocks/*.cpp)
+#file(GLOB USR_INCL usr/*/blocks/)
+#file(GLOB USR_MGS_INCL usr/*/messages/)
+file(GLOB_RECURSE USR_CPP usr/*.cpp)
+file(GLOB_RECURSE USR_HPP usr/*.hpp)
+file(GLOB_RECURSE USR_H usr/*.h)
+list(APPEND USR_OBJ ${USR_CPP} ${USR_HPP})
+list(APPEND USR_INCL_FILES ${USR_H} ${USR_HPP})
+# find unique directories of files in USR_INCL_FILES
+    set(USR_INCL "")
+    foreach(file_path ${USR_INCL_FILES})
+        get_filename_component(dir_path ${file_path} PATH)
+        set(USR_INCL ${USR_INCL} ${dir_path})
+    endforeach()
+    LIST(REMOVE_DUPLICATES USR_INCL)
+
+# daemon: c++ to python bindings
+file(GLOB DAEMON_BINDINGS daemon/*.cpp)
+
+#############################################################
+# Remove any test dirs from the lib objects
+#############################################################
+set(TMP_LIST "")
+foreach(arg ${LIB_OBJ})
+  string(REGEX REPLACE ".*test.*" "" arg ${arg})
+  list(APPEND TMP_LIST ${arg})
+endforeach(arg ${LIB_OBJ})
+set(LIB_OBJ ${TMP_LIST})
+
+
+#############################################################
+# Remove not-needed pugixml files
+#############################################################
+set(TMP_LIST "")
+foreach(arg ${LIB_OBJ})
+  string(REGEX REPLACE ".*pugixml.*docs.*" "" arg ${arg})
+  list(APPEND TMP_LIST ${arg})
+endforeach(arg ${LIB_OBJ})
+set(LIB_OBJ ${TMP_LIST})
 
 #############################################################
 # Optional packages
 #############################################################
-if(WITH_PFRING)
-  message(STATUS "pfring: ON")
-  add_definitions(-DPFRING_BLOCK)
-  list(APPEND TARGET_LINK_LIBS pfring)
-else(WITH_PFRING)
-  message(STATUS "pfring: OFF")
+if(WITH_PFQ)
+  message(STATUS "pfq: ON")
+  add_definitions(-DPFQ_BLOCK)
+  list(APPEND INCLUDE_DIRS lib/external/pfq)
+else(WITH_PFQ)
+  message(STATUS "pfq: OFF")
+
+   # exclude pfq block
+   set(TMP_LIST "")
+   foreach(arg ${BLOCKS_OBJ})
+     string(REGEX REPLACE "PFQSource.cpp" "" arg ${arg})
+     list(APPEND TMP_LIST ${arg})
+   endforeach(arg ${BLOCKS_OBJ})
+   set(BLOCKS_OBJ ${TMP_LIST})
+
 endif()
 
-if(WITH_IPFIX)
-   message(STATUS "ipfix: ON")
-   list(APPEND INCLUDE_DIRS lib/fc)
-else(WITH_IPFIX)
-   message( STATUS "ipfix: OFF" )
 
-   # exclude any paths to ipfix files
-   set(TMP_LIST "")
-   foreach(arg ${USR_INCL})
-     string(REGEX REPLACE ".*ipfix_ep.*" "" arg ${arg})
-     list(APPEND TMP_LIST ${arg})
-   endforeach(arg ${USR_INCL})
-   set(USR_INCL ${TMP_LIST})
-	
-   set(TMP_LIST "")
-   foreach(arg ${USR_OBJ})
-     string(REGEX REPLACE ".*ipfix_ep.*" "" arg ${arg})
-     list(APPEND TMP_LIST ${arg})
-   endforeach(arg ${USR_OBJ})
-   set(USR_OBJ ${TMP_LIST})	
-
-   set(TMP_LIST "")
-   foreach(arg ${LIB_OBJ_D})
-     string(REGEX REPLACE ".*/lib/fc/.*" "" arg ${arg})
-     list(APPEND TMP_LIST ${arg})
-   endforeach(arg ${LIB_OBJ_D})
-   set(LIB_OBJ_D ${TMP_LIST})	
-
+if(USE_SIMPLE_PACKET)
+    message(STATUS "packet: SIMPLE")
+    add_definitions(-DUSE_SIMPLE_PACKET)
 endif()
+
+if(USE_SLICED_PACKET)
+    message(STATUS "packet: SLICED")
+    add_definitions(-DUSE_SLICED_PACKET)
+endif()
+
+if(USE_PACKET_TAG)
+    message(STATUS "packet tag: ENABLED")
+    add_definitions(-DUSE_PACKET_TAG)
+endif()
+if(USE_PACKET_FLOW)
+    message(STATUS "packet flow: ENABLED")
+    add_definitions(-DUSE_PACKET_FLOW)
+endif()
+
+
+list(APPEND INCLUDE_DIRS lib/fc)
 
 # INVEA-TECH HW acceleration system libraries
 if(WITH_COMBO)
    message(STATUS "COMBO(sze2): ON")
-  list(APPEND TARGET_LINK_LIBS sze2)
-  list(APPEND TARGET_LINK_LIBS commlbr)
+  list(APPEND BLOCKMON_LINK_LIBS combo)
+  list(APPEND BLOCKMON_LINK_LIBS sze2)
+  list(APPEND BLOCKMON_LINK_LIBS commlbr)
+  add_definitions(-D_COMPILE_COMBO_BLOCK_)
 else(WITH_COMBO)
    message(STATUS "COMBO(sze2): OFF")
 
@@ -81,44 +133,36 @@ else(WITH_COMBO)
 
 endif()
 
-
 # For debug purposes
 #message (STATUS "INCLUDE_DIRS: " ${INCLUDE_DIRS})
-#message (STATUS "USR_INCL: " ${USR_INCL})
-#message (STATUS "USR_MES_INCL: " ${USR_MSG_INCL})
-
-#message (STATUS "BASE_OBJ: " ${BASE_OBJ})
-#message (STATUS "MES_OBJ: " ${MES_OBJ})
-#message (STATUS "EXT_OBJ: " ${EXT_OBJ})
-#message (STATUS "LIB_OBJ_D: " ${LIB_OBJ_D})
-#message (STATUS "LIB_OBJ: " ${LIB_OBJ})
-#message (STATUS "USR_OBJ: " ${USR_OBJ})
-#message (STATUS "LIB_HASH_C: " ${LIB_HASH_C})
-
-#message (STATUS "TARGET_LINK_LIBS: " ${TARGET_LINK_LIBS})
-
-
 
 #############################################################
 # Build
 #############################################################
-list(APPEND TARGET_LINK_LIBS  pcap pthread)
-list(APPEND INCLUDE_DIRS lib lib/pfq lib/external lib/hash base base/messages base/composition base/scheduler ${USR_MES_INCL} ${USR_INCL} )
-include_directories( ${INCLUDE_DIRS} )       
-set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -march=native  -Wall -std=c++0x")
+list(APPEND BLOCKMON_LINK_LIBS pcap pthread)
+list(APPEND INCLUDE_DIRS lib/external/pugixml/src lib lib/external/factory lib/external/more lib/external/ lib/hash lib/sketch lib/cusum lib/bloom core messages blocks ipfix core/block core/message core/composition core/scheduler core/time ${USR_INCL} )
+
+include_directories( ${INCLUDE_DIRS} )
+set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -march=native -Wall -g -std=c++0x")
 add_definitions(-D_GLIBCXX_USE_SCHED_YIELD -D_GLIBCXX_USE_NANOSLEEP)
-#add_definitions(-D_GLIBCXX_DEBUG_PEDANTIC )
 
+add_library(blockmoncore SHARED ${CORE_OBJ} ${MSG_OBJ} ${IPFIX_OBJ} ${LIB_OBJ} ${BLOCKS_OBJ} ${USR_OBJ})
+target_link_libraries(blockmoncore ${BLOCKMON_LINK_LIBS})
 
+add_executable(blockmon bin/blockmon.cpp)
+target_link_libraries(blockmon blockmoncore ${BLOCKMON_LINK_LIBS})
 
-add_executable(blockmonnaked ${BASE_OBJ} ${MES_OBJ} ${EXT_OBJ} ${LIB_OBJ_D} ${LIB_OBJ} ${USR_OBJ} ${LIB_HASH_C})
-target_link_libraries(blockmonnaked ${TARGET_LINK_LIBS})
-
-if(WITH_PYTHON)
-LINK_LIBRARIES(boost_python)
-find_package(PythonLibs REQUIRED)
-include_directories(${PYTHON_INCLUDE_DIRS})
-link_directories(${PYTHON_LIBRARIES})
-ADD_LIBRARY(blockmon SHARED ${BASE_OBJ} ${MES_OBJ} ${EXT_OBJ} ${LIB_OBJ_D} ${LIB_OBJ} ${USR_OBJ} ${LIB_HASH_C} ${PYTHON_BINDINGS})
-target_link_libraries(blockmon ${TARGET_LINK_LIBS})
+if (WITH_DAEMON)
+  message(STATUS "daemon: ON")
+  find_package(PythonLibs REQUIRED)
+  include_directories(${PYTHON_INCLUDE_DIRS})
+  link_directories(${PYTHON_LIBRARIES})
+  add_library(blockmonpy SHARED ${DAEMON_BINDINGS})
+  target_link_libraries(blockmonpy blockmoncore boost_python)
+else(WITH_DAEMON)
+  message(STATUS "daemon: OFF")
 endif()
+
+
+
+

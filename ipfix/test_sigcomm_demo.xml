@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<composition id="flowcounter">
+  <general>
+    <clock type="wall" />
+  </general>
+
+  <install>    
+    <threadpool id="collect_thread" num_threads="1" />
+
+    <block id="collector" type="IPFIXSource" invocation="async" threadpool="collect_thread">
+      <params>
+        <file name="/home/briant/work/data/test-flow-loop-in.ipfix"/>
+        <datatype name="ipv4flow"/>
+      </params>
+    </block>
+
+    <block id="exporter" type="IPFIXExporter" invocation="direct">
+      <params>
+        <file name="/home/briant/work/data/test-sigcomm-demo.ipfix"/>
+        <datatype name="labeled_ipv4flow"/>
+        <domain id="12345"/>
+        <fastflush/>
+      </params>
+    </block>
+
+    <connection src_block="collector" src_gate="source_out" dst_block="exporter" dst_gate="in_msg"/>
+  </install>
+</composition>

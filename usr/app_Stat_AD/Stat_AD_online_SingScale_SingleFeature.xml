@@ -1,0 +1,91 @@
+<composition id="Stat-AD_online_SingScale_SingleFeature" app_id="UL_Off_AD_ss_sf">
+  <general>
+      <clock type="wall" />
+  </general>
+  
+  <install>
+
+    <threadpool id="sniffer_thread" num_threads="2" >
+      <core number="0"/>
+    </threadpool>
+
+    <block id="snifferUL" type="PcapSource" invocation="async" threadpool="sniffer_thread">
+      <params> <!-- PcapSource constructor parameters /-->
+          <source type="live" name="eth0"/> 
+      </params>
+    </block>
+
+    <block id="FeatExtrUL" type="FeaturesExtractor" invocation="direct">
+      <params>
+          <direction type = "uplink"/>
+          <features>
+              <Feat_1>
+                <layer4 prot="TCP"/>
+                <flags name="SYN"/> 
+                <port num="65535"/>
+                <mode packets="on"
+                      bytes="off"
+                      ServPorts="off"
+                      ServIPs="off" />
+              </Feat_1>
+
+          </features>
+      </params>
+    </block>
+
+    <block id="UL_Per_User_Counter_0_1" type="PerUserCounter" invocation="direct">
+        <params>
+            <timescales in_ts  = "0"
+                        out_ts = "1" />        
+        </params>
+    </block>
+    
+    <block id="UL_Histo_Calc_1" type="HistoCalc" invocation="direct">
+        <params>  
+               <timescale val = "1"/>  
+               <max_nr_bins val = "80"/>  
+               <flag0 val = "on"/>                
+               <features_max_values> <!-- Il vero valore massimo per questa feature sulla scala di 1 min e' 4310 -->
+                   <feature_1 featID = "UL_SYN_packets_p_65535" 
+                            max_val = "10000"/>                  
+                  <!--     <feature_1 featID = "UL_UDP_packets_p_65535"
+                                  max_val = "50000000" />
+                  -->
+               </features_max_values>                      
+        </params>
+    </block>
+    
+    <block id="UL_AnomDet_Test_1" type="ADTest" invocation="direct">
+        <params>
+            <timescale val = "1"/> <!-- mins -->
+            <learning_window duration = "1"/> <!--days-->
+            <guard_period duration = "3"/> <!-- hours -->
+            <min_nr_active_users val = "1"/>
+            <detection_start_time val = "1339192801 "/> <!--2012-06-09 00:00:01 -->
+            <detection_stop_time val = "1433800801"/> <!--2015-06-09 00:00:01 -->
+            <res_output_file name = "UL_AnDet_Res_1_min_ul_syn_pkts_p65535.txt"/>
+            <anom_output_file name = "UL_AnDet_Anomal_1_min_ul_syn_pkts_p65535.txt"/>
+        </params>
+    </block>
+ 
+    
+    <block id="Null_Block" type="Null" invocation="direct">
+        <params>     
+        </params>
+    </block>
+    
+    <connection src_block="snifferUL" src_gate="source_out" dst_block="FeatExtrUL" dst_gate="in_pkt"/>
+   
+    <connection src_block="FeatExtrUL" src_gate="out_tckt" dst_block="UL_Per_User_Counter_0_1" dst_gate="in_tckt"/>
+    
+    <connection src_block="UL_Per_User_Counter_0_1" src_gate="out_tckt" dst_block="UL_Histo_Calc_1" dst_gate="in_tckt"/>
+    <connection src_block="UL_Per_User_Counter_0_1" src_gate="out_tckt" dst_block="Null_Block" dst_gate="in_msg"/>
+    
+    <connection src_block="UL_Histo_Calc_1" src_gate="out_histo" dst_block="UL_AnomDet_Test_1" dst_gate="in_histo"/>
+    
+    <connection src_block="UL_AnomDet_Test_1" src_gate="out_res" dst_block="Null_Block" dst_gate="in_msg"/>
+    <connection src_block="UL_AnomDet_Test_1" src_gate="out_anom" dst_block="Null_Block" dst_gate="in_msg"/>
+    
+
+  </install>
+</composition>
