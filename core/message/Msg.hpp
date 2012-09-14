@@ -51,6 +51,8 @@
 #include <StructTemplate.h>
 #include <InfoModel.h>
 
+#include <Serializer.hpp>
+
 namespace blockmon { 
 
   /**
@@ -125,6 +127,24 @@ namespace blockmon {
 
             m_tagbuf = buf;
             m_tagowner = ownership;
+        }
+
+        /**
+         * Serialize a message to be sent across the network.
+         * @param ser The serializer.
+         */
+        virtual void serialize(Serializer *ser) const
+        {
+            assert(0);
+        }
+
+        /**
+         * Deserialize data received from the network.
+         * @param ser The serializer.
+         */
+        virtual const std::shared_ptr<Msg> build_same(Serializer *ser) const
+        {
+            assert(0);
         }
 
         /**

@@ -1,0 +1,31 @@
+<composition id="hashtagfinder" app_id="app_hashtagfinder">
+  <general>
+    <clock type="wall" />
+  </general>
+
+  <install>
+    <threadpool id="src_thread" num_threads="1"/>
+    <threadpool id="finder_thread" num_threads="1"/>
+
+    <block id="src" type="TweetReader" invocation="async" threadpool="src_thread"> 
+        <params>
+            <source type="offline" name="tweets.txt" tweettocash="20" tweettosend="100"/>
+            <gates number="1"/>
+        </params>
+    </block>
+    <block id="finder" type="TweetFinder" invocation="async" threadpool="finder_thread"> 
+        <params>
+            <gates number="1"/>
+        </params>
+    </block>
+
+    <block id="export1" type="SerExporter" export="yes">
+        <params>
+            <export host="127.0.0.1" port="12345"/>
+        </params>
+    </block>
+
+    <connection src_block="src" src_gate="out_tweet0" dst_block="finder" dst_gate="in_word"/> 
+    <connection src_block="finder" src_gate="out_hash0" dst_block="export1" dst_gate="in_msg"/> 
+  </install>
+</composition>

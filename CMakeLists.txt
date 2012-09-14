@@ -133,6 +133,12 @@ else(WITH_COMBO)
 
 endif()
 
+if(WITH_TWITTERTRENDING)
+   message(STATUS "TWITTERTRENDING(jsmn): ON")
+  list(APPEND INCLUDE_DIRS lib/jsmn)
+  add_definitions(-D_USE_JSMN_LIBRARY)
+endif()
+
 # For debug purposes
 #message (STATUS "INCLUDE_DIRS: " ${INCLUDE_DIRS})
 
