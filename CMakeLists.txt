@@ -83,14 +83,6 @@ else(WITH_PFQ)
 
 endif()
 
-if(WITH_NETMAP)
-    message(STATUS "NETMAP (WITH_NETMAP): ON")
-    list(APPEND INCLUDE_DIRS lib/external/netmap)
-    add_definitions(-D_USE_NETMAP)
-else(WITH_NETMAP)
-    message(STATUS "NETMAP (WITH_NETMAP): OFF")
-endif()
-
 if(USE_SLICED_PACKET)
     message(STATUS "packet (USE_SLICED_PACKET=on): SLICED")
     add_definitions(-DUSE_SLICED_PACKET)
