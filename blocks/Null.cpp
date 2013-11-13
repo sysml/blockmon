@@ -30,7 +30,7 @@
  */
 
 /*
- * <blockinfo type="Null" invocation="direct" thread_exclusive="False">
+ * <blockinfo type="Null" invocation="both" thread_exclusive="False">
  *   <humandesc>
  *   Discards every message it receives.
  *   </humandesc>
@@ -72,12 +72,26 @@ namespace blockmon
         /*
          * constructor
          */
-        Null(const std::string &name, invocation_type)
-        : Block(name, invocation_type::Indirect),
+        Null(const std::string &name, invocation_type invocation)
+        : Block(name, invocation),
           m_ingate_id(register_input_gate("in_msg"))
         {
         }
 
+        Null(const Null &)=delete;
+        Null& operator=(const Null &) = delete;
+
+        /*
+         * destructor
+         */
+        virtual ~Null()
+        {}
+
+
+        virtual void _configure(const pugi::xml_node&  /*n*/ )
+        {}
+
+            
     private:
         
         int m_ingate_id;

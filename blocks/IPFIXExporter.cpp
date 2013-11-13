@@ -30,7 +30,7 @@
  */
 
 /**
- * <blockinfo type="IPFIXExporter" invocation="direct" thread_exclusive="True" thread_safe="False">
+ * <blockinfo type="IPFIXExporter" invocation="direct, indirect" thread_exclusive="True" thread_safe="False">
  *  <humandesc>
  *  Receives a message and exports it via an IPFIX transport session or into
  *  an IPFIX file. This block can handle any message class for which there
@@ -132,7 +132,7 @@ public:
         m_exporter(),
         m_gate_id(register_input_gate("in_msg")) {}
 
-    ~IPFIXExporter() {}
+    virtual ~IPFIXExporter() {}
 
     /**
      * Configure the block given an XML element containing configuration.
@@ -140,7 +140,7 @@ public:
      *
      * @param params_node the <params> XML element containing block parameters
      */
-    void _configure(const pugi::xml_node& params_node)  {
+    virtual void _configure(const pugi::xml_node& params_node)  {
         uint32_t            odid = 1;
 
         bootstrapIPFIX();
@@ -227,7 +227,7 @@ public:
         m_exporter->exportTemplatesForDomain();
     }
     
-    void _receive_msg(std::shared_ptr<const Msg>&& m, int gate_id) {
+    virtual void _receive_msg(std::shared_ptr<const Msg>&& m, int gate_id) {
        
         // select the first suitable bridge for the message
         for (auto iter = m_bridges.begin(); iter != m_bridges.end(); iter++) {

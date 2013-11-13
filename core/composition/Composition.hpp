@@ -58,13 +58,14 @@ namespace blockmon
         std::map< std::string, std::shared_ptr<Block> > m_map;
         const std::string m_composition_id;
 
-        /** Forbids copy and move constructors.
-	 */     
-        Composition(const Composition &)=delete;
+        /**
+          * composition is not moveable nor copiable
+          */
 
-        /** Forbids copy and move assignment.
-	 */
+        Composition(const Composition &)=delete;
         Composition & operator=(const Composition &)=delete;
+        Composition(Composition &&)=delete;
+        Composition & operator=(Composition &&)=delete;
 
         /**
           * Adds a block to the composition and configures it
@@ -155,13 +156,12 @@ namespace blockmon
         {
             pugi::xml_document config_info;
             if(!config_info.load(config.c_str()))
-                throw std::runtime_error("Composition::cannot parse config info");
-           pugi::xml_node params = config_info.child("params");
+                throw std::runtime_error("Composition::create_block: cannot parse config info");
+           pugi::xml_node block = config_info.child("block");
+            if (!block)
+                throw std::runtime_error("Composition: cannot find block node");
 
-            if (!params)
-                throw std::runtime_error("Composition: cannot find params node");
-
-            create_block_from_parsed(type, name, invocation, params);
+            create_block_from_parsed(type, name, invocation, block);
         }
 
         

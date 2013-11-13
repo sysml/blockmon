@@ -91,10 +91,29 @@ namespace blockmon
         /*
          * constructor
          */
-        PacketPrinter(const std::string &name, invocation_type)
-        : Block(name, invocation_type::Direct),
+        PacketPrinter(const std::string &name, invocation_type invocation)
+        : Block(name, invocation),
           m_ingate_id(register_input_gate("in_pkt"))
         {
+        }
+
+        PacketPrinter(const PacketPrinter &)=delete;
+        PacketPrinter& operator=(const PacketPrinter &) = delete;
+        PacketPrinter(PacketPrinter &&)=delete;
+        PacketPrinter& operator=(PacketPrinter &&) = delete;
+
+        /*
+         * destructor
+         */
+        virtual ~PacketPrinter()
+        {}
+
+        /*
+         * this block takes no configuration parameters
+         */  
+        virtual void _configure(const pugi::xml_node&  /*n*/ )
+        {
+        
         }
 
         /*
@@ -102,7 +121,7 @@ namespace blockmon
          * receives a Packet message and prints out its associated information
          * If the message belongs to another class, an exception is thrown.
          */
-        void _receive_msg(std::shared_ptr<const Msg>&& m, int /* index */) 
+        virtual void _receive_msg(std::shared_ptr<const Msg>&& m, int /* index */) 
         {
             if ( m->type() == MSG_ID(Packet) )
             {      

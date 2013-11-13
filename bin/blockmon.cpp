@@ -46,7 +46,7 @@ int main (int argc, char** argv)
 {
     if(argc!=2)
         throw std::runtime_error("must specify configuration file");
-    select_clock(WALL);
+    //select_clock(WALL);
  
     CompositionManager::instance().add_config_from_file(argv[1]);
 
@@ -56,11 +56,11 @@ int main (int argc, char** argv)
 
 	sleep(60);
 
+	std::cout<<"Stopping timer thread"<<std::endl;
+	TimerThread::instance().stop();
+
 	std::cout<<"Stopping pool manager"<<std::endl;
 	PoolManager::instance().stop();
-	std::cout<<"Stopping timer thread"<<std::endl;
-
-	TimerThread::instance().stop();
 
 	tt.join();
 	return (0);

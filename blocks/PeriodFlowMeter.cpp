@@ -165,12 +165,17 @@ namespace blockmon
         }
 
 
+        PeriodFlowMeter(const PeriodFlowMeter&) = delete;
+        PeriodFlowMeter& operator=(const PeriodFlowMeter&) = delete;
+        PeriodFlowMeter(PeriodFlowMeter&&) = delete;
+        PeriodFlowMeter& operator=(PeriodFlowMeter&&) = delete;
+
         /**
          * @brief Configures the block: defines whether reports should only concern expired flows 
          * and sets the timeout value
          * @param n The configuration parameters 
          */
-        void _configure(const pugi::xml_node&  n ) 
+        virtual void _configure(const pugi::xml_node&  n ) 
         {
            pugi::xml_node timeout = n.child("timeout");
             if(timeout)
@@ -204,7 +209,7 @@ namespace blockmon
           * a new entry into the table 
           * @param m a Packet message
           */
-        void _receive_msg(std::shared_ptr<const Msg>&& m, int /* index */) 
+        virtual void _receive_msg(std::shared_ptr<const Msg>&& m, int /* index */) 
         {
             if(m->type()!=MSG_ID(Packet))
                 throw std::runtime_error("PeriodFlowMeter:: wrong message type");

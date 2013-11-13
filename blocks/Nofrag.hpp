@@ -49,7 +49,8 @@ namespace blockmon
   public:
     Nofrag(const std::string &name,
 	   invocation_type invocation);
-    void _receive_msg(std::shared_ptr<const Msg>&& m,
+    virtual void _configure(const pugi::xml_node& xmlnode);
+    virtual void _receive_msg(std::shared_ptr<const Msg>&& m,
                               int /* index */) ;
   };
 

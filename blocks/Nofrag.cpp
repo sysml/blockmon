@@ -40,7 +40,7 @@
 namespace blockmon {
   Nofrag::Nofrag(const std::string &name,
 		 invocation_type invocation)
-    : Block(name, invocation_type::Direct),
+    : Block(name, invocation),
       in_gate(register_input_gate("in_packet")),
       out_gate(register_output_gate("out_unfragged_packet")) {
   }
@@ -64,5 +64,9 @@ namespace blockmon {
 	       && (IPHDR_FRAGOFF(fragoff) == 0)))
       send_out_through(std::move(m), out_gate);
   }
+
+  void Nofrag::_configure(const pugi::xml_node& xmlnode) {
+  }
+
 
 } // blockmon

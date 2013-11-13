@@ -71,9 +71,9 @@ namespace blockmon
         : Block(name, invocation), 
         m_pkt_cnt(0), 
         m_byte_cnt(0),
-	    m_pkt_rate(0),
-	    m_byte_rate(0),
-	    m_reset(0),
+	m_pkt_rate(0),
+	m_byte_rate(0),
+	m_reset(0),
         m_pkt_cnt_prev(0),
         m_byte_cnt_prev(0),
         m_last_t(std::chrono::system_clock::now()),
@@ -90,14 +90,14 @@ namespace blockmon
         /**
          * @brief Destructor
          */
-        ~PacketCounter()  {}
+        virtual ~PacketCounter()  {}
 
         /**
          * @brief Configures the block, in this case the export time is hard-coded
          * to 0.5 seconds
          * @param n The configuration parameters 
          */
-        void _configure(const pugi::xml_node&  n ) 
+        virtual void _configure(const pugi::xml_node&  n ) 
         {
             if(!n.child("notimer"))
             {
@@ -108,7 +108,7 @@ namespace blockmon
         /**
          * @brief Initialize the block
          */
-        void _initialize() 
+        virtual void _initialize()
         {
         }
 
@@ -118,7 +118,7 @@ namespace blockmon
          * @param m     The message
          * @param index The index of the gate the message came on
          */
-        void _receive_msg(std::shared_ptr<const Msg>&& m, int /* index */) 
+        virtual void _receive_msg(std::shared_ptr<const Msg>&& m, int /* index */) 
         {
             if(m->type()!=MSG_ID(Packet))
             {

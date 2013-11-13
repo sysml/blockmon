@@ -31,7 +31,6 @@
 #define __TWEET_H_
 
 #include <Msg.hpp>
-#include <MessageFactory.hpp>
 
 #include <ctime>
 #include <cstring>
@@ -71,6 +70,5 @@ namespace blockmon
             return std::shared_ptr<Msg>(new_tweet);
         }
     };
-    REGISTER_MESSAGE(Tweet, "Tweet")
 }
 #endif// __TWEET_H_

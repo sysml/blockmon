@@ -30,7 +30,7 @@
  */
 
 /*
- * <blockinfo type="FlowPrinter" invocation="direct" thread_exclusive="False">
+ * <blockinfo type="FlowPrinter" invocation="direct, indirect" thread_exclusive="False">
  *   <humandesc>
  *   Receives a Flow message and prints its associated information (as returned
  *   by the methods in the Flow class)
@@ -91,18 +91,35 @@ namespace blockmon
         /*
          * constructor
          */
-        FlowPrinter(const std::string &name, invocation_type)
-        : Block(name, invocation_type::Indirect),
+        FlowPrinter(const std::string &name, invocation_type invocation)
+        : Block(name, invocation),
           m_ingate_id(register_input_gate("in_flow"))
         {
         }
+
+        FlowPrinter(const FlowPrinter &)=delete;
+        FlowPrinter& operator=(const FlowPrinter &) = delete;
+        FlowPrinter(FlowPrinter &&)=delete;
+        FlowPrinter& operator=(FlowPrinter &&) = delete;
+
+        /*
+         * destructor
+         */
+        virtual ~FlowPrinter()
+        {}
+
+        /*
+         * this block takes no configuration parameters
+         */  
+        virtual void _configure(const pugi::xml_node&  /*n*/ )
+        {}
 
         /*
          * the main method
          * receives a Flow message and prints out its associated information
          * If the message belongs to another class, an exception is thrown.
          */
-        void _receive_msg(std::shared_ptr<const Msg>&& m, int /* index */) 
+        virtual void _receive_msg(std::shared_ptr<const Msg>&& m, int /* index */)
         {
             if ( m->type() == MSG_ID(Flow) )
             {      

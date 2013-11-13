@@ -43,6 +43,9 @@
 
 namespace blockmon
 {
+    /**
+      * forward declaration
+      */
     class Block;
 
   /**
@@ -116,19 +119,30 @@ namespace blockmon
             m_running=true;
         }
 
-        /**
+		/**
           * stops all of the threads in the pool
           */
         void stop()
         {
-            if(!m_running) throw std::runtime_error("thread pool il not running");
+            if(!m_running) throw std::runtime_error("thread pool is not running");
+            //m_running=false;
             for (int i = 0; i < m_threadnum; ++i)
             {
                 m_threads[i]->stop();
             }
             m_running=false;
         }
-
+/*
+        void join(){
+        	if(m_running){
+        		stop();
+        	}
+        	for (int i = 0; i < m_threadnum; ++i)
+			{
+				m_threads[i]->join();
+			}
+        }
+*/
     };
 
 }//namespace blockmon

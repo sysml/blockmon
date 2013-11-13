@@ -70,8 +70,6 @@ ustime_t get_BM_time()
     else
     {
         throw std::runtime_error("clock source not set");
-        //return ustime_t (); //otherwise the compiler would complain
-	// no, it doesn't :-)
     }
 }
 

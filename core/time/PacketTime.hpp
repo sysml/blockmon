@@ -53,9 +53,12 @@
 #endif
 
 #include<stdexcept>
+#include <TimerThread.hpp>
 
 namespace blockmon
 {
+//	class TimerThread;// forward declaration
+
     class PacketTime
     {
     private:
@@ -82,31 +85,26 @@ namespace blockmon
           * Returns the current value of the packet clock
           * @return the packet clock value
           */
-        ustime_t get_time()
-        {
-            return m_packet_time.load(std::memory_order_relaxed);
-        }
+        ustime_t get_time();
 
 
         /**
           * Returns the unique instance of this class.
-	  *
-	  * @return the unique instance of this class
+          *
+          * @return the unique instance of this class
           */
-        static PacketTime& instance()
-        {
-            static PacketTime the_time;
-            return the_time;
-        }
+	   static PacketTime& instance()
+	   {
+		   static PacketTime the_time;
+		   return the_time;
+	   }
+
         /**
           * Notifies the class that a time source has been registered.
           * This should not be called directly, as it is done by the
           * constructor of PacketTimeWriter
          */
-        void register_time_writer()
-        {
-            m_writers++;
-        }
+        void register_time_writer();
 
         /**
           * Updates the value of the packet time.
@@ -114,33 +112,9 @@ namespace blockmon
           * If there are several potential writers, an atomic exchange is used to make this operation thread safe.
           * @param next_time the new packet time value
           */
-        void time_past(ustime_t next_time)
-        {
-
-            ustime_t last_time;
-            if(m_writers > 1)
-            {
-                last_time = m_packet_time.exchange(next_time, std::memory_order_relaxed);
-            }
-            else if(m_writers == 1)
-            {
-                last_time = m_packet_time.load( std::memory_order_relaxed);
-                m_packet_time.store(next_time, std::memory_order_relaxed);
-            }
-            else
-            {
-                throw std::runtime_error("inconsistent number of packet time writers");
-            }
-
-            if( last_time > next_time)
-                throw std::runtime_error("packet time value out of order");
-        }
+        void time_past(ustime_t next_time);
 
     }; 
-
-
-
-
 
 
     /**
@@ -162,10 +136,7 @@ namespace blockmon
           * updates the packet clock time (just forwards the call to the singleton instance)
           * @param next_time the new value of the packet clock
           */
-        void advance_packet_time(ustime_t next_time)
-        {
-            PacketTime::instance().time_past(next_time);
-        }
+        void advance_packet_time(ustime_t next_time);
 
     };
 

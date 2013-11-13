@@ -38,6 +38,12 @@
  *     source type is set to trace, then the name should be the full path to a
  *     pcap trace file (e.g., /tmp/mytrace.pcap). Use the bfp paramter to filter
  *     traffic using BFP syntax.
+ *     The "advance_time_at_eof" parameter is used only if a pcap trace file is
+ *     read and the PACKET clock is used. In this case, and if this parameter is
+ *     specified, the PACKET clock will be advanced by the specified amount of
+ *     microseconds after the end of the pcap file is reached. This allows potential
+ *     timers to fire even though the time is no longer advancing after the end of the
+ *     file.
  *   </humandesc>
  *
  *   <shortdesc>Captures traffic from a local interface or pcap trace file</shortdesc>
@@ -51,18 +57,22 @@
  *      element source {
  *        attribute type {"live" | "trace"}
  *        attribute name {text}
+ *        attribute snaplen {int}
  *      }
  *      element bpf_filter {text}?
+ *      element advance_time_at_eof {
+ *     	  attribute us {in}
+ *      }
  *    }
  *   </paramsschema>
  *
  *   <paramsexample>
  *     <params>
- *        <source type="live" name="eth0">
+ *        <source type="live" name="eth0" snaplen="1514" />
  *        or
- *        <source type="trace" name="trace.pcap">
- *
- *      <bpf_filter expression=" ">
+ *        <source type="trace" name="trace.pcap" />
+ *		  <advance_time_at_eof us="360000000"/>
+ *      <bpf_filter expression=" " />
  *     </params>
  *   </paramsexample>
  *
@@ -80,7 +90,8 @@
 
 #include <Packet.hpp>
 #include <NewPacket.hpp>
-
+#include <sstream>
+#include <iostream>
 
 using namespace pugi;
 
@@ -101,7 +112,7 @@ namespace blockmon
                 #ifdef USE_PACKET_FLOW
                 blockmon::FlowKey,
                 #endif
-                blockmon::dynamic_buffer> allocator_type;
+                net::payload> allocator_type;
 #elif defined(USE_SLICED_PACKET)
         typedef blockmon::slice_allocator<blockmon::NewPacket, 
                 #ifdef USE_PACKET_TAG
@@ -115,21 +126,27 @@ namespace blockmon
                 net::tcp,
                 net::udp,
                 net::icmp,
-                blockmon::dynamic_buffer> allocator_type;
+                net::payload> allocator_type;
 #endif
 
     private:
-        
         pcap_t* m_source;
-        bool    m_live;	
+        bool    m_live;
+        bool    end_displayed;
         int     m_gate_id;
-
 #if   defined(USE_SIMPLE_PACKET) || defined(USE_SLICED_PACKET)
         std::unique_ptr<allocator_type> m_allocator;
 #else
         std::shared_ptr<MemoryBatch> m_mem_block;  
 #endif
         PacketTimeWriter m_writer;
+        long	m_pkt_cnt;
+        ustime_t m_advance_time_eof;
+        bool 	m_from_file;
+
+        PcapSource(const PcapSource &) = delete;
+        PcapSource& operator=(const PcapSource &) = delete;
+
 
     public:
 
@@ -138,11 +155,11 @@ namespace blockmon
          * @param name         The name of the source block
          * @param invocation   Invocation type of the block (Indirect, Direct, Async)
          */
-
         PcapSource(const std::string &name, invocation_type invocation)
         : Block(name, invocation_type::Async) //ignore options, source must be indirect
         , m_source(NULL)
         , m_live(false) 
+        , end_displayed(false) 
         , m_gate_id(register_output_gate("source_out"))  
 #if defined(USE_SIMPLE_PACKET) || defined(USE_SLICED_PACKET)
         , m_allocator()
@@ -150,6 +167,9 @@ namespace blockmon
         , m_mem_block(new MemoryBatch(4096*4))
 #endif
         , m_writer()
+        , m_pkt_cnt(0)
+    	, m_advance_time_eof(0)
+    	, m_from_file(false)
         {
             if (invocation != invocation_type::Async) {
                 blocklog("PcapSource must be Async, ignoring configuration", log_warning);
@@ -159,11 +179,13 @@ namespace blockmon
         /**
          * @brief Destructor
          */
-
-        ~PcapSource() 
+        virtual ~PcapSource() 
         {
             if(m_source)
                 pcap_close(m_source);
+            std::ostringstream ss;
+            ss << "received " << m_pkt_cnt << " packets";
+            blocklog(ss.str(), log_info);
         }
 
 
@@ -172,13 +194,16 @@ namespace blockmon
          * also, it opens the socket for capturing
          * @param n The configuration parameters 
          */
-        void _configure(const pugi::xml_node& n) 
+        virtual void _configure(const pugi::xml_node& n) 
         {
             pugi::xml_node source=n.child("source");
             if(!source) 
                 throw std::runtime_error("pcapsource: missing parameter source");
             std::string type=source.attribute("type").value();
             std::string name=source.attribute("name").value();
+            int snaplen=source.attribute("snaplen").as_int();
+            if(snaplen==0)
+            	snaplen=BUFSIZ;
 
             if((type.length()==0)||(name.length()==0))
                 throw std::runtime_error("pcapsource: missing attribute");
@@ -190,7 +215,7 @@ namespace blockmon
             char errbuf[PCAP_ERRBUF_SIZE];
             if(m_live)
             {
-                m_source = pcap_open_live(name.c_str(),BUFSIZ,1 ,10,errbuf);
+                m_source = pcap_open_live(name.c_str(),snaplen,1 ,10,errbuf);
                 if(!m_source)
                 { 
                     blocklog(std::string(errbuf), log_error);
@@ -204,8 +229,15 @@ namespace blockmon
                     blocklog(std::string(errbuf), log_error);
                     throw(std::invalid_argument("TcpPcapSource::error within pcap_open_offline"));
                 }
+                pugi::xml_node advance_time=n.child("advance_time_at_eof");
+                if(advance_time!=NULL){
+                	auto usAttr=advance_time.attribute("us");
+                	if(usAttr!=NULL)
+                		m_advance_time_eof=usAttr.as_uint();
             }
 
+                m_from_file=true;
+            }
 
             pugi::xml_node bpf=n.child("bpf_filter");
             if(bpf)
@@ -235,9 +267,9 @@ namespace blockmon
                 }
             }             
 
-            blockmon::dynamic_buffer::size_of(BUFSIZ);
+            net::payload::size_of(BUFSIZ);
            
-            // the slice_allocator must be created once the dynamic_buffer
+            // the slice_allocator must be created once the dynamic_buffer (net::payload)
             // is set to a given size.
             //
 #if defined(USE_SIMPLE_PACKET) || defined(USE_SLICED_PACKET)
@@ -257,8 +289,10 @@ namespace blockmon
             const u_char* pkt = NULL;
 
             int ret_code = pcap_next_ex(m_source,&hdr,&pkt);  
-            while (ret_code == 1)
+            if (ret_code == 1)
             {
+                m_pkt_cnt++;
+
                 timespec p_tstamp;
                 p_tstamp.tv_sec = hdr->ts.tv_sec;
                 p_tstamp.tv_nsec = hdr->ts.tv_usec * 1000;
@@ -278,7 +312,6 @@ namespace blockmon
 #endif                
                 send_out_through(std::move(sp), m_gate_id);
 
-                ret_code = pcap_next_ex(m_source, &hdr, &pkt);
             }
 
             if (ret_code == -1)
@@ -288,7 +321,15 @@ namespace blockmon
             {
                 //timeout expired
             } else if(ret_code == -2) {
-                blocklog("trace is over", log_info);
+                if (!end_displayed)
+				{
+					blocklog(std::string("trace at EOF"), log_warning);
+					if(m_from_file && blockmon_clock_source() == PACKET && m_advance_time_eof>0 ){
+						blocklog(std::string("advancing PACKET time ..."), log_warning);
+						m_writer.advance_packet_time(get_BM_time() + m_advance_time_eof);
+						m_advance_time_eof=0;
+					}
+                }
             }
         }
     };

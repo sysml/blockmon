@@ -54,26 +54,31 @@ namespace blockmon
     class PoolManager
     {
         std::map<std::string,std::shared_ptr<ThreadPool> > m_map;
+        std::atomic_bool running;
 
+		/**
+          * class constructor
+          * private,as in Meyer's singleton
+          */
         PoolManager()
-        : m_map()
+        : m_map(), running(false)
         {}
 
         ~PoolManager()
         {}
         
-        /** Forbids copy and move constructors.
-	 */
+        /**
+          * this object is non-moveable and non-copiable
+          */
         PoolManager(const PoolManager &) = delete;
-
-        /** Forbids copy and move constructors.
-	 */
         PoolManager& operator=(const PoolManager &) = delete;
+        PoolManager(PoolManager &&) = delete;
+        PoolManager& operator=(PoolManager &&) = delete;
+
 
     public:
         /**
-          * Gets the unique instance.
-	  *
+          * unique instance accessor as in Meyer's singleton
           * @return a reference to the only instance of this class
           */
         static PoolManager& 
@@ -172,6 +177,7 @@ namespace blockmon
           */
         void start()
         {
+            running.store(true);
             auto end = m_map.end();
             for(auto cur = m_map.begin(); cur!=end; ++cur)
             {
@@ -186,13 +192,36 @@ namespace blockmon
 	  *
           * This is needs to be done prior to any reconfiguration.
           */
+
+        void stop() {
+            running.store(false);
+            auto end = m_map.end();
+            for(auto cur=m_map.begin(); cur!=end; ++cur) {
+                cur->second->stop();
+            }
+        }
+        /*
+         * Replaced with the code above
+         */
+/*
         void stop()
         {
+        	running.store(false);
+        	std::cout << "Stopping all thread pools..." << std::endl;
             auto end=m_map.end();
             for(auto cur=m_map.begin(); cur!=end; ++cur)
             {
                 cur->second->stop();
             }
+            std::cout << "Waiting for all threads to finish..." << std::endl;
+            for(auto cur=m_map.begin(); cur!=end; ++cur)
+			{
+				cur->second->join();
+			}
+        }
+*/
+        bool isRunning(){
+        	return running.load();
         }
 
     };

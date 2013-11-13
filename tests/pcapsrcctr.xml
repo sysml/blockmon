@@ -1,0 +1,28 @@
+<composition id="mypcapsrcctr">
+  <general>
+    <clock type="wall" />
+  </general>
+
+  <install>
+    <threadpool id="src_thread" num_threads="2" >
+      <core number="0"/>
+	</threadpool>
+
+    <block id="src" type="PcapSource" invocation="async" threadpool="src_thread"> 
+      <params>
+        <source type="live" name="eth0"/> 
+<!--        <source type="live" name="wlan0"/> -->
+        <!--bpf_filter expression="!tcp"/--> 
+      </params>
+    </block>
+
+    <!-- NOTE: passive blocks shouldn't have a threadpool assigned to them -->
+    <block id="counter" type="PacketCounter" invocation="direct"> 
+      <params>
+      </params>
+    </block>
+
+    <connection src_block="src" src_gate="source_out" dst_block="counter" dst_gate="in_pkt"/>
+
+  </install>
+</composition>

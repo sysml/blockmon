@@ -45,6 +45,7 @@
 #include <cassert>
 #include <chrono>
 #include <thread>
+#include <condition_variable>
 
 template<typename T,unsigned int Qlen>
 class DBQueue
@@ -155,6 +156,10 @@ public:
 
     }
 
+    /** reads the next entry from the consumer queue and forward the pointer.
+    	if the last entry was reached already, the queues are swapped and the
+    	first entry from the new consumer queue is returned
+    */
     bool pop(T& in)
     {
        if(consume(in))
@@ -162,6 +167,32 @@ public:
         swap_queues();
         return consume(in);
     }
+
+    /**	same as  bool pop(T& in) with one difference:
+     *  if (and only if) the queues are swapped, the condition variable's
+     *  notify_all() is called.
+     */
+    bool pop_notify_all(T& in, std::condition_variable& cond){
+    	if(consume(in))
+			return true;
+		swap_queues();
+		cond.notify_all();
+		return consume(in);
+    }
+
+    /**	same as  bool pop(T& in) with one difference:
+         *  if (and only if) the queues are swapped, the condition variable's
+         *  notify_one() is called.
+         */
+	bool pop_notify_one(T& in, std::condition_variable& cond){
+		if(consume(in))
+			return true;
+		swap_queues();
+		cond.notify_one();
+		return consume(in);
+	}
+
+
 
     // perfect forwarding...
     template <typename Tp>
@@ -185,7 +216,16 @@ public:
         m_queues[cur_queue].vec[my_slot].payload=std::forward<Tp>(in);
         m_queues[cur_queue].vec[my_slot].valid.store(true,std::memory_order_release);
         return true;
-    } 
+    }
+
+
+    bool is_full()
+    {
+        if(m_full.load(std::memory_order_acquire))
+            return true;
+
+        return false;
+    }
 
     //this has to be executed out of the critical session 
     void reset()

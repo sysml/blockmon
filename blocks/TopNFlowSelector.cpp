@@ -131,7 +131,7 @@ namespace blockmon
           * and the reporting periof.
           * @param n the xml configurstion subtree
           */
-        void _configure(const pugi::xml_node&  n ) 
+        virtual void _configure(const pugi::xml_node&  n ) 
         {
            pugi::xml_node len=n.child("top_flows");
             if(len)
@@ -157,7 +157,7 @@ namespace blockmon
           * Otherwise it is discarded.
           * @param m Flow message
           */
-        void _receive_msg(std::shared_ptr<const Msg>&& m, int /* index */) 
+        virtual void _receive_msg(std::shared_ptr<const Msg>&& m, int /* index */) 
         {
             if(m->type() != MSG_ID(Flow))
                 throw std::runtime_error("TopNFlowSelector:: wrong input message type");
@@ -191,7 +191,7 @@ namespace blockmon
             }
         }
 
-        bool _synchronize_access()  { return false; }
+        virtual bool _synchronize_access() { return false; }
 
     };
 

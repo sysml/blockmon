@@ -72,13 +72,13 @@ namespace blockmon
         ~BlockFactory()
         {}
 
-        /** Forbids copy and move constructors.
-	 */
+ 		/**
+          * the factory object is not copiable nor movable
+          */
         BlockFactory(const BlockFactory &) = delete;
-
-        /** Forbids copy and move assignment.
-	 */
         BlockFactory& operator=(const BlockFactory &) = delete;
+        BlockFactory( BlockFactory &&) = delete;
+        BlockFactory& operator=( BlockFactory &&) = delete;
         
 
     public:

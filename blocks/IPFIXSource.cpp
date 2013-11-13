@@ -130,7 +130,7 @@ public:
      *
      * @param params_node the <params> XML element containing block parameters
      */
-    void _configure(const pugi::xml_node& params_node)  {
+    virtual void _configure(const pugi::xml_node& params_node)  {
         bootstrapIPFIX();
 
         // Does not support reconfiguration yet.
@@ -199,7 +199,7 @@ public:
         m_gate_id(register_output_gate("source_out")),
         m_eosdelay(10) {}
 
-    ~IPFIXSource() {}
+    virtual ~IPFIXSource() {}
 
     void _do_async()  {
         if (m_collector) {

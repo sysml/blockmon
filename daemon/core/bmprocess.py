@@ -32,13 +32,13 @@
 # ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
 #
 
-import sys
-sys.path.append("/home/fhuici/research/eu/demons/svn/Sources/blockmon/main/node/daemon/")
+import os, sys
+BASE_PATH = reduce (lambda l,r: l + os.path.sep + r, os.path.dirname( os.path.realpath( __file__ ) ).split( os.path.sep )[:-1] )
+sys.path.append(os.path.abspath(BASE_PATH +"/"))
 import xml.dom.minidom
 from SimpleXMLRPCServer import SimpleXMLRPCServer
 from core.returnvalue import *
 from bmparser import CompositionParser
-import os
 from composition import CompositionManager
 from bmlogging import setup_logging
 

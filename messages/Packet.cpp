@@ -32,6 +32,7 @@
 #include "Packet.hpp"
 #include "NetTypes.hpp"
 #include <netinet/in.h>
+#include <iomanip>
 
 #if !defined(USE_SIMPLE_PACKET) && !defined(USE_SLICED_PACKET)
 
@@ -165,6 +166,7 @@ void Packet::parse_ports() const {
 	        const udphdr* uh = reinterpret_cast<const udphdr*>(m_l4hdr_ptr);
 		m_udplen = ntohs(uh->len);
                 m_l4payload_ptr = m_l4hdr_ptr + sizeof(udphdr);
+                m_payload_len = m_iplen - m_iphlen - sizeof(udphdr);
             }
         } else {
             // Shortcut further parsing on runt ports
@@ -207,6 +209,7 @@ void Packet::parse_tcphdr() const {
             if ((m_caplen - tcphoff) >= m_tcphlen) {
                 // we may even have a valid layer 4 payload, store it
                 m_l4payload_ptr = m_l4hdr_ptr + m_tcphlen;
+                m_payload_len = m_iplen - m_iphlen - m_tcphlen;
             }
         } else {
             // Mark runt packet

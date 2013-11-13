@@ -154,10 +154,14 @@ cmd = None
 args = []
 mngr = BMProcessManager(bm_logger=bm_logger)
 is_running = False
-
+starting = True
 while (1):    
-    inp = raw_input('BM shell:')
-    cmds = inp.split()
+    if(starting):
+        cmds = sys.argv[1:]
+        starting = False
+    else:
+        inp = raw_input('BM shell:')
+        cmds = inp.split()
     if len(cmds) < 1: continue
     cmd = cmds[0]
     if(len(cmds) > 1):
@@ -194,6 +198,7 @@ while (1):
         if not is_running:
             print 'no composition is running'
             continue
+        print 'stopping composition'
         r = mngr.stop_composition()
         if r.get_code() == ReturnValue.CODE_SUCCESS:
             is_running = False

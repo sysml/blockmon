@@ -45,7 +45,8 @@
 #include <MpMcQueue.hpp>
 #include <pthread.h>
 #include <Block.hpp>
-
+#include <pthread.h>
+#include <signal.h>
 #include<Scheduler.hpp>
 
 namespace blockmon
@@ -77,6 +78,7 @@ namespace blockmon
         std::atomic_bool m_stop;
         std::unique_ptr<std::thread> m_thread;
         int m_id;
+		std::shared_ptr<Block>torun;
 
     public: 
       /** Creates a ThreadHandler.
@@ -88,19 +90,19 @@ namespace blockmon
        * on the policy)
        */
         ThreadHandler(Scheduler& sched, unsigned int id)
-        :m_scheduler(sched),m_mask(), m_stop(false), m_thread(),m_id(id)
+        :m_scheduler(sched),m_mask(), m_stop(true), m_thread(),m_id(id)
         {}
 
         /**
-          * Starts up the actual thread and gives it...
-	  *
-	  * This as a callable object to execute.  This will cause the
-          * new thread to execute the operator()() method of this
-          * class.
-	  *
-          * @param aff the CPUs the thread is allowed to run on (an
-          * empty vector means no affinity specification)
-          */
+        * Starts up the actual thread and gives it...
+	    *
+	    * This as a callable object to execute.  This will cause the
+        * new thread to execute the operator()() method of this
+        * class.
+	    *
+        * @param aff the CPUs the thread is allowed to run on (an
+        * empty vector means no affinity specification)
+        */
         void run(const std::vector<unsigned int>& aff)
         {
             CPU_ZERO(&m_mask);
@@ -135,31 +137,68 @@ namespace blockmon
                     throw(std::runtime_error("set affinity failed"));
                 }
             }
+			m_stop.store(false);
             while(!m_stop.load())
             {
-                std::shared_ptr<Block>torun(m_scheduler.next_task(m_id));
-                if(torun)
-                {
-                    torun->run();
-                    m_scheduler.task_done(m_id, std::move(torun));
-                }
-                else
-                {
-                    std::this_thread::sleep_for(std::chrono::milliseconds(10));
-                }
+				try
+				{
+					torun=m_scheduler.next_task(m_id);
+					if(torun)
+					{
+						torun->set_running(true);
+						torun->run();
+						m_scheduler.task_done(m_id, std::move(torun));
+					}
+					else
+					{
+						std::this_thread::sleep_for(std::chrono::milliseconds(10));
+					}
+				}
+				catch (...)
+				{
+				}
             }
-            m_stop.store(false);
+            m_stop.store(true);
         }
 
         /**
           * Tells the running thread to stop and blocks until it terminates.
           */
-        void stop()
-        {
+        void stop() {
             m_stop.store(true);
             m_thread->join();
             m_thread.reset();
         }
+
+        /*
+         * Replaced with the code above
+         */
+        /*
+        void stop()
+        {
+			if (!m_stop.load())
+			{
+				m_stop.store(true);
+				if(torun)
+				{
+					torun->set_running(false);
+				}
+				if (m_thread->joinable())
+				{
+					m_thread->join();
+				}
+				m_thread.reset();
+			}
+			
+        }
+
+		void join(){
+        	if(!m_stop.load())
+        		stop();
+        	m_thread->join();
+			m_thread.reset();
+        }
+        */
 
     };
 

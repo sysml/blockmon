@@ -37,6 +37,12 @@
 #include <vector>
 #include<algorithm>
 #include<DBQueue.hpp>
+#include <chrono>
+
+#define QUEUETYPE_DROPPING -2
+#define QUEUETYPE_MUTEX -1
+#define QUEUETYPE_YIELDING 0
+
 
 namespace blockmon { 
 
@@ -51,6 +57,10 @@ namespace blockmon {
 
         InGate(Block& own,int id)
         : m_owner(&own), m_queue(new queue_type), m_peers(), m_index(id)
+#if BLOCKING_QUEUE
+        , WAIT_DURATION(1)
+        , is_waiting(false)
+#endif
         {}
 
         ~InGate()
@@ -82,13 +92,8 @@ namespace blockmon {
         }
 
         void connect(OutGate& out);
+        std::shared_ptr<const Msg> dequeue();
 
-        std::shared_ptr<const Msg> dequeue()
-        {
-            std::shared_ptr<const Msg> tmp;
-            m_queue->pop(tmp);
-            return tmp;
-        }
 
         void disconnect(OutGate* in);
 
@@ -101,6 +106,15 @@ namespace blockmon {
         std::unique_ptr<queue_type> m_queue;
         std::vector<OutGate*> m_peers;
         int m_index;
+
+#ifdef BLOCKING_QUEUE
+//        pthread_mutex_t m_queue_mutex;
+//        pthread_cond_t m_queue_cond;
+        std::condition_variable queue_cond;
+        std::mutex queue_mutex;
+        std::chrono::seconds WAIT_DURATION;
+        bool is_waiting;
+#endif //BLOCKING_QUEUE == MUTEX
     };
 
 } // namespace blockmon

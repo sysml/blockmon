@@ -31,6 +31,8 @@
 
 #include "NetTypes.hpp"
 #include <sstream>
+#include <boost/lexical_cast.hpp>
+#include <boost/algorithm/string.hpp>
 
 namespace blockmon {
 
@@ -87,4 +89,15 @@ namespace blockmon {
             << (ipv4 & 0x000000FF);
         return os.str();
     }
+        
+    const uint32_t string_to_ipv4(std::string str) {
+        std::vector<std::string> strvec;
+        boost::split(strvec, str, boost::is_any_of("."));
+        uint32_t a = boost::lexical_cast<uint32_t>(strvec[0]) << 24;
+        a |= (boost::lexical_cast<uint32_t>(strvec[1]) << 16);
+        a |= (boost::lexical_cast<uint32_t>(strvec[2]) << 8);
+        a |= boost::lexical_cast<uint32_t>(strvec[3]);
+        return a;
+    }
+    
 }

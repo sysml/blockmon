@@ -32,7 +32,6 @@
 #define __WORDRECORD_H_
 
 #include <Msg.hpp>
-#include <MessageFactory.hpp>
 
 #include <ctime>
 #include <cstring>
@@ -87,6 +86,5 @@ namespace blockmon
             return std::shared_ptr<Msg>(new_word);
         }
     };
-    REGISTER_MESSAGE(WordRecord,"WordRecord")
 }
 #endif// __WORDRECORD_H_

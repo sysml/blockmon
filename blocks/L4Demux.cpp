@@ -30,7 +30,7 @@
  */
 
 /*
- * <blockinfo type="L4Demux" invocation="direct" thread_exclusive="false">
+ * <blockinfo type="L4Demux" invocation="direct, indirect" thread_exclusive="false">
  *   <humandesc>
  *   Takes Packet messages and demultiplexes them across three possible output
  *   gates depending on their transport protocol: TCP packets are forwarded
@@ -95,13 +95,31 @@ namespace blockmon
           m_out_unknown(register_output_gate("out_unknown"))
         {}
 
+        L4Demux(const L4Demux&)=delete;
+        L4Demux(L4Demux&&)=delete;
+        L4Demux& operator=(const L4Demux&)=delete;
+        L4Demux& operator=(L4Demux&&)=delete;
+
+        /**
+         * @brief Configures the block: in this case does nothing as the block has no params 
+         */
+        virtual void _configure(const pugi::xml_node& /* n */)
+        {
+        }
+
+        /**
+         * @brief Destructor
+         */
+        virtual ~L4Demux()
+        {}
+
         /**
          * If the message received is not of type Packet throw an exception,
          * otherwise demultiplexes it. 
          * @param m     The message
          * @param index The index of the gate the message came on
          */
-        void _receive_msg(std::shared_ptr<const Msg>&& m, int /* index */) 
+        virtual void _receive_msg(std::shared_ptr<const Msg>&& m, int /* index */) 
         {
             if(m->type()!=MSG_ID(Packet)) throw std::runtime_error("counter: unexpected msg type");
             const Packet* packet = static_cast<const Packet*>(m.get());

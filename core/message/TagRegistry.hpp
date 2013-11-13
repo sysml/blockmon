@@ -54,8 +54,11 @@
 namespace blockmon { 
 
     /** 
-     * Used to enforce correct internal alignment for tags allocated
-     * in the tag buffer.
+     * @brief
+     * tag_object class is used to enforce the correct internal alignemnt 
+     * for tags allocated in the tag buffer...
+     * value is the value of the Tag that be trivially destructible. 
+     * valid is an atomic flag used for synchronization.
      */
     struct tag_base
     {
@@ -173,13 +176,13 @@ namespace blockmon {
 
 
     /**
-     * Implements a registry of the tags for the message type MsgType.
-     *
-     * This is a template singleton class.  When a message tag is
-     * registered, an associated handle is returned. Such an handle is
-     * then used in order to read and write the tags associated to a
-     * message.
+     * @brief
+     * TagRegistry class implements a registry of the tags for the message type MsgType.
+     * This is a template singleton class, according to Meyer's idiom.
+     * When a message tag is registered, an associated handle is returned. Such an handle is then used in 
+     * order to read and write the tags associated to a message.
      */
+
     template <typename MsgType>
     struct TagRegistry
     {

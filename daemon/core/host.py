@@ -137,9 +137,12 @@ class HostSpecsManager:
         \param node (\c minidom.Node) The xml node
         \return     (\c Interface)    The parsed interface, or None if the node was not an interface
         """
-        model = self.__get_text(node.getElementsByTagName("product")[0].childNodes)
-        mac = self.__get_text(node.getElementsByTagName("serial")[0].childNodes)
-        name = self.__get_text(node.getElementsByTagName("logicalname")[0].childNodes)
+	try: model = self.__get_text(node.getElementsByTagName("product")[0].childNodes)
+	except IndexError: model = ""
+        try: mac = self.__get_text(node.getElementsByTagName("serial")[0].childNodes)
+	except IndexError: mac = ""
+        try: name = self.__get_text(node.getElementsByTagName("logicalname")[0].childNodes)
+	except IndexError: name = ""
 
         # dirty hack
         speed = 1000

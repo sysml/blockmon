@@ -30,7 +30,7 @@
  */
 
 /*
- * <blockinfo type="FlowFilter" invocation="direct" thread_exclusive="False">
+ * <blockinfo type="FlowFilter" invocation="direct, indirect" thread_exclusive="False">
  *   <humandesc>
  *   </humandesc>
  * Selects packets based on a set of given conditions. Selected packets are
@@ -236,8 +236,8 @@ namespace blockmon
         /*
          * constructor
          */
-        FlowFilter(const std::string &name, invocation_type) : 
-        Block(name, invocation_type::Direct),
+        FlowFilter(const std::string &name, invocation_type invocation) : 
+        Block(name, invocation),
         m_in_gate(register_input_gate("in_flow")),
         m_out_gate(register_output_gate("out_flow")),
         m_ip_src_address(0),
@@ -255,11 +255,24 @@ namespace blockmon
         {
         }
 
+        FlowFilter(const FlowFilter &)=delete;
+        FlowFilter& operator=(const FlowFilter &) = delete;
+        FlowFilter(FlowFilter &&)=delete;
+        FlowFilter& operator=(FlowFilter &&) = delete;
+
+
+
+        /*
+         * destructor
+         */
+        virtual ~FlowFilter()
+        {}
+
         /**
           * configures the filter
           * @param n the xml subtree
           */
-        void _configure(const pugi::xml_node&  n ) 
+        virtual void _configure(const pugi::xml_node&  n )
         {
 
             if(pugi::xml_node c = n.child("ip_src"))
@@ -358,7 +371,7 @@ namespace blockmon
           * Expects Flow messages, otherwise it throws
           * @param m the message to be checked
          */ 
-        void _receive_msg(std::shared_ptr<const Msg>&& m, int /* index */) 
+        virtual void _receive_msg(std::shared_ptr<const Msg>&& m, int /* index */)
         {
             if(m->type() != MSG_ID(Flow))
                 throw std::runtime_error("FlowFilter: wrong message type");

@@ -163,11 +163,12 @@ class BMDaemon(jsonrpc.JSONRPC):
 		return jsonpickle.encode(r)
 
 	@defer.inlineCallbacks
-	def jsonrpc_start_composition(self, comp):
+	def jsonrpc_start_composition(self, comp, datafiles = []):
 		"""\brief Starts a new Blockmon instance based on the given 
 				  composition XML. The instance will run in a newly
 				  spawned process.
 		\param  comp (\c string)	  The composition XML
+		\param  datafiles (\c list)	  The datafile to be used
 		\return	  (\c ReturnValue) Value member is empty
 		"""
 		self.__parser.set_comp(comp)
@@ -182,6 +183,12 @@ class BMDaemon(jsonrpc.JSONRPC):
 		logfile = self.__logging_dir + "/" + bmproc_id + ".log"
 		compfile = self.__tmp_dir + "/" + bmproc_id + ".xml"
 		commands.getstatusoutput("mkdir -p " + self.__tmp_dir)
+
+		if len(datafiles):
+			for (fname,fbin) in datafiles:
+				isSaved = yield threads.deferToThread(self.__save_datafile, fname, fbin)
+				if isSaved: comp = comp.replace(fname,self.__tmp_dir + "/" + fname)
+
 		f = open(compfile, "w")
 		f.write(comp)
 		f.close()
@@ -189,7 +196,13 @@ class BMDaemon(jsonrpc.JSONRPC):
 		portno = yield threads.deferToThread(self.__find_open_port)
 		port = str(portno)
 		args = [compfile, logfile, port]
-		proc = yield threads.deferToThread(ProcessSpawner.spawn,self.__bm_proc_exec, args)		
+		try:
+			proc = yield threads.deferToThread(ProcessSpawner.spawn,self.__bm_proc_exec, args)
+		except OSError as err:
+			# handle error (see below)
+			print("Failure when starting composition. Ensure that core/bmprocess.py is set to executable (u+x)." + err)
+			r = ReturnValue(ReturnValue.CODE_FAILURE, "error while starting composition", None)
+			defer.returnValue(jsonpickle.encode(r))
 		info = BMProcessInfo(proc, comp, logfile, port)
 		self.__bm_processes[comp_id] = info
 		self.__spawn_proc_id += 1
@@ -318,6 +331,22 @@ class BMDaemon(jsonrpc.JSONRPC):
 		r = ReturnValue(ReturnValue.CODE_SUCCESS, "", results)
 		return jsonpickle.encode(r)
 
+	def __save_datafile(self, fname, fbin):
+		import base64
+		data = base64.b64decode(fbin)
+		f = open(self.__tmp_dir +'/'+fname,'w')
+		try: f.write(data) 
+		except: return False
+		f.close()
+		return True
+
+	@defer.inlineCallbacks
+	def jsonrpc_save_datafile(self, fname, fbin):
+		isSaved = yield threads.deferToThread(self.__save_datafile, fname, fbin)
+		if isSaved: r = ReturnValue(ReturnValue.CODE_SUCCESS, "datafile saved successfully", None)
+		else: r = ReturnValue(ReturnValue.CODE_FAILURE, "error while saving datafile", None)
+		defer.returnValue(jsonpickle.encode(r))
+
 	def get_listening_port(self):
 		return self.__listening_port
 
@@ -393,7 +422,12 @@ class BMDaemon(jsonrpc.JSONRPC):
 			specs = jsonpickle.encode(host_specs)
 			from core.blockinfo import block_infos
 			blocks =  block_infos.keys()
-			d = bc_register.callRemote('register', self.__local_ip, port, specs, blocks)
+			blocks_descr = [block_infos[b] for b in blocks] 
+			descr = jsonpickle.encode(blocks_descr)
+			#blocks_descr = [str(block_infos[b]) for b in blocks] 
+			#d = bc_register.callRemote('register', self.__local_ip, port, specs, blocks)
+			#d = bc_register.callRemote('register', self.__local_ip, port, specs, blocks, blocks_descr)
+			d = bc_register.callRemote('register', self.__local_ip, port, specs, blocks, descr)
 		d.addCallback(self.__registration_results).addErrback(self.__registration_error)
 
 ########################################################################

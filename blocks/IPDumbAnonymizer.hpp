@@ -61,13 +61,13 @@ namespace blockmon
         /**
          * @brief Destructor
          */
-        ~IPDumbAnonymizer()  {}
+        virtual ~IPDumbAnonymizer() {}
 
         /**
          * @brief Configures the block, nothing to do.
          * @param n The configuration parameters 
          */
-        void _configure(const pugi::xml_node&  n) ;
+        virtual void _configure(const pugi::xml_node&  n);
 
         /**
          * If the message received is not of type Packet throw an exception,
@@ -77,7 +77,7 @@ namespace blockmon
          * @param index The index of the gate the message came on
          * @return      0 upon success, negative otherwise
          */
-        void _receive_msg(std::shared_ptr<const Msg>&& m, int index) ;
+        virtual void _receive_msg(std::shared_ptr<const Msg>&& m, int index);
 
     };
 

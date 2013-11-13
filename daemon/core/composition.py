@@ -31,9 +31,9 @@
 
 import os
 
-from core.threadpool import ThreadPool
-from core.block import Block, Connection
-from core.blockinfo import block_infos
+from threadpool import ThreadPool
+from block import Block, Connection
+from blockinfo import block_infos
 from core.returnvalue import *
 from symbol import except_clause
 
@@ -198,8 +198,8 @@ class CompositionManager:
         tpool_id = ""
         tpool = None
                 
-        params = blocknode.getElementsByTagName('params')
-        params = params[0].toxml()
+#        params = blocknode.getElementsByTagName('params')
+        #params = params[0].toxml()
         
         if blocknode.attributes.has_key('invocation'):
             invocation = blocknode.attributes['invocation'].value
@@ -212,7 +212,7 @@ class CompositionManager:
                                           block_type,\
                                           self.__comp_id,\
                                           invocation,\
-                                          params,\
+                                          blocknode.toxml(),\
                                           tpool_id,\
                                           tpool,\
                                           self.__blockmon,\

@@ -96,7 +96,16 @@ namespace blockmon
         {
         }
 
-        void _receive_msg(std::shared_ptr<const Msg>&& m, int /* index */) 
+        AppendTag(const AppendTag &)=delete;
+        AppendTag& operator=(const AppendTag &) = delete;
+
+        /*
+         * destructor
+         */
+        virtual ~AppendTag()
+        {}
+
+        virtual void _receive_msg(std::shared_ptr<const Msg>&& m, int /* index */)
         {
             if(m->type() != MSG_ID(Packet))
                 throw std::runtime_error("AppendTag: wrong message type");
@@ -118,7 +127,7 @@ namespace blockmon
             send_out_through(std::move(m),m_outgate_id);
         }
 
-        void _configure(const pugi::xml_node&  n ) 
+        virtual void _configure(const pugi::xml_node&  n )
         {
             if(pugi::xml_node tag = n.child("tag"))
             {

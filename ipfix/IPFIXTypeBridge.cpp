@@ -29,12 +29,12 @@
 #include "IPFIXTypeBridge.hpp"
 
 namespace blockmon {
-
-    bool IPFIXTypeBridge::declareIEVec(const char* spec1, ...) {
+    
+    bool IPFIXTypeBridge::declareIEVec(
+                std::vector<const IPFIX::InfoElement*>& v,
+                const char* spec1,
+                va_list args) {
         m_ievec.clear();
-
-        va_list args;
-        va_start(args, spec1);
         const char* s = spec1;
 
         IPFIX::InfoModel& m = IPFIX::InfoModel::instance();
@@ -51,8 +51,26 @@ namespace blockmon {
             m_ievec.push_back(e);
             s = va_arg(args, const char*);
         }
+        return true;        
+    }
+
+    bool IPFIXTypeBridge::declareIEVec(
+                std::vector<const IPFIX::InfoElement*>& v,
+                const char* spec1, ...) {
+        va_list args;
+        va_start(args, spec1);
+        bool rv = declareIEVec(v, spec1, args);
         va_end(args);
-        return true;
+        return rv;
+    }
+
+
+    bool IPFIXTypeBridge::declareIEVec(const char* spec1, ...) {
+        va_list args;
+        va_start(args, spec1);
+        bool rv = declareIEVec(m_ievec, spec1, args);
+        va_end(args);
+        return rv;
     }
     
     void IPFIXTypeBridge::defaultPrepareExporter(IPFIX::Exporter& e) {

@@ -80,13 +80,13 @@ namespace blockmon {
         virtual ~Timer()
         {}
 
-        /** Forbids copy and move constructors.
-	 */
+        /**
+          * This object is non copiable and non moveable
+          */
         Timer(const Timer &) = delete;
-
-        /** Forbids copy and move assignments.
-	 */
         Timer& operator=(const Timer &) = delete;
+        Timer(Timer &&) = delete;
+        Timer& operator=( Timer &&) = delete;
 
         /**
           * @return the timer object name
@@ -157,6 +157,9 @@ namespace blockmon {
         : Timer(b,  tp, n, id)
         {}
 
+        virtual ~OneShotTimer()
+        {}
+
         /**
           * Implementation of the base class virtual method
           * @return the same time point when the timer expired. This causes the timer not to be rescheduled.
@@ -192,6 +195,8 @@ namespace blockmon {
         : Timer(b,  tp, n, id), m_period(p)
         {}
 
+        virtual ~PeriodicTimer()
+        {}
 
     // FIXME check whether this method is needed    
     //    PeriodicTimer (const PeriodicTimer& t)

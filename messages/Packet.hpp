@@ -59,6 +59,7 @@
                                                     
 #else 
 
+// compatibility with NewPacket
 namespace blockmon
 {
 
@@ -122,8 +123,8 @@ namespace blockmon
           m_machdr_parsed(false),
           m_iphdr_parsed(false),
           m_ports_parsed(false),
-          m_l4hdr_parsed(false)
-          
+          m_l4hdr_parsed(false),
+          m_payload_len(0)
         {
             if (!m_length) m_length = buf.len();
                 memcpy(const_cast<uint8_t*>(m_buffer) , buf.addr(), buf.len());
@@ -179,7 +180,8 @@ namespace blockmon
           m_machdr_parsed(false),
           m_iphdr_parsed(false),
           m_ports_parsed(false),
-          m_l4hdr_parsed(false)
+          m_l4hdr_parsed(false),
+          m_payload_len(0)
         {
             if (!m_length) m_length = buf.len();
             memcpy(const_cast<uint8_t*>(m_buffer), buf.addr(), buf.len());
@@ -206,7 +208,7 @@ namespace blockmon
         /**
         * Destroy this Packet. Frees the packet buffer if owned.
         */
-        ~Packet() 
+        virtual ~Packet() 
         {
             if (m_buffer_owned) {
               delete m_buffer;
@@ -217,7 +219,7 @@ namespace blockmon
          * Clone this message; the new Packet will have the same content, own
          * its buffer, and will lose its parsed field cache.
          */
-        std::shared_ptr<Msg> clone() const 
+        virtual std::shared_ptr<Msg> clone() const
         {
             return std::make_shared<Packet>(
                 const_buffer<uint8_t>(m_buffer, m_caplen), 
@@ -287,9 +289,14 @@ public:
         }
 
         /** Get the total length of the packet captured from the wire */
-        size_t length() const {
+        size_t caplen() const {
             return m_length;
         }
+
+        /** Backwards compatibility */
+		size_t length() const {
+			return caplen();
+		}
 
         /** Get a pointer to the start of the packet */
         const uint8_t *base() const {
@@ -319,6 +326,12 @@ public:
                 parse_ports();
             }
             return m_l4payload_ptr;
+        }
+        
+        /** return the l4 (TCP/UDP) playload length or 0 if there is no such payload */
+        const size_t payload_len() const{
+        	payload();// make sure payload is parsed
+        	return m_payload_len;
         }
         
         /** Get the MAC type of the packet; 
@@ -399,6 +412,10 @@ public:
 
         bool tcp_has_syn() const {
            return tcp_flags() & kSYN;
+        }
+
+        bool tcp_has_ack() const {
+                  return tcp_flags() & kACK;
         }
 
         bool tcp_has_fin() const {
@@ -521,6 +538,7 @@ public:
         mutable uint8_t       m_tcphlen;
 
         mutable uint16_t      m_udplen;
+        mutable size_t 	      m_payload_len;
     };
 
 }

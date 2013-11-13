@@ -37,7 +37,6 @@
 #include <Composition.hpp>
 #include <PoolManager.hpp>
 
-// Andrea, I don't know what the XML for a composition should look like anymore
 
 namespace blockmon
 {
@@ -62,13 +61,13 @@ namespace blockmon
         ~CompositionManager()
         {}
 
-        /** Forbids copy and move constructors.
-	 */
+        /**
+          * this object is non-moveable and non-copyable
+          */
         CompositionManager(const CompositionManager &) = delete;
-
-        /** Forbids copy and move assignment.
-	 */
         CompositionManager& operator=(const CompositionManager &) = delete;
+        CompositionManager(CompositionManager &&) = delete;
+        CompositionManager& operator=(CompositionManager &&) = delete;
 
         std::map<std::string, std::shared_ptr<Composition> > m_config_map;
 
@@ -164,6 +163,27 @@ namespace blockmon
             std::string composition_id = config.attribute("id").value();
             std::string app_id = config.attribute("app_id").value();
 
+			pugi::xml_node general = config.child("general");
+			if(general==NULL){
+				throw std::runtime_error(std::string("init: ").append("No <general> tag found in composition XML"));
+			}
+			pugi::xml_node clock = general.child("clock");
+			if(clock==NULL){
+				throw std::runtime_error(std::string("init: ").append("No <clock> tag found within <general> tag in composition XML"));
+			}
+			auto clocktypeAttr = clock.attribute("type");
+			if(clocktypeAttr==NULL){
+				throw std::runtime_error(std::string("init: ").append("No 'type' attribute within <clock> tag found"));
+			}
+			auto clocktype=std::string(clocktypeAttr.value());
+			if(clocktype.compare("wall")==0 || clocktype.compare("WALL")==0){
+				select_clock(WALL);
+			}
+			else if(clocktype.compare("packet")==0 || clocktype.compare("PACKET")==0){
+				select_clock(PACKET);
+			}
+			else
+				throw std::runtime_error(std::string("init: ").append("Clock type '").append(clocktype).append("' is invalid"));
 
            pugi::xml_node install = config.child("install");
             if(install)
@@ -182,11 +202,6 @@ namespace blockmon
             }
 
         }
-
-
-
-
-
 
     };
 

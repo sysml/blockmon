@@ -90,7 +90,7 @@ class BlockInfoParser:
 
         # append end of file and write it out
         info_str += "}\n"
-        output_file = base_path + "/daemon/core/blockinfo.py"
+        output_file = base_path + "daemon/core/blockinfo.py"
         f = open(output_file, "w")
         f.write(info_str)
         f.close()

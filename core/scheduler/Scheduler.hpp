@@ -70,13 +70,13 @@ namespace blockmon
          */
         T m_scheduler;
 
-        /** Forbids copy and move constructors.
-	 */
+         /**
+         * this object is not copiable nor moveable
+         */
         PluginScheduler(const PluginScheduler&)=delete;
-
-        /** Forbids copy and move assignments.
-	 */
         PluginScheduler& operator = (const PluginScheduler&) = delete;
+        PluginScheduler(PluginScheduler&&)=delete;
+        PluginScheduler& operator = (PluginScheduler&&) = delete;
 
     public:
         /**

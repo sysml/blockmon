@@ -177,7 +177,6 @@ namespace blockmon {
  * IPFIXMyBridge::IPFIXMyBridge()
  *     : IPFIXTypeBridge("my") {
  *   declareIEVec("sourceIPv4Address",
- *                "payloadBufferSize(35501/102)<unsigned32>[4]",
  *                "payloadBuffer(35501/101)<octetArray>[v]",
  *                "domainName(35501/103)<octetArray>[v]",
  *                (const char*)0);
@@ -185,7 +184,8 @@ namespace blockmon {
  * @endcode
  *
  * (This is not a tutorial on how to write IE specs. If you don't know
- * what these specifications above mean, please consult an RFC.)
+ * what these specifications above mean, please consult 
+ * draft-ietf-ipfix-ie-doctors)
  *
  * Next we need to tell the exporter if we can export a certain
  * Msg. In this case, that's easy, since we can only export MyMsg's:
@@ -207,15 +207,22 @@ namespace blockmon {
  *
  *    e.setTemplate(m_tid);
  *    e.beginRecord();
+ *    e.reserveVarlen(m_ievec[1], msg->getPayloadBufferSize());
+ *    e.reserveVarlen(m_ievec[2], msg->getDomainName().length());
+ *    e.commitVarlen();
  *    e.putValue(m_ievec[0], static_cast<uint32_t>(msg->getSourceIPv4Address());
- *    e.putValue(m_ievec[1], msg->getPayloadBufferSize(),
- *    e.putValue(m_ievec[2], msg->getPayloadBuffer(),
+ *    e.putValue(m_ievec[1], msg->getPayloadBuffer(),
  *               msg->getPayloadBufferSize())
- *    e.putValue(m_ievec[3], msg->getDomainName());
+ *    e.putValue(m_ievec[2], msg->getDomainName());
  *    e.exportRecord();
  * }
  * @endcode
  *
+ * All variable-length Information Elements must have their values reserved
+ * and committed before any values are put in the record, so that the
+ * exporter knows the offset to each information element and can flush
+ * any buffers beforehand that would be overflowed by the export.
+ * 
  * Now, let's go into the opposite direction, importing a value from
  * IPFIX:
  *
@@ -255,7 +262,12 @@ namespace blockmon {
 
         std::string m_type_name;
         OutGate* m_gate;
-      
+
+        bool declareIEVec(
+                std::vector<const IPFIX::InfoElement*>& v,
+                const char* spec1,
+                va_list args);
+
     protected:
         std::vector<const IPFIX::InfoElement*>  m_ievec;
         uint16_t                                m_tid;
@@ -286,6 +298,21 @@ namespace blockmon {
          */
 
         bool declareIEVec(const char* spec1, ...);
+
+        /**
+         * Variadic function taking a list of partial or full
+         * IE specifiers. Information elements not already in the model
+         * will be added (assuming a full specifier is present). Caches IE 
+         * pointers in the supplied vector; used when a bridge needs
+         * multiple IE vectors (i.e., for multiple templates). Should be 
+         * called in derived member constructors if used, and the return value
+         * checked.
+         *
+         * @return false if an IE lookup or model addition failed
+         */
+
+        bool declareIEVec(std::vector<const IPFIX::InfoElement*>& v,
+                          const char* spec1, ...);
 
         /**
         * The default implementation of exporter preparation, creates a 

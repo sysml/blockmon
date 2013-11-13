@@ -144,7 +144,7 @@ namespace blockmon
         /*
          * destructor
          */
-        ~Flow() 
+        virtual ~Flow() 
         {}
 
 
@@ -152,7 +152,7 @@ namespace blockmon
           *returns a copy of the message (which always owns its buffer)
           */
 
-        std::shared_ptr<Msg> clone() const 
+        virtual std::shared_ptr<Msg> clone() const
         {
             Flow* new_flow = new Flow(m_key);
             new_flow->m_etime = m_etime;

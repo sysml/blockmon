@@ -32,10 +32,6 @@
 #ifndef _CORE_MESSAGE_MSG_HPP_
 #define _CORE_MESSAGE_MSG_HPP_
 
-/*
- * Copyright notice goes here.
- */
-
 #include <string>
 #include <stdexcept>
 #include <memory>
@@ -109,6 +105,31 @@ namespace blockmon {
                 delete [] m_tagbuf.addr();
         }
 
+	/**
+	 * For debugging purpose it could be useful to get the name of the message
+	 */
+	virtual std::string get_message_name() const {
+		return "Msg";
+	}
+
+	/**
+	 * Create a new message of the same type using the data in the serializer
+	 * (deserialization)
+	 */
+	virtual const std::shared_ptr<Msg> build_same(Serializer *ser) const {
+		assert(0);
+	}
+
+	/**
+	 * Modify the serializer to reflect the content of the message
+	 * The serializer will then be used to send this message across
+	 * the network
+	 */
+	virtual void serialize(Serializer *ser) const {
+		assert(0);
+	}
+
+
         /**
          * Set the tag buffer this message.
          *
@@ -127,24 +148,6 @@ namespace blockmon {
 
             m_tagbuf = buf;
             m_tagowner = ownership;
-        }
-
-        /**
-         * Serialize a message to be sent across the network.
-         * @param ser The serializer.
-         */
-        virtual void serialize(Serializer *ser) const
-        {
-            assert(0);
-        }
-
-        /**
-         * Deserialize data received from the network.
-         * @param ser The serializer.
-         */
-        virtual const std::shared_ptr<Msg> build_same(Serializer *ser) const
-        {
-            assert(0);
         }
 
         /**
@@ -244,7 +247,13 @@ namespace blockmon {
          * }    
          *
          */
-      virtual std::shared_ptr<Msg> clone() const = 0;
+        virtual std::shared_ptr<Msg> clone() const 
+        {   
+            throw std::runtime_error(std::string("Msg::clone: virtual method not implemented in msg type ").
+                                     append(classid::instance().get_name(m_type)));
+            
+            return std::shared_ptr<Msg>();
+        }
 
         /**
          * Copies the content of this message as a C struct (Plain Old
@@ -261,104 +270,6 @@ namespace blockmon {
           throw std::runtime_error(__PRETTY_FUNCTION__);
       }
         
-      // DELETEME after SketchMsg gets fixed
-         //         class Descriptor 
-         //         {
-         //             const uint16_t m_template_id;
-         // 
-         //         public:
-         //             /*
-         //              * Keeps a class-wide index of the last assigned template ids.
-         // *
-         // * It is used to assign consecutive ids to all of the
-         //              * registered messages Notice that, for IPFIX export,
-         //              * templates do not need to be consistent across different
-         //              * nodes.
-         // *
-         // * @return the template id assigned to the next message
-         //              */   
-         // 
-         //             static uint16_t next_template_id()
-         //             {
-         // 
-         //                 static uint16_t last_id=256;
-         //                 // as registration happens when the main thread starts
-         //                 // up, there is no concurrent access
-         //                 if (!last_id) {
-         //                     throw std::runtime_error("blockmon ran out of template ids");
-         //                 }
-         //                 return ++last_id;
-         //             }
-         // 
-         //             /**
-         //              * Returns the template id.
-         // *
-         // * The template id is computed once for all by the
-         //              * registry when the message type is registered.  The
-         //              * registry guarantees that there are no collisions among
-         //              * template ids.
-         // *
-         //              * @return the template id
-         //              */
-         //             uint16_t template_id() const
-         //             {
-         //                 return m_template_id;
-         //             }
-         // 
-         //             /**
-         //              * Constructs a template id.
-         // *
-         // * Automatically obtains a template id from the static
-         // * class function
-         //              */  
-         //             Descriptor():
-         //             m_template_id( next_template_id() )
-         //             {}
-         // 
-         //             /**
-         //              * Constructs a new Msg from the POD representation
-         //              * returned by copy_pod for the given Msg.
-         //              *
-         //              * @param buf buffer containing the POD representation
-         //              */
-         //             virtual const std::shared_ptr<Msg> create_from_pod(const_buffer<uint8_t>& buf) const = 0;
-         // 
-         //             /**
-         // * Fills the POD template.
-         // *
-         //              * Given a reference to an empty IETemplate, this method
-         //              * fills the template with IEs representing the POD
-         //              * representation of this Message.
-         //              *
-         //              * @param st template to fill
-         //              */
-         //             virtual void fill_pod_template (IPFIX::StructTemplate& st) const = 0;
-         // 
-         //             /**
-         // * Fills the wire template.
-         // *
-         //              * Given a reference to an empty IETemplate (a
-         //              * WireTemplate returned from
-         //              * IPFIX::Session.getTemplate()), this method fills the
-         //              * template with IEs representing the wire representation
-         //              * of this Message.
-         //              *
-         //              * @param wt template to fill
-         //              */
-         //             virtual void fill_wire_template (IPFIX::WireTemplate& wt) const = 0;
-         // 
-         //             std::shared_ptr<IPFIX::StructTemplate> get_pod_template() const {
-         //                 auto st = std::make_shared<IPFIX::StructTemplate>();
-         //                 fill_pod_template(*st);
-         //                 return std::move(st);
-         //             }
-         // 
-         //             /**
-         //              * Called after a message descriptor is registered. 
-         //              */
-         //             virtual void post_register() const = 0;
-         // 
-         //         };
 
     protected:
         void assert_pod_size(size_t len) const 
@@ -368,6 +279,9 @@ namespace blockmon {
             }            
         }
 
+		/* 
+         * Copy constructor
+         */        
         Msg(Msg const &other)
         : m_type(other.m_type)
         , m_tagbuf(mutable_buffer<char>(new char[other.m_tagbuf.len()], other.m_tagbuf.len()))

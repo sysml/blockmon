@@ -22,9 +22,6 @@ In order to control blockmon, a number of options exist:
    or to write code that generates them. Also, make sure that core/bmprocess.py
    is executable (e.g., chmod u+x core/bmprocess.py).
 
-3. GUI: [NOT YET READY!!] a Javascript based GUI that not only controls blockmon
-   but allows users to graphically create compositions. Run it with...
-
 
 DIRECTORY STRUCTURE
 ------------------------
@@ -37,7 +34,7 @@ DIRECTORY STRUCTURE
 ├── lib       libraries
 ├── messages  message files
 ├── tests     test files
-└── usr       user blocks, msgs, compositions
+└── usr       user blocks, messages, compositions
 
 DOCUMENTATION
 ------------------------
@@ -51,12 +48,13 @@ found under doc/blockmon/html/index.html
 
 In addition to the code documentation, classes implementing blocks include
 additional information regarding the block's functionality. To generate this
-documentation, go to the doc directory and run:
+documentation, go to the "doc" directory and run:
 
 python blocksdoc.py
 
-The environment variable PYTHONPATH has to be set to Blockmon's main directory
-(i.e., "node") for this to work.
+The environment variable PYTHONPATH has to be set to Blockmon's daemon 
+directory (i.e., "node/daemon") for this to work.
+
 
 COMPOSITION FILES
 ------------------------
@@ -70,7 +68,7 @@ all in XML format. One such file is shown below:
       <core number="0"/>
     </threadpool>
 
-    <block id="sniffer" type="PcapSource" sched_type="active" threadpool="sniffer_thread"> 
+    <block id="sniffer" type="PcapSource" invocation="async" threadpool="sniffer_thread"> 
       <params>
         <source type="live" name="eth0"/>
         <!--bpf_filter expression="!tcp"/--> 
@@ -78,7 +76,7 @@ all in XML format. One such file is shown below:
     </block>
 
     <!-- NOTE: passive blocks shouldn't have a threadpool assigned to them -->
-    <block id="counter" type="PktCounter" sched_type="passive"> 
+    <block id="counter" type="PktCounter" invocation="direct"> 
       <params>
       </params>
     </block>
@@ -113,8 +111,8 @@ them, adding to them, or deleting from them:
     </add>-->
 
     <reconf>
-     <!-- note: id, sched_type and threadpool are MANDATORY even if they don't change -->
-      <block id="sniffer" sched_type="active" threadpool="sniffer_thread"> 
+     <!-- note: id, invocation and threadpool are MANDATORY even if they don't change -->
+      <block id="sniffer" invocation="indirect" threadpool="sniffer_thread"> 
         <params>
           <source type="live" name="wlan0" />
         </params>
@@ -192,6 +190,61 @@ PairMsg: represents a message carrying a generic (key, value) pair.
 Each block can append a Tag to an existing Message (see documentation about 
 the TagRegistry class for details). Note that you must first register the tag 
 before creating a message or appending the tag to an existing message.
+
+QUEUEING TYPES
+------------------------
+For indirectly invoked blocks, messages are queued at the InGate. The used 
+queues however have a finite capacity. If the messages are enqueued with a 
+higher rate than they are consumed by the block they are by default dropped
+when the queue is full. This behavior can be changed on a per-block-
+basis.
+To enable this feature cmake must be run with the -DBLOCKING_QUEUE=on parameter.
+One can then configure the queuing behavior in the <block> tag within the 
+composition XML. 
+The following queue behaviors can be specified:
+  1) drop (default): 
+     The default mode is "drop", in which messages are dropped if the InGate 
+     queue has no more free slots.
+     Example:
+     	<block id="..." type="..." threadpool="..." 
+     		   invocation="indirect" blocking_mode="drop">   
+  2) sleep:
+     In this mode, the enqueuing block (i.e., the thread running the block 
+     sending a message) sleeps for a configurable amount of time if the 
+     queue is full.
+     Example:      
+  	    <block id="..." type="..." threadpool="..." 
+     	       invocation="indirect" blocking_mode="sleep" sleep_usec="1000">
+  3) yield:
+     This mode is very similar to the "sleep" mode. However, the the enqueuing
+     thread simply yields.  
+     Example:      
+  	    <block id="..." type="..." threadpool="..." 
+     	       invocation="indirect" blocking_mode="yield">
+  4) mutex:
+     In this mode a mutex is used to block the enqueueing thread until a slot
+     the queue becomes free.
+     Example:      
+  	    <block id="..." type="..." threadpool="..." 
+     	       invocation="indirect" blocking_mode="mutex">
+
+The above allows you to chose the best suited queueing strategy for your 
+application. 
+Two important points:
+1) The queueing behavior can currently only be configured per block(!) but not 
+   per gate.
+2) All methods (except "drop") may block the enqueueing block. This may lead to
+   deadlocks if you are not careful with your compisition design and the 
+   composition's block-to-threadpool and threads-per-threadpool configuration. 
+   E.g., assume you have two indirectly invoked blocks A and B, both assigned to 
+   the same threadpool. Also assume that the threadpool only has one thread 
+   assigned and that block A sends more messages than block B consumes. In this 
+   case the queue of block B will eventually get fully occupied. If any of the 
+   non-dropping methods above was specified, the thread will block when block A 
+   next tries to send a message. Since this thead is blocked it will not schedule
+   any other block. Thus B's queue will never get free again, i.e., we are in a 
+   deadlock. (This limitation will be removed in a future version of blockmon) 
+   
 
 CODE COMMENTING
 ------------------------

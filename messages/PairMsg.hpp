@@ -76,7 +76,7 @@ namespace blockmon
         /**
           message destructor 
           */
-        ~PairMsg() 
+        virtual ~PairMsg() 
         {}
 
         /**
@@ -99,7 +99,7 @@ namespace blockmon
           returns a copy of the message
           */
          
-        std::shared_ptr<Msg> clone() const 
+        virtual std::shared_ptr<Msg> clone() const
         {
             return std::make_shared<PairMsg>(*this);
         }    

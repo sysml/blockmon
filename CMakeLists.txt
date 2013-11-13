@@ -67,11 +67,11 @@ set(LIB_OBJ ${TMP_LIST})
 # Optional packages
 #############################################################
 if(WITH_PFQ)
-  message(STATUS "pfq: ON")
+  message(STATUS "pfq (WITH_PFQ): ON")
   add_definitions(-DPFQ_BLOCK)
   list(APPEND INCLUDE_DIRS lib/external/pfq)
 else(WITH_PFQ)
-  message(STATUS "pfq: OFF")
+  message(STATUS "pfq (WITH_PFQ): OFF")
 
    # exclude pfq block
    set(TMP_LIST "")
@@ -83,24 +83,47 @@ else(WITH_PFQ)
 
 endif()
 
-
-if(USE_SIMPLE_PACKET)
-    message(STATUS "packet: SIMPLE")
-    add_definitions(-DUSE_SIMPLE_PACKET)
+if(WITH_NETMAP)
+    message(STATUS "NETMAP (WITH_NETMAP): ON")
+    list(APPEND INCLUDE_DIRS lib/external/netmap)
+    add_definitions(-D_USE_NETMAP)
+else(WITH_NETMAP)
+    message(STATUS "NETMAP (WITH_NETMAP): OFF")
 endif()
 
 if(USE_SLICED_PACKET)
-    message(STATUS "packet: SLICED")
+    message(STATUS "packet (USE_SLICED_PACKET=on): SLICED")
     add_definitions(-DUSE_SLICED_PACKET)
+else()
+    if(USE_SIMPLE_PACKET)
+        message(STATUS "packet (USE_SIMPLE_PACKET=on): SIMPLE")
+        add_definitions(-DUSE_SIMPLE_PACKET)
+    endif()
+endif()
+
+if(NOT USE_SIMPLE_PACKET AND NOT USE_SLICED_PACKET)
+    message(STATUS "packet (neither USE_SIMPLE_PACKET nor USE_SLICED_PACKET set): using old packet")
 endif()
 
 if(USE_PACKET_TAG)
-    message(STATUS "packet tag: ENABLED")
+    message(STATUS "packet tag (USE_PACKET_TAG=on): ENABLED")
     add_definitions(-DUSE_PACKET_TAG)
+else()
+    message(STATUS "packet tag (USE_PACKET_TAG=off): DISABLED")
 endif()
+
 if(USE_PACKET_FLOW)
-    message(STATUS "packet flow: ENABLED")
+    message(STATUS "packet flow (USE_PACKET_FLOW=on): ENABLED")
     add_definitions(-DUSE_PACKET_FLOW)
+else()
+    message(STATUS "packet flow (USE_PACKET_FLOW=off): DISABLED")
+endif()
+
+if(BLOCKING_QUEUE)
+    message(STATUS "InGate queue (BLOCKING_QUEUE=on): BLOCKING")
+    add_definitions(-DBLOCKING_QUEUE)
+else()
+    message(STATUS "InGate queue (BLOCKING_QUEUE=off): DROPPING (i.e., non-blocking)")
 endif()
 
 
@@ -146,7 +169,7 @@ endif()
 # Build
 #############################################################
 list(APPEND BLOCKMON_LINK_LIBS pcap pthread)
-list(APPEND INCLUDE_DIRS lib/external/pugixml/src lib lib/external/factory lib/external/more lib/external/ lib/hash lib/sketch lib/cusum lib/bloom core messages blocks ipfix core/block core/message core/composition core/scheduler core/time ${USR_INCL} )
+list(APPEND INCLUDE_DIRS lib/external/pugixml/src lib lib/external/factory lib/external/more lib/external/ lib/hash lib/cusum lib/bloom core messages blocks ipfix core/block core/message core/composition core/scheduler core/time ${USR_INCL} )
 
 include_directories( ${INCLUDE_DIRS} )
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -march=native -Wall -g -std=c++0x")
@@ -159,14 +182,14 @@ add_executable(blockmon bin/blockmon.cpp)
 target_link_libraries(blockmon blockmoncore ${BLOCKMON_LINK_LIBS})
 
 if (WITH_DAEMON)
-  message(STATUS "daemon: ON")
+  message(STATUS "daemon (WITH_DAEMON): ON")
   find_package(PythonLibs REQUIRED)
   include_directories(${PYTHON_INCLUDE_DIRS})
   link_directories(${PYTHON_LIBRARIES})
   add_library(blockmonpy SHARED ${DAEMON_BINDINGS})
   target_link_libraries(blockmonpy blockmoncore boost_python)
 else(WITH_DAEMON)
-  message(STATUS "daemon: OFF")
+  message(STATUS "daemon (WITH_DAEMON): OFF")  
 endif()
 
 

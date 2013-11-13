@@ -154,7 +154,7 @@ namespace net {
                  ( p ? std::string("*").append(std::to_string(p->proto())) : "-") << std::dec;
 #endif
 
-        if (p != NULL && (proto == 0 || proto == p->proto())) {
+        if (p != nullptr && (proto == 0 || proto == p->proto())) {
             return std::make_pair(void_cast(p), p->size_of());
         }
 

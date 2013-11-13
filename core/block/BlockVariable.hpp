@@ -231,13 +231,13 @@ public:
     m_var(v)
     {}  
 
-  /** Forbids copy and move constructors.
-   */
+    /**
+     * this object cannot be copied nor moved
+     */
     VariableImpl(const VariableImpl <T,rdonly_t,no_mutex_t>&)=delete;
-
-  /** Forbids copy and move assignment.
-   */
+    VariableImpl( VariableImpl <T,rdonly_t,no_mutex_t>&&)=delete;
     VariableImpl <T,rdonly_t,no_mutex_t>& operator=(const VariableImpl <T,rdonly_t,no_mutex_t>&)=delete;
+    VariableImpl <T,rdonly_t,no_mutex_t>& operator=(VariableImpl <T,rdonly_t,no_mutex_t>&&)=delete;
 
 
 protected:
@@ -245,7 +245,7 @@ protected:
       * actual implementation of the base class virtual method
       */
 
-    void _write(const std::string& ) 
+    virtual void _write(const std::string& )
     {
         throw std::runtime_error("trying to write a read-only variable");
     }
@@ -254,7 +254,7 @@ protected:
     /**
       * actual implementation of the base class virtual method
       */
-    std::string _read() const 
+    virtual std::string _read() const
     {
         std::stringstream s;
         if(!(s << m_var))
@@ -286,13 +286,13 @@ public:
     m_var(v) 
     {}
 
-  /** Forbids copy and move constructors.
-   */
+    /**
+     * this object cannot be copied nor moved
+     */
     VariableImpl(const VariableImpl <T,wronly_t,no_mutex_t>&)=delete;
-
-  /** Forbids copy and move assignment.
-   */
+    VariableImpl( VariableImpl <T,wronly_t,no_mutex_t>&&)=delete;
     VariableImpl <T,wronly_t,no_mutex_t>& operator=(const VariableImpl <T,wronly_t,no_mutex_t>&)=delete;
+    VariableImpl <T,wronly_t,no_mutex_t>& operator=(VariableImpl <T,wronly_t,no_mutex_t>&&)=delete;
 
 
 
@@ -300,7 +300,7 @@ protected:
     /**
       * actual implementation of the base class virtual method
       */
-    void _write(const std::string& s) 
+    virtual void _write(const std::string& s)
     {
         std::stringstream ss(std::stringstream::in | std::stringstream::out);
         ss << s;
@@ -311,7 +311,7 @@ protected:
     /**
       * actual implementation of the base class virtual method
       */
-    std::string _read() const 
+    virtual std::string _read() const
     {
         throw std::runtime_error("trying to read a write-only variable");
     }
@@ -342,13 +342,13 @@ public:
       m_mutex(m)
       {}
 
-  /** Forbids copy and move constructors.
+    /**
+     * this object cannot be copied nor moved               
    */
     VariableImpl(const VariableImpl <T,wronly_t,ext_mutex_t>&)=delete;
-
-  /** Forbids copy and move assignment.
-   */
+    VariableImpl( VariableImpl <T,wronly_t,ext_mutex_t>&&)=delete;
     VariableImpl <T,wronly_t,ext_mutex_t>& operator=(const VariableImpl <T,wronly_t,ext_mutex_t>&)=delete;
+    VariableImpl <T,wronly_t,ext_mutex_t>& operator=(VariableImpl <T,wronly_t,ext_mutex_t>&&)=delete;
 
 
 
@@ -357,7 +357,7 @@ protected:
     /**
       * actual implementation of the base class virtual method
       */
-    void _write(const std::string& s) 
+    virtual void _write(const std::string& s)
     {
         std::lock_guard<std::mutex> lock_guard_object(m_mutex);
         std::stringstream ss(std::stringstream::in | std::stringstream::out);
@@ -369,7 +369,7 @@ protected:
     /**
       * actual implementation of the base class virtual method
       */
-    std::string _read() const 
+    virtual std::string _read() const
     {
         throw std::runtime_error("trying to read a write-only variable");
     }
@@ -454,13 +454,13 @@ public:
       m_mutex()
       {}
 
-  /** Forbids copy and move constructors.
+    /**
+     * this object cannot be copied nor moved               
    */
     VariableImpl(const VariableImpl <T,wronly_t,own_mutex_t>&)=delete;
-
-  /** Forbids copy and move constructors.
-   */
+    VariableImpl( VariableImpl <T,wronly_t,own_mutex_t>&&)=delete;
     VariableImpl <T,wronly_t,own_mutex_t>& operator=(const VariableImpl <T,wronly_t,own_mutex_t>&)=delete;
+    VariableImpl <T,wronly_t,own_mutex_t>& operator=(VariableImpl <T,wronly_t,own_mutex_t>&&)=delete;
 
     /* 
      *  returns a reference to the internal mutex to be used for synchronization
@@ -490,7 +490,7 @@ protected:
     /**
       * actual implementation of the base class virtual method
       */
-    std::string _read() const 
+    virtual std::string _read() const
     {
         throw std::runtime_error("trying to read a write-only variable");
     }
@@ -521,13 +521,13 @@ public:
     {
     }
 
-  /** Forbids copy and move constructors.
+    /**
+     * this object cannot be copied nor moved               
    */
     VariableImpl(const VariableImpl <T,rdonly_t,own_mutex_t>&)=delete;
-
-  /** Forbids copy and move constructors.
-   */
+    VariableImpl( VariableImpl <T,rdonly_t,own_mutex_t>&&)=delete;
     VariableImpl <T,rdonly_t,own_mutex_t>& operator=(const VariableImpl <T,rdonly_t,own_mutex_t>&)=delete;
+    VariableImpl <T,rdonly_t,own_mutex_t>& operator=(VariableImpl <T,rdonly_t,own_mutex_t>&&)=delete;
     
     /* 
      *  returns a reference to the internal mutex to be used for synchronization
@@ -543,7 +543,7 @@ protected:
     /**
       * actual implementation of the base class virtual method
       */
-    void _write(const std::string& ) 
+    virtual void _write(const std::string& )
     {
         throw std::runtime_error("trying to write a read-only variable");
     }
@@ -552,7 +552,7 @@ protected:
     /**
       * actual implementation of the base class virtual method
       */
-    std::string _read() const 
+    virtual std::string _read() const
     {
         std::lock_guard<std::mutex> lock_guard_object(m_mutex);
         std::stringstream s(std::stringstream::in | std::stringstream::out);

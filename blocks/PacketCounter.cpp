@@ -30,7 +30,7 @@
  */
 
 /*
- * <blockinfo type="PacketCounter" invocation="direct" thread_exclusive="False">
+ * <blockinfo type="PacketCounter" invocation="direct, indirect" thread_exclusive="False">
  *   <humandesc>
  *     Keeps packet and byte counts of traffic going through it and logs,
  *     every 0.5 seconds, the packet rate.

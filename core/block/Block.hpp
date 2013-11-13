@@ -41,6 +41,7 @@
 #include <mutex>
 #include <sstream>
 #include <stdexcept>
+#include <algorithm>
 
 #if __GNUC__ == 4 &&  __GNUC_MINOR__ == 4  
 #include <cstdatomic>
@@ -56,6 +57,7 @@
 #include <MpMcQueue.hpp>
 #include <BlockVariable.hpp>
 #include <BMTime.h>
+#include <TimerThread.hpp>
 #include <Timer.hpp>
 /**
  * The blockmon namespace contains all classes and functions belonging
@@ -63,7 +65,7 @@
  */
 namespace blockmon { 
 
-//    class Timer;
+    class Timer;	// forward definition
 
     /** Maximum number of messages to dequeue at once in active mode. */
     static const int MAX_MSG_DEQUEUE = 10;
@@ -169,17 +171,19 @@ namespace blockmon {
           m_last_in_id(0),
           m_last_out_id(0),
           m_timer_queue(),
-          m_variables()
+          m_variables(),
+          m_queue_type(QUEUETYPE_DROPPING)
         {}
     public:
+        /** Virtual destructor */
         virtual ~Block();
 
     protected:
 
-        /** Blocks cannot be copied or moved. */
+        /** Null copy constructor for Block; Blocks cannot be copied. */
         Block(const Block &) = delete;
 
-        /** Blocks cannot be copied or moved. */
+        /** Null copy assignment for Block; Blocks cannot be copied. */
         Block& operator=(const Block &) = delete;
 
 
@@ -256,6 +260,17 @@ namespace blockmon {
             return m_name;
         }
 
+/**
+ * Returns if queues are blocking.
+ *
+ * @return true if queues are blocking
+ */
+
+        const int queue_type() const
+        {
+            return m_queue_type;
+        }
+
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Gate accessors
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -320,10 +335,54 @@ namespace blockmon {
  * derived classes must implement the virtual method _configure() to
  * handle configuration.
  *
- * @param xmlnode the <params> XML node containing Block parameters
+ * @param xmlnode the <block> XML node containing Block configuration
  */
-      void configure(const pugi::xml_node& params_node)
-        {
+      void configure(const pugi::xml_node& block_node)
+      {
+            // configure needs to take <block> node of XML
+            // parsing common block features
+#ifdef BLOCKING_QUEUE
+    	  auto block_attrib=block_node.attribute("blocking_mode");
+    	  if(!block_attrib.empty()){
+    		  if (m_invocation != invocation_type::Indirect){
+    			  std::cerr << "warning: m_queue_blocking attribute is valid only for indirect blocks. The argument is ignored for the block " <<m_name<<"\n";
+    		  }
+    		  else
+    		  {
+				  std::string s(block_attrib.value());
+				  std::transform(s.begin(), s.end(), s.begin(), (int (*)(int))std::tolower);
+				  if (s.compare("drop")==0){
+					  m_queue_type=QUEUETYPE_DROPPING;
+					  blocklog("Queues are dropping", log_info);
+				  }
+				  else if (s.compare("yield")==0){
+					  m_queue_type=QUEUETYPE_YIELDING;
+					  blocklog("Queues are blocking (threads yield)", log_info);
+				  }else if(s.compare("sleep")==0){
+					  m_queue_type=block_node.attribute("sleep_usec").as_int();	// returns 0 if sleep_usec is not set
+					  if(m_queue_type<=0){
+						  throw std::runtime_error(std::string("For block '").append(m_name).append("': 'blocking_mode=sleep' but 'sleep_usec' attribute not set or not > 0"));
+					  }
+					  blocklog(std::string("Queues are blocking (threads sleep for ").append(std::to_string(m_queue_type)).append(" usec)"), log_info);
+
+				  }else if(s.compare("mutex")==0){
+					  m_queue_type=QUEUETYPE_MUTEX;
+					  blocklog(std::string("Queues are blocking (using signals and a mutex)"), log_info);
+				  }else{
+					  throw std::runtime_error(std::string("'blocking_mode' attribute value '").append(s)
+											  .append("' for block '").append(m_name).append("' is invalid.\n")
+											  .append("Valid parameters are: drop (default), yield, sleep, mutex.")  );
+				  }
+    		  }
+    	  }
+    	  else if (m_invocation != invocation_type::Indirect){
+    		  blocklog("Queues are non-blocking (i.e., messages will be dropped when queue is full)", log_info);
+    		  m_queue_type=QUEUETYPE_DROPPING;
+    	  }
+
+#endif	//BLOCKING_QUEUE
+            pugi::xml_node params_node = block_node.child("params");
+
             _configure(params_node);
             m_issynchronized = _synchronize_access();
         }
@@ -398,18 +457,7 @@ namespace blockmon {
  *
  * @param t a shared pointer to the timer on which the event occurred
  */
-        void handle_timer(std::shared_ptr<Timer> t) {
-            if (m_invocation == invocation_type::Direct) {
-                if (m_issynchronized) {
-                    std::lock_guard<std::mutex> tmp(m_mutex);
-                    _handle_timer(std::move(t));
-                } else {
-                    _handle_timer(std::move(t));
-                }
-            } else {
-                m_timer_queue.push(std::move(t));
-            }
-        }
+        void handle_timer(std::shared_ptr<Timer> t);
 
  /**
   * Runs this Block.
@@ -589,20 +637,21 @@ namespace blockmon {
     protected:
         
 /**
- * Configures the Block given an XML element containing configuration.
+ * Configure the block given an XML element containing configuration.
+ * Called before the block will begin receiving messages.
  *
- * Called before the Block will begin receiving messages.
- *
+ * SHOULD be overridden in a derived class. 
  * Configuration errors should be signaled by throwing.
  *
  * @param xmlnode the <params> XML element containing block parameters
  */
-      virtual void _configure(const pugi::xml_node& /* xmlnode */) {}
+      virtual void _configure(const pugi::xml_node& xmlnode) {}
 
 /**
  * Initializes the Block. 
  * Called before the Block will begin receiving messages.
  *
+ * CAN be overridden in a derived class. 
  * Configuration errors should be signaled by throwing.
  */
 
@@ -620,8 +669,8 @@ namespace blockmon {
  * @param xmlnode the <params> XML node containing block parameters.
  * @return true if update was successful, false if impossible.
  */
-      virtual bool _update_config(const pugi::xml_node& /* xmlnode */) { return false; }
-                                                            
+      virtual bool _update_config(const pugi::xml_node& xmlnode) { return false; }
+
 /**
  * Handles a message sent from another Block.
  *
@@ -634,7 +683,7 @@ namespace blockmon {
  *                received, as returned by register_input_gate()
  *
  */
-        virtual void _receive_msg(std::shared_ptr<const Msg>&& /* msg */, int /* gate_id */) {}
+        virtual void _receive_msg(std::shared_ptr<const Msg>&& m, int gate_id) {}
 
 /**
  * Handles a timer event.
@@ -646,9 +695,7 @@ namespace blockmon {
  * @param t the timer on which the event occurred.
  *
  */
-        virtual void _handle_timer(std::shared_ptr<Timer>&& /* msg */) {
-            throw std::logic_error("timer set on block without _handle_timer()");
-        }
+        virtual void _handle_timer(std::shared_ptr<Timer>&& t);
             
         
 /**
@@ -663,11 +710,9 @@ namespace blockmon {
 /**
  * Determines whether the Block's _receive_msg() and _handle_timer() methods
  * should be synchronized (i.e., should allow only one thread at a time to
- * execute them.
+ * execute them. Called after configuration or reconfiguration time.
  *
- * Called after configuration or reconfiguration time.
- *
- * Derived classes SHOULD  this method to return false if they are 
+ * Derived classes SHOULD override this method to return false if they are 
  * threadsafe; the default implementation always returns true.
  *
  * @return the synchronized status of the methods in the Block
@@ -698,6 +743,8 @@ namespace blockmon {
         MpMcQueue<Timer> m_timer_queue;
 
         std::map<std::string, std::shared_ptr<BlockVariable> > m_variables;
+
+        int m_queue_type;
     };
 
 } // namespace blockmon

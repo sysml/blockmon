@@ -36,14 +36,18 @@
 #include <iostream>
 #include <algorithm>
 #include <vector>
+#include <queue>
 #include <thread>
 #include <mutex>
+#include <stdlib.h>
 
 #include <BMTime.h>
 #include <Timer.hpp>
+#include <pthread.h>
 
-namespace blockmon { 
+#include<atomic>
 
+namespace blockmon {
 /**
   * Represent the callable object which is executed by the timer
   * thread and that handles timers for the whole Blockmon instance.
@@ -78,21 +82,29 @@ namespace blockmon {
           m_running(false),
           m_queue(),
           m_heap(),
-          m_queue_mutex()
+          m_queue_spinlock()
         {
-            std::make_heap(m_heap.begin(),m_heap.end(),hsorter());
+            pthread_spin_init(&m_queue_spinlock, PTHREAD_PROCESS_PRIVATE);
+            atexit(&cleanup);
         }
 
         ~TimerThread()
-        {}
+        {
+        	pthread_spin_destroy(&m_queue_spinlock);
+        }
 
-        /** Forbids copy and move constructors.
-	 */
+        static void cleanup() {
+            delete inst;
+            inst = NULL;
+        }
+
+        /**
+          * this object is non-moveable and non-copiable
+          */
         TimerThread(const TimerThread&) = delete;
-
-        /** Forbids copy and move assignments.
-	 */
         TimerThread& operator=(const TimerThread&) = delete;
+        TimerThread(TimerThread&&) = delete;
+        TimerThread& operator=(TimerThread&&) = delete;
 
         /**
           * Callable object class used to sort the timer heap
@@ -109,23 +121,13 @@ namespace blockmon {
           * private helper function used to insert a timer in the heap
           * @param in a shared pointer to the timer to be inserted (as r-value reference)
           */
-        void insert_in_heap(std::shared_ptr<Timer>&& in)
-        {
-            m_heap.push_back(std::move(in));
-            std::push_heap(m_heap.begin(),m_heap.end(),hsorter());
-        }
+        void insert_in_heap(std::shared_ptr<Timer>&& in);
 
         /**
           * private helper function used to pop from the heap the timer with the earliest expiration time point
           * @return  a shared pointer to the timer popped from the heap
           */
-        std::shared_ptr<Timer> remove_from_heap()
-        {
-            std::pop_heap(m_heap.begin(),m_heap.end(),hsorter());
-            std::shared_ptr<Timer> tmp(std::move(m_heap.back()));
-            m_heap.pop_back();
-            return tmp;
-        }
+        std::shared_ptr<Timer> remove_from_heap();
 
         /** 
           * helper callable objects
@@ -150,8 +152,13 @@ namespace blockmon {
         static TimerThread& 
         instance()
         {
-            static TimerThread t;
-            return t;
+            if (!m_instance.load()) {
+                std::cout << "allocating singleton" << std::endl;
+                inst = new TimerThread();
+                m_instance.store(true);
+                assert(inst != NULL);
+            }
+            return *inst;
         }
         
         /**
@@ -159,72 +166,28 @@ namespace blockmon {
           * @param in a shared pointer to the timer to be scheduled (as r-value reference).
           * The timer is provisionally stored into a timer queue and will be pushed into the heap the next time this thread wakes up.
           */
-        void schedule_timer(std::shared_ptr<Timer>&& in)
-        {
-            std::lock_guard<std::mutex> tmp(m_queue_mutex);
-            m_queue.push_back(std::move(in));
-        }
+        void schedule_timer(std::shared_ptr<Timer>&& in);
 
         /**
           * Notifies the timer thread functor that is should stop by setting a boolean flag
           */
-        void stop()
-        {
-            m_stop=true;
-        }
+        void stop();
+
 
         /**
           * This is the actual function which is executed by the timer thread
           * It checks the timer queue every millisecond and handles all of the expired timers.
           * After handling one timer (i.e. calling the handle_timer method of the associated block) it 
-          * checks whether it needs to be rescheduled by calling its next_time function.
-          * It runs until it is signalled to stop through the stop() virtual method
+          * checks whether it needs to be rescheduled by calling its next_time virtual function.
+          * It runs until it is signalled to stop through the stop() method
           */
-        void operator()()
-        {
-            if(!m_running)
-            {
-                m_running=true;
-            }
-            else
-            {
-                throw std::runtime_error("trying to start timer thread while it is already running");
-            }
+        void operator()();
 
-            while(!m_stop)
-            {
-                {
-                    std::lock_guard<std::mutex> tmp(m_queue_mutex);
-                    while (!m_queue.empty())
-                    {
-                        insert_in_heap(std::move(m_queue.back()));
-                        m_queue.pop_back();
-                    }
-                }
-                //std::chrono::system_clock::time_point tnow(std::chrono::system_clock::now());
-                ustime_t tnow = get_BM_time();
-                
-                while((!m_heap.empty())&&(m_heap.front()->time_point() <= tnow))
-                {
-                    std::shared_ptr<Timer> t(remove_from_heap());
-                    t->owner().handle_timer(t);
-                    //std::chrono::system_clock::time_point ttmp(t->time_point());
-                    ustime_t ttmp = t->time_point();
-                    t->next_time();
-                    if(t->time_point()!= ttmp )
-                    {
-                        insert_in_heap(std::move(t));
-                    }
-                }
-                /**
-                  * this time interval can be changed in order to tune the precision/performance trade off
-                  */
-                std::this_thread::sleep_for(std::chrono::milliseconds(1));//timers queue is sampled every 1 msec
-            }
-
-            m_running=false;
-            m_stop=false;
-        }
+        /** checks if there are any timer events which should be processed and calls the handle_timer methods
+         *  on the corresponding blocks. This can be called from outside in case you want to make sure that
+         *  all timer events have been processed at a certain time.
+         */
+        void process_timer_events();
 
         /**
           * Removes both from the timer heap and the timer queue all of the timers associated to a given block.
@@ -232,23 +195,26 @@ namespace blockmon {
           * This function is called by the destructor of the block superclass and can only be executed when the timer thread is stopped
           * @param a const reference to the Block whose timers are to be removed (it is only used to derive the block address)
           */
-        void remove_references(const Block& b)
-        {
-            if(m_running)
-            {
-                throw std::runtime_error("timer thread::cannot remove references while the thread is running");
-            }
-
-            m_heap.erase( std::remove_if(m_heap.begin(),m_heap.end(),remover(b)),m_heap.end());
-            m_queue.erase( std::remove_if(m_queue.begin(),m_queue.end(),remover(b)),m_queue.end());
-        }
+        void remove_references(const Block& b);
 
     private:
+
+        inline void lock(){
+        	pthread_spin_lock(&m_queue_spinlock);
+        }
+
+        inline void unlock(){
+        	pthread_spin_unlock(&m_queue_spinlock);
+        }
+
         bool m_stop;
         bool m_running;
         std::vector<std::shared_ptr<Timer> > m_queue;
-        std::vector<std::shared_ptr<Timer> > m_heap;
-        std::mutex m_queue_mutex;
+        std::priority_queue<std::shared_ptr<Timer>, std::vector<std::shared_ptr<Timer>>, hsorter> m_heap;
+        pthread_spinlock_t m_queue_spinlock;
+    public:
+        static std::atomic<bool> m_instance;
+        static TimerThread* inst;
     };
 
 } // namespace blockmon

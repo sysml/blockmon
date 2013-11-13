@@ -223,6 +223,9 @@ namespace blockmon
     */
     const std::string ipv4_to_string(uint32_t ipv4);
 
+    const uint32_t string_to_ipv4(std::string str);
+
+
 }
 
 #endif // _MESSAGES_NETTYPES_HPP_

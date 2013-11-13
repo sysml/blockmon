@@ -248,6 +248,11 @@ namespace blockmon
             }
         }
 
+        FlowMeter(const FlowMeter&) = delete;
+        FlowMeter& operator=(const FlowMeter&) = delete;
+        FlowMeter(FlowMeter&&) = delete;
+        FlowMeter& operator=(FlowMeter&&) = delete;
+
         /**
          * @brief Configures the block: defines whether reports should only concern expired flows 
          * and sets the timeout value.
@@ -255,7 +260,7 @@ namespace blockmon
          * The timer period is set to the value of the idle timeout.
          * @param n The configuration parameters 
          */
-        void _configure(const pugi::xml_node&  n ) 
+        virtual void _configure(const pugi::xml_node&  n ) 
         {
             pugi::xml_node idle_timeout = n.child("idle_timeout");
             if(idle_timeout)
@@ -323,7 +328,7 @@ namespace blockmon
           * a new entry into the table and the flow queue
           * @param m a Packet message
           */
-        void _receive_msg(std::shared_ptr<const Msg>&& m, int /* index */) 
+        virtual void _receive_msg(std::shared_ptr<const Msg>&& m, int /* index */)
         {
             if(m->type()!=MSG_ID(Packet))
                 throw std::runtime_error("FlowMeter: wrong message type"
@@ -335,12 +340,12 @@ namespace blockmon
             {
                 Flow* new_flow = new Flow (packet->key());
 
-		printf("insert flow: <%s:%d -> %s:%d proto=%d>\n", 
+		/*printf("insert flow: <%s:%d -> %s:%d proto=%d>\n", 
 		       ip_to_string(new_flow->key().src_ip4).c_str(),
 		       new_flow->key().src_port,
 		       ip_to_string(new_flow->key().dst_ip4).c_str(),
 		       new_flow->key().dst_port,
-		       new_flow->key().proto);
+		       new_flow->key().proto);*/
 
                 new_flow->expand_interval (us_now);
                 new_flow->increment_bytes (packet->length());
@@ -362,12 +367,12 @@ namespace blockmon
                 {
                     flow->expand_interval (us_now);
                     
-                    printf("exporting flow: <%s:%d -> %s:%d proto=%d>\n", 
+                    /* printf("exporting flow: <%s:%d -> %s:%d proto=%d>\n", 
                            ip_to_string(flow->key().src_ip4).c_str(),
                            flow->key().src_port,
                            ip_to_string(flow->key().dst_ip4).c_str(),
                            flow->key().dst_port,
-                           flow->key().proto);
+                           flow->key().proto);*/
             
                     send_out_through(flow_it->second->clone(),m_out_gate_id);
                     flow->reset();

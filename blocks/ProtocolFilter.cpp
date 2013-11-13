@@ -30,7 +30,7 @@
  */
 
 /*
- * <blockinfo type="ProtocolFilter" invocation="direct" thread_exclusive="False">
+ * <blockinfo type="ProtocolFilter" invocation="direct, indirect" thread_exclusive="False">
  *   <humandesc>
  *   </humandesc>
  * Selects packets based on the protocol type (i.e., the mac header's EtherType
@@ -81,8 +81,8 @@ namespace blockmon
     /*
      * constructor
      */  
-    ProtocolFilter(const std::string &name, invocation_type) : 
-      Block(name, invocation_type::Direct),
+    ProtocolFilter(const std::string &name, invocation_type invocation) : 
+      Block(name, invocation),
       m_in_gate(register_input_gate("in_pkt")),
       m_out_gate(register_output_gate("out_pkt")),
       m_proto(Packet::kPktTypeIP4)
@@ -98,7 +98,7 @@ namespace blockmon
      * configures the filter
      * @param n the xml subtree
      */
-    void _configure(const pugi::xml_node&  n ) 
+    virtual void _configure(const pugi::xml_node&  n ) 
     {
       if (pugi::xml_node c = n.child("protocol"))
       {
@@ -119,7 +119,7 @@ namespace blockmon
       * Expects Packet messages, otherwise it throws
       * @param m the message to be checked
       */ 
-     void _receive_msg(std::shared_ptr<const Msg>&& m, int /* index */) 
+     virtual void _receive_msg(std::shared_ptr<const Msg>&& m, int /* index */) 
      {
        if(m->type() != MSG_ID(Packet))
          throw std::runtime_error("PacketFiler: wrong message type");

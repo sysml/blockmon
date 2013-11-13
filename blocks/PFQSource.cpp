@@ -1,5 +1,5 @@
 /* Copyright (c) 2011, Consorzio Nazionale Interuniversitario 
- * per le Telecomunicazioni. 
+ * per le Telecomunicazioni, NEC Europe Ltd. 
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without 
@@ -9,9 +9,10 @@
  *    * Redistributions in binary form must reproduce the above copyright
  *      notice, this list of conditions and the following disclaimer in the
  *      documentation and/or other materials provided with the distribution.
- *    * Neither the name of Interuniversitario per le Telecomunicazioni nor the
- *      names of its contributors may be used to endorse or promote products
- *      derived from this software without specific prior written permission.
+ *    * Neither the names of NEC Europe Ltd, Consorzio Nazionale 
+ *      Interuniversitario per le Telecomunicazioni nor the names of its 
+ *      contributors may be used to endorse or promote products derived from 
+ *      this software without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT 
@@ -51,6 +52,9 @@
  *    element params {
  *      element queues {
  *          attribute device {text}
+ *          attribute caplen {xsd:integer, default=1514}
+ *          attribute offset {xsd:integer, default=0}
+ *          attribute slots {xsd:integer, default=131072}
  *          element queue {
  *               attribute number {xsd:integer}
  *               }*
@@ -60,7 +64,7 @@
  *
  *   <paramsexample>
  *  <params>                                                                                                                                 
- *      <queues device="eth3">
+ *      <queues device="eth3" caplen="1514" offset="0" slots="131072">
  *          <queue number="0"/>
  *      </queues> 
  *  </params>
@@ -102,7 +106,7 @@ namespace blockmon
                                   #ifdef USE_PACKET_FLOW
                                   blockmon::FlowKey,
                                   #endif
-                                  blockmon::dynamic_buffer> allocator_type;
+                                  net::payload> allocator_type;
 #elif defined(USE_SLICED_PACKET)
         typedef blockmon::slice_allocator<blockmon::NewPacket, 
                                   #ifdef USE_PACKET_TAG
@@ -116,7 +120,7 @@ namespace blockmon
                                   net::tcp,
                                   net::udp,
                                   net::icmp,
-                                  blockmon::dynamic_buffer> allocator_type;
+                                  net::payload> allocator_type;
 #endif
         /**
          * @brief Constructor
@@ -139,17 +143,27 @@ namespace blockmon
             }
         }
         
+        virtual ~PFQSource(){
+        	auto stats=m_pfq.stats();
+        	std::cout << "PFQSource '"<<this->m_name <<"' statistics: " <<std::endl;
+        	std::cout << "\tReceived: "<<stats.recv << std::endl;
+        	std::cout << "\tDropped: "<<stats.drop << std::endl;
+        	std::cout << "\tLost: "<<stats.lost << std::endl;
+
+        	m_pfq.close();
+        }
+
         /**
          * @brief Configures the block: defines the capture interface, the possible hw-queues in use, etc.
          * @param n The configuration parameters 
          */
-        void _configure(const pugi::xml_node& n) 
+        virtual void _configure(const pugi::xml_node& n) 
         {
             std::cout << __PRETTY_FUNCTION__ << std::endl;
 
             int offset = 0;
             int slots  = 131072;
-            int caplen = 1500;
+            int caplen = 1514;
 
             bool timestamp = false;
 
@@ -211,13 +225,14 @@ namespace blockmon
                 m_max_caplen = std::max(m_max_caplen, caplen);
             }
 
-            blockmon::dynamic_buffer::size_of(m_max_caplen);
+            net::payload::size_of(m_max_caplen);
 
-            // the slice_allocator must be created once the dynamic_buffer
+            // the slice_allocator must be created once the dynamic_buffer (or net::payload)
             // is set to a given size.
             //
+#if defined(USE_SIMPLE_PACKET) || defined(USE_SLICED_PACKET)            
             m_allocator.reset(new allocator_type);
-            
+#endif           
             m_pfq.caplen(caplen);
             m_pfq.toggle_time_stamp(timestamp);
             m_pfq.enable();         

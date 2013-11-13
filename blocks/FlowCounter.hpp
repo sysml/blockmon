@@ -95,14 +95,14 @@ namespace blockmon
         /**
          * @brief Destructor
          */
-        ~FlowCounter()  {}
+        virtual ~FlowCounter() {}
 
         /**
          * @brief Configures the block, in this case the export time is hard-coded
          * to 0.5 seconds
          * @param n The configuration parameters 
          */
-        void _configure(const pugi::xml_node&  n ) 
+        virtual void _configure(const pugi::xml_node&  n ) 
         {
             if(!n.child("notimer"))
             {
@@ -113,7 +113,7 @@ namespace blockmon
         /**
          * @brief Initialize the block
          */
-        void _initialize() 
+        virtual void _initialize() 
         {
         }
 
@@ -123,7 +123,7 @@ namespace blockmon
          * @param m     The message
          * @param index The index of the gate the message came on
          */
-        void _receive_msg(std::shared_ptr<const Msg>&& m, int /* index */) 
+        virtual void _receive_msg(std::shared_ptr<const Msg>&& m, int /* index */)
         {
             if(m->type()!=MSG_ID(Flow))
             {
@@ -145,7 +145,7 @@ namespace blockmon
               m_byte_cnt += f->bytes();
         }
         
-        void _handle_timer(std::shared_ptr<Timer> &&t) ;
+        virtual void _handle_timer(std::shared_ptr<Timer> &&t);
 
     };
 

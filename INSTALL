@@ -66,7 +66,6 @@ cp [PFQDIR]/user/c++/pfq.hpp [BLOCKMONDIR]/lib/external/pfq/
 
 If the directory [BLOCKMONDIR]/lib/external/pfq/ does not exist just create it.
 
-
 IPFIX
 --------------
 Blockmon supports IPFIX (http://datatracker.ietf.org/wg/ipfix/charter/) through a block
@@ -100,6 +99,20 @@ WITH_PFQ: Support for PFQ-based capture block
 WITH_COMBO: Support for COMBO acceleration cards
 WITH_DAEMON: Support for a json-rpc, python-based control daemon plus the CLI
 	     (if you specify WITH_DAEMON=OFF the txJSON-RPC library is not required)
+
+Furthermore you can chose between different implementations of the Packet class:
+USE_SIMPLE_PACKET: Use new implementation of Packet class with simple memory allocator
+USE_SLICED_PACKET: Use new implementation of Packet class with memory slice-allocator
+If none of the above features is specified, the old Packet implementation is used (quite similar to SimplePacket).
+
+The queueing behavior of InGates can also be specified using a feature:
+BLOCKING_QUEUE: 
+    BLOCKING_QUEUE=ON one can configure the queueing behavior for each 
+    block individually in the composition XML (c.f. README). Since each 
+    block can be configured differently a small overhead is introduced 
+    even in the case the queues are not full. If highest message 
+    processing performance is required (and messages may be dropped) one 
+    should set BLOCKING_QUEUE=OFF.
 
 Note that options passed with -D will persist across independent runs of cmake. For
 instance, if you first run cmake with -DWITH_PFQ=ON and then run it without it,

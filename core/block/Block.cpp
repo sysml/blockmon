@@ -30,6 +30,7 @@
  */
 
 #include <Block.hpp>
+#include <Timer.hpp>
 #include <TimerThread.hpp>
 
 namespace blockmon { 
@@ -96,6 +97,23 @@ namespace blockmon {
     Block::~Block(void)
     {
          TimerThread::instance().remove_references(*this);
+    }
+    
+    void Block::handle_timer(std::shared_ptr<Timer> t) {
+                if (m_invocation == invocation_type::Direct) {
+                    if (m_issynchronized) {
+                        std::lock_guard<std::mutex> tmp(m_mutex);
+                        _handle_timer(std::move(t));
+                    } else {
+                        _handle_timer(std::move(t));
+                    }
+                } else {
+                    m_timer_queue.push(std::move(t));
+                }
+            }
+
+    void Block::_handle_timer(std::shared_ptr<Timer>&& t) {
+    	throw std::logic_error("timer set on block without _handle_timer()");
     }
     
     void Block::set_timer_at(ustime_t ts, const std::string &name, unsigned int id)

@@ -81,13 +81,13 @@ void Composition::delete_link(const std::string& from_block,const std::string& f
 void Composition::create_block_from_parsed(const std::string& type, 
                                   const std::string& name, 
                                   invocation_type invocation, 
-                                  const pugi::xml_node & params)
+                                  const pugi::xml_node & blocknode)
 {
     std::shared_ptr<Block> sp = BlockFactory::instantiate(type, name, invocation);
     if (!sp) {
         throw std::runtime_error(std::string(type).append(": block type not supported"));
     }
-    sp->configure(params);
+    sp->configure(blocknode);
     m_map[name] = std::move(sp);
 }
 
@@ -151,8 +151,7 @@ void Composition::install(const pugi::xml_node& config)
         }
 
 
-       pugi::xml_node args=blocknode.child("params");
-        create_block_from_parsed(type, name, invocation, args);
+        create_block_from_parsed(type, name, invocation, blocknode);
 
         if (invocation == invocation_type::Indirect || invocation == invocation_type::Async) {
             if (threadpool.length() == 0) {
