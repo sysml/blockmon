@@ -96,7 +96,8 @@ namespace blockmon {
 
     Block::~Block(void)
     {
-         TimerThread::instance().remove_references(*this);
+         if (TimerThread::inst != NULL)
+           TimerThread::instance().remove_references(*this);
     }
     
     void Block::handle_timer(std::shared_ptr<Timer> t) {
