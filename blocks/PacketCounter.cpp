@@ -74,7 +74,7 @@ namespace blockmon
     void PacketCounter::_handle_timer(std::shared_ptr<Timer>&& )
     {
         std::chrono::system_clock::time_point n= std::chrono::system_clock::now(); 
-        std::chrono::microseconds d = n - m_last_t;
+        auto d = std::chrono::duration_cast<std::chrono::microseconds>(n-m_last_t);
 
         unsigned long long tmp_pkt_cnt = m_pkt_cnt;
         unsigned long long tmp_byte_cnt = m_byte_cnt;

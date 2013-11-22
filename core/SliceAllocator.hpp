@@ -74,7 +74,12 @@ namespace blockmon {
             typedef typename 
             std::remove_pointer<
                 typename std::tuple_element<0, Tp>::type>::type current_type;
-            if (!std::has_trivial_destructor<current_type>::value)
+#if __GNUC__ == 4 && __GNUC_MINOR__ <= 7
+            bool has_trivial_destructor = std::has_trivial_destructor<current_type>::value;
+#elif __GNUC__ == 4 && __GNUC_MINOR__ == 8
+            bool has_trivial_destructor = std::is_trivially_destructible<current_type>::value;
+#endif
+            if (!has_trivial_destructor)
             {
                 for(size_t i=0; i < s; i++)
                     advance_ptr(std::get<0>(t),i)->~current_type();
@@ -87,7 +92,12 @@ namespace blockmon {
             typedef typename 
             std::remove_pointer<
                 typename std::tuple_element<N, Tp>::type>::type current_type;
-            if (!std::has_trivial_destructor<current_type>::value)
+#if __GNUC__ == 4 && __GNUC_MINOR__ <= 7
+            bool has_trivial_destructor = std::has_trivial_destructor<current_type>::value;
+#elif __GNUC__ == 4 && __GNUC_MINOR__ == 8
+            bool has_trivial_destructor = std::is_trivially_destructible<current_type>::value;
+#endif
+            if (!has_trivial_destructor)
             {
                 for(size_t i=0; i < s; i++)
                     advance_ptr(std::get<N>(t),i)->~current_type();

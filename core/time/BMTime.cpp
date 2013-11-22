@@ -60,8 +60,8 @@ ustime_t get_BM_time()
     if(clock_source == WALL) 
     {
         std::chrono::system_clock::time_point tnow = std::chrono::system_clock::now();
-        std::chrono::microseconds t_epoch = tnow.time_since_epoch();
-        return t_epoch.count();
+        auto t_epoch = tnow.time_since_epoch();
+        return std::chrono::duration_cast<std::chrono::microseconds>(t_epoch).count();
     }
     else if (clock_source == PACKET)
     {
