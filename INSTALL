@@ -83,6 +83,17 @@ need to run cmake with -DWITH_COMBO=ON (see below).
 [2] http://www.invea-tech.com/products-and-services/netcope-fpga-platform
 [3] http://www.invea-tech.com/products-and-services/combo-fpga-boards
 
+TSTAT
+--------------
+Blockmon has a block which calls the tstat library.
+Once tstat is installed in the system, place the following files in the
+Blockmon build tree:
+
+cp [TSTATDIR]/include/libtstat.h [BLOCKMONDIR]/lib/external/tstat/
+ln -s [TSTATDIR]/libtstat/.libs [BLOCKMONDIR]/lib/external/tstat/libtstatdir
+
+and compile Blockmon with -DWITH_TSTAT option.
+
 INSTALL
 --------------
 On the main directory type

@@ -154,6 +154,16 @@ if(WITH_TWITTERTRENDING)
   add_definitions(-D_USE_JSMN_LIBRARY)
 endif()
 
+if(WITH_TSTAT)
+    set(TSTAT_LIB "lib/external/tstat/libtstatdir")
+    message(STATUS "TSTAT: ON")
+    list(APPEND INCLUDE_DIRS lib/external/tstat)
+    link_directories(${TSTAT_LIB}) 
+    list(APPEND BLOCKMON_LINK_LIBS tstat)
+    add_definitions(-D_USE_TSTAT)
+endif()
+
+
 # For debug purposes
 #message (STATUS "INCLUDE_DIRS: " ${INCLUDE_DIRS})
 

@@ -1,0 +1,29 @@
+<composition id="mytstat">
+  <general>
+    <clock type="wall" />
+  </general>
+
+  <install>
+    <threadpool id="src_thread" num_threads="1" >
+	</threadpool>
+
+    <block id="src" type="PcapSource" invocation="async" threadpool="src_thread"> 
+      <params>
+        <!-- 
+        <source type="trace" name="testhttp10.pcap"/>
+        -->
+        <source type="trace" name="-"/>
+      </params>
+    </block>
+
+    <block id="tstat" type="TstatAnalyzer" invocation="direct"> 
+      <params>
+          <config name="usr/app_tstat/tstat.conf"/>
+          <logdir name="usr/app_tstat/tstat_log"/>
+      </params>
+    </block>
+
+    <connection src_block="src" src_gate="source_out" dst_block="tstat" dst_gate="in_pkt"/>
+
+  </install>
+</composition>

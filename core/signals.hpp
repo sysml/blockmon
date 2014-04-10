@@ -1,4 +1,4 @@
-/* Copyright (c) 2011, NEC Europe Ltd, Consorzio Nazionale 
+/* Copyright (c) 2011-2012, NEC Europe Ltd, Consorzio Nazionale 
  * Interuniversitario per le Telecomunicazioni, Institut 
  * Telecom/Telecom Bretagne, ETH Zürich, INVEA-TECH a.s. All rights reserved.
  *
@@ -29,45 +29,13 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
  */
 
-#include <CompositionManager.hpp>
-#include <PoolManager.hpp>
-#include <TimerThread.hpp>
-#include <DynamicBuffer.hpp>
+#ifndef _CORE_SIGNALS_HPP_
+#define _CORE_SIGNALS_HPP_ 
 
-#include "signals.hpp"
-
-#include <BMTime.h>
-
-//
-
-
-using namespace blockmon;
-
-
-int main (int argc, char** argv)
-{
-    if(argc!=2)
-        throw std::runtime_error("must specify configuration file");
-    //select_clock(WALL);
-    
-    // wait for quit signal
-    init_quit_signal();
- 
-    CompositionManager::instance().add_config_from_file(argv[1]);
-
-	PoolManager::instance().start();
-
-	std::thread tt(std::ref(TimerThread::instance()));
-
-	while (!did_quit()) sleep(5);
-
-	std::cout<<"Stopping timer thread"<<std::endl;
-	TimerThread::instance().stop();
-
-	std::cout<<"Stopping pool manager"<<std::endl;
-	PoolManager::instance().stop();
-
-	tt.join();
-	return (0);
+namespace blockmon {
+    bool did_quit();
+    void do_quit(int zero);
+    void init_quit_signal();
 }
 
+#endif
