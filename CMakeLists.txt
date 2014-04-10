@@ -161,6 +161,8 @@ if(WITH_TSTAT)
     link_directories(${TSTAT_LIB}) 
     list(APPEND BLOCKMON_LINK_LIBS tstat)
     add_definitions(-D_USE_TSTAT)
+else(WITH_TSTAT)
+    message(STATUS "TSTAT: OFF")  
 endif()
 
 
