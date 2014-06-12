@@ -76,7 +76,7 @@ namespace blockmon {
 #if __GNUC__ == 4 && __GNUC_MINOR__ <= 7
         static_assert(std::has_trivial_destructor<Tag>::value,
                      "Tag must be trivally destructible");
-#elif __GNUC__ == 4 && __GNUC_MINOR__ == 8
+#elif __GNUC__ == 4 && __GNUC_MINOR__ >= 8
         static_assert(std::is_trivially_destructible<Tag>::value,
                      "Tag must be trivally destructible");
 #endif

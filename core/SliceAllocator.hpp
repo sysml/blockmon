@@ -76,7 +76,7 @@ namespace blockmon {
                 typename std::tuple_element<0, Tp>::type>::type current_type;
 #if __GNUC__ == 4 && __GNUC_MINOR__ <= 7
             bool has_trivial_destructor = std::has_trivial_destructor<current_type>::value;
-#elif __GNUC__ == 4 && __GNUC_MINOR__ == 8
+#elif __GNUC__ == 4 && __GNUC_MINOR__ >= 8
             bool has_trivial_destructor = std::is_trivially_destructible<current_type>::value;
 #endif
             if (!has_trivial_destructor)
@@ -94,7 +94,7 @@ namespace blockmon {
                 typename std::tuple_element<N, Tp>::type>::type current_type;
 #if __GNUC__ == 4 && __GNUC_MINOR__ <= 7
             bool has_trivial_destructor = std::has_trivial_destructor<current_type>::value;
-#elif __GNUC__ == 4 && __GNUC_MINOR__ == 8
+#elif __GNUC__ == 4 && __GNUC_MINOR__ >= 8
             bool has_trivial_destructor = std::is_trivially_destructible<current_type>::value;
 #endif
             if (!has_trivial_destructor)

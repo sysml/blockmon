@@ -39,10 +39,11 @@ directory. Follow the individual scripts listed here to do so.
 3. libfc (you need GIT installed for this) 
    cd lib
    git clone git://github.com/britram/libfc.git fc
+   cd fc
    git checkout af3065e37cdadabf00ed170c9830cfde57708b05
    mv ipfix2csv.cpp ipfix2csv.cpp.exclude
    mv fcprof.cpp fcprof.cpp.exclude
-   cd ..
+   cd ../..
 
 PORTABILITY
 -------------
