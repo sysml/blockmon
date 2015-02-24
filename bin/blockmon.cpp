@@ -35,6 +35,7 @@
 #include <DynamicBuffer.hpp>
 
 #include "signals.hpp"
+#include <unistd.h>
 
 #include <BMTime.h>
 

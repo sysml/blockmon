@@ -33,6 +33,7 @@
 #include <iostream>
 #include <arpa/inet.h>
 #include <pugixml.hpp>
+#include <unistd.h>
 
 #include <Alert.hpp>
 
