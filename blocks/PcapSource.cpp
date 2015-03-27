@@ -323,7 +323,7 @@ namespace blockmon
             } else if(ret_code == -2) {
                 if (!end_displayed)
 				{
-					blocklog(std::string("trace at EOF"), log_warning);
+					//blocklog(std::string("trace at EOF"), log_warning);
 					if(m_from_file && blockmon_clock_source() == PACKET && m_advance_time_eof>0 ){
 						blocklog(std::string("advancing PACKET time ..."), log_warning);
 						m_writer.advance_packet_time(get_BM_time() + m_advance_time_eof);

@@ -127,10 +127,21 @@ namespace blockmon
                 std::stringstream ss;
                 const FlowKey& fk = flow->key();
                 int duration = flow->end_time() - flow->start_time();
+                ss<<"packets="<<flow->packets() << ",";
+                ss<<"bytes="<<flow->bytes() << ",";
+                ss<<"start="<<flow->start_time() << ",";
+                ss<<"end="<<flow->end_time() << ",";
+                ss<<"duration.ms="<<duration<< ",";
+                ss<<"source.ip4="<<ip_to_string(fk.src_ip4)<< ",";
+                ss<<"source.port="<<fk.src_port<< ",";
+                ss<<"destination.ip4="<<ip_to_string(fk.dst_ip4)<< ",";
+                ss<<"destination.port="<<fk.dst_port;
+                /*
                 ss<<"Flow of  "<< flow->packets() << " packets and "<<flow->bytes()<<" bytes begin at "<<flow->start_time()<<" end at "<<flow->end_time()<< "duration (ms.) "<<duration <<std::endl;
                 ss<<"SRC IP "<<ip_to_string(fk.src_ip4)<<" SRC port "<<fk.src_port<<std::endl;
                 ss<<"DST IP "<<ip_to_string(fk.dst_ip4)<<" DST port "<<fk.dst_port<<std::endl;
-                ss<<"protocol "<<fk.proto<<std::endl;
+                //ss<<"protocol "<<fk.proto<<std::endl;
+                */
                 blocklog(ss.str(),log_info);
 
 

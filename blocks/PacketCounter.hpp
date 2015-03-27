@@ -90,7 +90,13 @@ namespace blockmon
         /**
          * @brief Destructor
          */
-        virtual ~PacketCounter()  {}
+        virtual ~PacketCounter()  
+        {
+            std::ostringstream ss;
+            ss << "packets=" << m_pkt_cnt << ",";
+            ss << "bytes=" << m_byte_cnt;
+            blocklog(ss.str(), log_info);
+        }
 
         /**
          * @brief Configures the block, in this case the export time is hard-coded

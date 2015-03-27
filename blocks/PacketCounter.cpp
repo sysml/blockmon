@@ -84,5 +84,10 @@ namespace blockmon
 	m_pkt_cnt_prev = m_pkt_cnt;
 	m_byte_cnt_prev = m_byte_cnt;
         m_last_t = n;	  
+
+        std::ostringstream ss;
+        ss << "packets=" << m_pkt_cnt << ",";
+        ss << "bytes=" << m_byte_cnt ;
+        blocklog(ss.str(), log_info);
     }
 } // namespace blockmon

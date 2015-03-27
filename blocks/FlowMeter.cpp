@@ -300,13 +300,15 @@ namespace blockmon
             while(1)
             {
                 queue_slot cur_slot;
-                if(!pop_slot(cur_slot))
+                if(!pop_slot(cur_slot)) {
+                    std::cout << "no new flows to export" << std::endl;
                     return; //queue is empty    
+                }
                 const Flow* cur_flow = static_cast<const Flow*> (cur_slot.flow_ptr.get());
                 if(cur_flow->end_time() < us_limit) //timeout expired for this flow+
                 {
                     m_flow_table.erase(cur_flow->key());
-		    printf("sending info out from handle_timer!\n");
+		    //printf("sending info out from handle_timer!\n");
                     send_out_through(std::move(cur_slot.flow_ptr),m_out_gate_id);
                 }
                 else 
