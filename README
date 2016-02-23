@@ -1,9 +1,9 @@
 BLOCKMON
 ================================
 Blockmon is software allowing construction of flexible and high performance
-(rates in the 10Gb range) monitoring and data analisys nodes, where a node 
+(rates in the 10Gb range) monitoring and data analysis nodes, where a node
 can be for example a hardware probe or a PC. Blockmon is based around the 
-notion of blocks, which are small units of processing (e.g., packet counting). 
+notion of blocks, which are small units of processing (e.g. packet counting).
 Blocks are connected and communicate via gates, and the set of inter-connected 
 blocks represents a composition, where compositions are expressed in terms of 
 an XML file.
@@ -234,7 +234,7 @@ Two important points:
 1) The queueing behavior can currently only be configured per block(!) but not 
    per gate.
 2) All methods (except "drop") may block the enqueueing block. This may lead to
-   deadlocks if you are not careful with your compisition design and the 
+   deadlocks if you are not careful with your composition design and the
    composition's block-to-threadpool and threads-per-threadpool configuration. 
    E.g., assume you have two indirectly invoked blocks A and B, both assigned to 
    the same threadpool. Also assume that the threadpool only has one thread 
@@ -242,8 +242,8 @@ Two important points:
    case the queue of block B will eventually get fully occupied. If any of the 
    non-dropping methods above was specified, the thread will block when block A 
    next tries to send a message. Since this thead is blocked it will not schedule
-   any other block. Thus B's queue will never get free again, i.e., we are in a 
-   deadlock. (This limitation will be removed in a future version of blockmon) 
+   any other block. Thus Blockmon's queue will never get free again, i.e., we
+   are in a deadlock. (This limitation will be removed in a future version of blockmon)
    
 
 CODE COMMENTING
