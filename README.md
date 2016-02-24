@@ -22,7 +22,6 @@ In order to control blockmon, a number of options exist:
    or to write code that generates them. Also, make sure that `core/bmprocess.py`
    is executable (e.g., `chmod u+x core/bmprocess.py`).
 
-
 ## DIRECTORY STRUCTURE
 
 ```
@@ -53,8 +52,7 @@ found under `doc/blockmon/html/index.html`
 In addition to the code documentation, classes implementing blocks include
 additional information regarding the block's functionality. To generate this
 documentation, go to the doc directory and run:
-
-```bash
+```
 python blocksdoc.py
 ```
 
@@ -98,12 +96,12 @@ Compositions also allow configuration of how many threads are in a thread pool,
 and how a threadpool is allocated to CPU cores. Some examples:
 
 ```xml
-  <!-- scheduler lets OS decide how to schedule threads over the specified cores -->
-  <threadpool id="pool1" num_threads="10" cores="0-2,4">
-  <!-- core-specific thread -->
-  <threadpool id="pool1" num_threads="1" cores="2">
-  <!-- scheduler assigns to cores as it sees fit -->
-  <threadpool id="pool1" num_threads="10">
+<!-- scheduler lets OS decide how to schedule threads over the specified cores -->
+<threadpool id="pool1" num_threads="10" cores="0-2,4">
+<!-- core-specific thread -->
+<threadpool id="pool1" num_threads="1" cores="2">
+<!-- scheduler assigns to cores as it sees fit -->
+<threadpool id="pool1" num_threads="10">
 ```
 
 In addition, it is possible to modify existing compositions, updating parts of
@@ -147,7 +145,6 @@ Or, in Blockmon's shell:
 ```
 start [composition file]
 ```
-
 And to stop it in Blockmon's shell just type:
 ```
 stop
@@ -188,7 +185,6 @@ python core/blockinfoparser.py config
 
 to let the CLI and daemon know about the new block.
 
-
 ## MESSAGE TYPES
 
 Blockmon supports the ability for developers to add custom message types by
@@ -222,34 +218,34 @@ The following queue behaviors can be specified:
      queue has no more free slots.
      Example:
      
-     ```
-     <block id="..." type="..." threadpool="..." invocation="indirect" blocking_mode="drop">
-     ```
+   ```
+   <block id="..." type="..." threadpool="..." invocation="indirect" blocking_mode="drop">
+   ```
   2. sleep:
      In this mode, the enqueuing block (i.e., the thread running the block
      sending a message) sleeps for a configurable amount of time if the
      queue is full.
      Example:
      
-     ```
-     <block id="..." type="..." threadpool="..." invocation="indirect" blocking_mode="sleep" sleep_usec="1000">
-     ```
+   ```
+   <block id="..." type="..." threadpool="..." invocation="indirect" blocking_mode="sleep" sleep_usec="1000">
+   ```
   3. yield:
      This mode is very similar to the "sleep" mode. However, the the enqueuing
      thread simply yields.
      Example:
      
-     ```
-     <block id="..." type="..." threadpool="..." invocation="indirect" blocking_mode="yield">
-     ```
+   ```
+   <block id="..." type="..." threadpool="..." invocation="indirect" blocking_mode="yield">
+   ```
   4. mutex:
      In this mode a mutex is used to block the enqueueing thread until a slot
      the queue becomes free.
      Example:
      
-     ```
-     <block id="..." type="..." threadpool="..." invocation="indirect" blocking_mode="mutex">
-     ```
+   ```
+   <block id="..." type="..." threadpool="..." invocation="indirect" blocking_mode="mutex">
+   ```
 
 The above allows you to chose the best suited queueing strategy for your application.
 Two important points:
@@ -267,7 +263,6 @@ Two important points:
    next tries to send a message. Since this thead is blocked it will not schedule
    any other block. Thus Blockmon's queue will never get free again, i.e., we
    are in a deadlock. (This limitation will be removed in a future version of blockmon)
-
 
 ## CODE COMMENTING
 
