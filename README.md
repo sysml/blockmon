@@ -10,17 +10,17 @@ an XML file.
 
 In order to control blockmon, a number of options exist:
 
-1. CLI: python-based, run it with "python daemon/cli.py" (run it as root if
+1. CLI: python-based, run it with `python daemon/cli.py` (run it as root if
    for instance capturing from a network interface). At the prompt type
-   "help" for a list of commands. Users are expected to write XML composition
+   `help` for a list of commands. Users are expected to write XML composition
    files by hand.
 
 2. Daemon: a json-rpc, python-based daemon. Exposes the same functionality as
    the CLI, but allows for programmability. If using it, make sure to first
-   edit the "daemon/config" file; run it with "python bmdaemon.py config" (as
+   edit the `daemon/config` file; run it with `python bmdaemon.py config` (as
    root if needed). Users are expected to write XML composition files by hand,
-   or to write code that generates them. Also, make sure that core/bmprocess.py
-   is executable (e.g., chmod u+x core/bmprocess.py).
+   or to write code that generates them. Also, make sure that `core/bmprocess.py`
+   is executable (e.g., `chmod u+x core/bmprocess.py`).
 
 
 ## DIRECTORY STRUCTURE
@@ -43,19 +43,23 @@ In order to control blockmon, a number of options exist:
 The documentation is generated through doxygen. To generate, go to the doc
 directory and run:
 
+```
 doxygen blockmondoc.cfg
+```
 
 This will generate HTML documentation for all the code; the index page can be
-found under doc/blockmon/html/index.html
+found under `doc/blockmon/html/index.html`
 
 In addition to the code documentation, classes implementing blocks include
 additional information regarding the block's functionality. To generate this
-documentation, go to the "doc" directory and run:
+documentation, go to the doc directory and run:
 
+```bash
 python blocksdoc.py
+```
 
-The environment variable PYTHONPATH has to be set to Blockmon's daemon
-directory (i.e., "node/daemon") for this to work.
+The environment variable `PYTHONPATH` has to be set to Blockmon's daemon
+directory (i.e., `node/daemon`) for this to work.
 
 
 ## COMPOSITION FILES
@@ -91,7 +95,7 @@ all in XML format. One such file is shown below:
 ```
 
 Compositions also allow configuration of how many threads are in a thread pool,
-and how a threadpool is allocated to CPU cores; some examples are below:
+and how a threadpool is allocated to CPU cores. Some examples:
 
 ```xml
   <!-- scheduler lets OS decide how to schedule threads over the specified cores -->
@@ -136,31 +140,33 @@ connections to emulate the equivalent of a connection reconfiguration.
 ## RUNNING A COMPOSITION
 
 To run a composition via the CLI simply run:
-
+```
 sudo python daemon/cli.py
-BM shell: start [composition file]
+```
+Or, in Blockmon's shell:
+```
+start [composition file]
+```
 
-And stop it with:
-
-BM shell: stop
+And to stop it in Blockmon's shell just type:
+```
+stop
+```
 
 Also note that to run the above, sudo is needed to access a local
 interface.
 
 ## ADDING COMPOSITIONS
 
-To create a new application, please add a subdirectory under
-
-/usr
-
-with the name
-
+To create a new application, please add a subdirectory under `BLOCKMON_DIR/usr` with the name
+```
 app_[your_app_name]
+```
 
 Place any composition files in this directory. Also, under this directory
 create a further subdirectory called blocks and another one called messages.
 
-Finally, make sure to re-run "cmake ." in order to include the new files into
+Finally, make sure to re-run `cmake .` in order to include the new files into
 the project.
 
 ## CREATING BLOCKS
@@ -176,8 +182,9 @@ a cpp file and not an hpp one.
 For more details, please refer to the doxygen documentation of Block.hpp.
 
 Once you're done creating the block, run
-
+```
 python core/blockinfoparser.py config
+```
 
 to let the CLI and daemon know about the new block.
 
@@ -185,7 +192,7 @@ to let the CLI and daemon know about the new block.
 ## MESSAGE TYPES
 
 Blockmon supports the ability for developers to add custom message types by
-putting message files under /usr/app_[your_app_name]/messages. However, note
+putting message files under `/usr/app_[your_app_name]/messages`. However, note
 that in most cases the standard message types provided should be sufficient.
 
 Packet: represents a packet captured from the wire and provides access to
@@ -206,44 +213,50 @@ queues however have a finite capacity. If the messages are enqueued with a
 higher rate than they are consumed by the block they are by default dropped
 when the queue is full. This behavior can be changed on a per-block-
 basis.
-To enable this feature cmake must be run with the -DBLOCKING_QUEUE=on parameter.
-One can then configure the queuing behavior in the <block> tag within the
+To enable this feature cmake must be run with the `-DBLOCKING_QUEUE=ON` parameter.
+One can then configure the queuing behavior in the `<block>` tag within the
 composition XML.
 The following queue behaviors can be specified:
-  1) drop (default):
+  1. drop (default):
      The default mode is "drop", in which messages are dropped if the InGate
      queue has no more free slots.
      Example:
+     
      ```
      <block id="..." type="..." threadpool="..." invocation="indirect" blocking_mode="drop">
      ```
-  2) sleep:
+  2. sleep:
      In this mode, the enqueuing block (i.e., the thread running the block
      sending a message) sleeps for a configurable amount of time if the
      queue is full.
      Example:
+     
      ```
      <block id="..." type="..." threadpool="..." invocation="indirect" blocking_mode="sleep" sleep_usec="1000">
      ```
-  3) yield:
+  3. yield:
      This mode is very similar to the "sleep" mode. However, the the enqueuing
      thread simply yields.
      Example:
+     
      ```
      <block id="..." type="..." threadpool="..." invocation="indirect" blocking_mode="yield">
      ```
-  4) mutex:
+  4. mutex:
      In this mode a mutex is used to block the enqueueing thread until a slot
      the queue becomes free.
      Example:
+     
      ```
      <block id="..." type="..." threadpool="..." invocation="indirect" blocking_mode="mutex">
      ```
 
 The above allows you to chose the best suited queueing strategy for your application.
 Two important points:
-1) The queueing behavior can currently only be configured per block(!) but not per gate.
-2) All methods (except "drop") may block the enqueueing block. This may lead to
+
+1. The queueing behavior can currently only be configured **per block** but not per gate.
+
+2. All methods (except "drop") may block the enqueueing block. This may lead to
    deadlocks if you are not careful with your composition design and the
    composition's block-to-threadpool and threads-per-threadpool configuration.
    E.g., assume you have two indirectly invoked blocks A and B, both assigned to
