@@ -1,0 +1,8 @@
+CMakeCache.txt
+CMakeFiles/
+Makefile
+cmake_install.cmake
+blockmon
+lib/external/
+lib/fc/
+libblockmoncore.so
