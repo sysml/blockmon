@@ -23,7 +23,7 @@ In order to control blockmon, a number of options exist:
    is executable (e.g., chmod u+x core/bmprocess.py).
 
 
-# DIRECTORY STRUCTURE
+## DIRECTORY STRUCTURE
 
 ```
 
@@ -38,7 +38,7 @@ In order to control blockmon, a number of options exist:
 └── usr       user blocks, messages, compositions
 ```
 
-# DOCUMENTATION
+## DOCUMENTATION
 
 The documentation is generated through doxygen. To generate, go to the doc
 directory and run:
@@ -58,7 +58,7 @@ The environment variable PYTHONPATH has to be set to Blockmon's daemon
 directory (i.e., "node/daemon") for this to work.
 
 
-# COMPOSITION FILES
+## COMPOSITION FILES
 
 A very simple composition file consists of a set of blocks and their connections,
 all in XML format. One such file is shown below:
@@ -133,7 +133,7 @@ them, adding to them, or deleting from them:
 Note that blockmon does not support reconfiguration of connections. The user must delete and add
 connections to emulate the equivalent of a connection reconfiguration.
 
-# RUNNING A COMPOSITION
+## RUNNING A COMPOSITION
 
 To run a composition via the CLI simply run:
 
@@ -147,7 +147,7 @@ BM shell: stop
 Also note that to run the above, sudo is needed to access a local
 interface.
 
-# ADDING COMPOSITIONS
+## ADDING COMPOSITIONS
 
 To create a new application, please add a subdirectory under
 
@@ -163,7 +163,7 @@ create a further subdirectory called blocks and another one called messages.
 Finally, make sure to re-run "cmake ." in order to include the new files into
 the project.
 
-# CREATING BLOCKS
+## CREATING BLOCKS
 
 The easiest way is to start with an existing simple block such as
 blocks/PktCounter.[hpp|cpp] and copy it. Please make sure to
@@ -182,7 +182,7 @@ python core/blockinfoparser.py config
 to let the CLI and daemon know about the new block.
 
 
-# MESSAGE TYPES
+## MESSAGE TYPES
 
 Blockmon supports the ability for developers to add custom message types by
 putting message files under /usr/app_[your_app_name]/messages. However, note
@@ -199,7 +199,7 @@ Each block can append a Tag to an existing Message (see documentation about
 the TagRegistry class for details). Note that you must first register the tag
 before creating a message or appending the tag to an existing message.
 
-# QUEUEING TYPES
+## QUEUEING TYPES
 
 For indirectly invoked blocks, messages are queued at the InGate. The used
 queues however have a finite capacity. If the messages are enqueued with a
@@ -256,10 +256,10 @@ Two important points:
    are in a deadlock. (This limitation will be removed in a future version of blockmon)
 
 
-# CODE COMMENTING
+## CODE COMMENTING
 
 Please follow the format used in blocks/PktCounter.[hpp|cpp]
 
-# BUGS & QUESTIONS
+## BUGS & QUESTIONS
 
 Please write to blockmon@neclab.eu
