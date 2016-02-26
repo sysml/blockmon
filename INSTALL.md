@@ -17,7 +17,7 @@ Several external libraries have to be installed into the `lib/external`
 directory. Follow the steps listed here to do so.
 
 1. Crypto-Pan
-```
+   ```
    mkdir lib/external/crypto
    cd lib/external/crypto
    wget http://www.cc.gatech.edu/computing/Networking/projects/cryptopan/Crypto-PAn.1.0.tar.gz
@@ -26,17 +26,19 @@ directory. Follow the steps listed here to do so.
    mv sample.cpp sample.cpp.exclude
    rmdir Crypto-PAn.1.0
    cd ../../..
-```
+   ```
+
 2. PugiXML
-```
+   ```
    mkdir lib/external/pugixml
    cd lib/external/pugixml
    wget http://pugixml.googlecode.com/files/pugixml-1.2.tar.gz
    tar xzf pugixml-1.2.tar.gz
    cd ../../..
-```
+   ```
+
 3. libfc (you need GIT installed for this)
-```
+   ```
    cd lib
    git clone git://github.com/britram/libfc.git fc
    cd fc
@@ -44,7 +46,7 @@ directory. Follow the steps listed here to do so.
    mv ipfix2csv.cpp ipfix2csv.cpp.exclude
    mv fcprof.cpp fcprof.cpp.exclude
    cd ../..
-```
+   ```
 
 PORTABILITY
 -------------
