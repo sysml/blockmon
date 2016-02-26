@@ -2,7 +2,7 @@ BLOCKMON INSTALLATION INSTRUCTIONS
 ==============================================
 To compile blockmon you will need gcc version 4.6 or higher (earlier 
 versions might work but have not be tested) as well as 
-cmake 2.8 or higher. In addition, you will need several external libaries 
+cmake 2.8 or higher. In addition, you will need several external libraries
 (see below) which need to be installed into the /lib/external directory.
 
 Python 2.5 or higher is required for using the blockmon CLI. The daemon and
@@ -14,7 +14,7 @@ and the json pickle package:
 
 http://pypi.python.org/pypi/jsonpickle (jsonpickle webpage)
 
-For more information on the CLI, daemon and GUI please see the README file.
+For more information on the CLI, daemon and GUI please check the README.
 
 EXTERNAL LIBRARIES
 ------------------
@@ -54,8 +54,8 @@ PFQ
 --------------
 Blockmon supports PFQ (http://netgroup.iet.unipi.it/software/pfq/), an
 accelerated packet capture engine designed for multi-core architectures.
-By default the block of PFQ wil not be built; if you want to enable it
-you have to give the -DWITH_PFQ=ON to cmake (see below).
+By default, PFQ's source block will not be built; to enable it
+provide the -DWITH_PFQ=ON option to cmake (see below).
 
 The source code of PFQ is available from the public github repository
 at https://github.com/pfq/PFQ.
@@ -67,9 +67,9 @@ Please follow the instruction shipped with the package to install it.
 Once PFQ is installed in the system, place the user-level PFQ header file
 in the Blockmon build tree:
 
-cp [PFQDIR]/user/c++/pfq.hpp [BLOCKMONDIR]/lib/external/pfq/
+cp [PFQDIR]/user/C++/pfq.hpp [BLOCKMONDIR]/lib/external/pfq/
 
-If the directory [BLOCKMONDIR]/lib/external/pfq/ does not exist just create it.
+If the directory [BLOCKMONDIR]/lib/external/pfq/ does not exist, create it.
 
 IPFIX
 --------------
@@ -124,7 +124,7 @@ If none of the above features is specified, the old Packet implementation is use
 The queueing behavior of InGates can also be specified using a feature:
 BLOCKING_QUEUE: 
     BLOCKING_QUEUE=ON one can configure the queueing behavior for each 
-    block individually in the composition XML (c.f. README). Since each 
+    block individually in the composition XML. Since each
     block can be configured differently a small overhead is introduced 
     even in the case the queues are not full. If highest message 
     processing performance is required (and messages may be dropped) one 
