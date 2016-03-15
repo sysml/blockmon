@@ -66,28 +66,29 @@ A very simple composition file consists of a set of blocks and their connections
 all in XML format. One such file is shown below:
 
 ```xml
-<composition id="mysnifferctr" app_id="boh">
-  <install>
+<composition id="mysnifferctr" app_id="packet_count">
+   <general>
+      <clock type="wall"/>
+   </general>
+   
+   <install>
+      <threadpool id="sniffer_thread" num_threads="2">
+         <core number="0"/>
+      </threadpool>
+      
+      <block id="sniffer" type="PcapSource" invocation="async" threadpool="sniffer_thread">
+         <params>
+            <source type="live" name="eth0"/>
+            <!--bpf_filter expression="!tcp"/-->
+         </params>
+      </block>
+      
+      <!-- NOTE: passive blocks shouldn't have a threadpool assigned to them -->
+      <block id="counter" type="PacketCounter" invocation="direct">
+         <params></params>
+      </block>
 
-    <threadpool id="sniffer_thread" num_threads="2">
-      <core number="0"/>
-    </threadpool>
-
-    <block id="sniffer" type="PcapSource" invocation="async" threadpool="sniffer_thread">
-      <params>
-        <source type="live" name="eth0"/>
-        <!--bpf_filter expression="!tcp"/-->
-      </params>
-    </block>
-
-    <!-- NOTE: passive blocks shouldn't have a threadpool assigned to them -->
-    <block id="counter" type="PktCounter" invocation="direct">
-      <params>
-      </params>
-    </block>
-
-    <connection src_block="sniffer" src_gate="sniffer_out" dst_block="counter" dst_gate="in_pkt"/>
-
+      <connection src_block="sniffer" src_gate="source_out" dst_block="counter" dst_gate="in_pkt"/>
   </install>
 </composition>
 ```
