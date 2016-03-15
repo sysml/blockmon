@@ -61,8 +61,7 @@ By default, PFQ's source block will not be built; to enable it
 provide the -DWITH_PFQ=ON option to cmake (see below).
 
 Please note that before running cmake with -DWITH_PFQ=ON, PFQ must be installed on the system.
-The PFQ source code is available at its [public github repository](https://github.com/pfq/PFQ).
-Please follow the instruction to install it first.
+The PFQ source code is available at its [public github repository](https://github.com/pfq/PFQ) and, at this moment, Blockmon is compatible with version [1.4.3](https://github.com/pfq/PFQ/tree/v1.4.3) of PFQ, which is also the version of PFQ fully compatible with Debian Jessie (3.16 kernel). Please checkout the correct version of PFQ and then follow its instructions to install it before building Blockmon with PFQ support.
 
 Once PFQ is installed in the system, place the user-level PFQ header file
 in the Blockmon build tree:
