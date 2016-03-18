@@ -131,7 +131,7 @@ namespace blockmon
                 ss<<"bytes="<<flow->bytes() << ",";
                 ss<<"start="<<flow->start_time() << ",";
                 ss<<"end="<<flow->end_time() << ",";
-                ss<<"duration.ms="<<duration<< ",";
+                ss<<"duration.us="<<duration<< ",";
                 ss<<"source.ip4="<<ip_to_string(fk.src_ip4)<< ",";
                 ss<<"source.port="<<fk.src_port<< ",";
                 ss<<"destination.ip4="<<ip_to_string(fk.dst_ip4)<< ",";
