@@ -1,25 +1,25 @@
 /* Copyright (c) 2011-2012 ETH Zürich. All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without 
+ * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *    * Redistributions of source code must retain the above copyright
  *      notice, this list of conditions and the following disclaimer.
  *    * Redistributions in binary form must reproduce the above copyright
  *      notice, this list of conditions and the following disclaimer in the
  *      documentation and/or other materials provided with the distribution.
- *    * Neither the names of ETH Zürich nor the names of other contributors 
- *      may be used to endorse or promote products derived from this software 
+ *    * Neither the names of ETH Zürich nor the names of other contributors
+ *      may be used to endorse or promote products derived from this software
  *      without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT 
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR 
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT 
- * HOLDERBE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, 
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, 
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR 
- * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY 
- * OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT
+ * HOLDERBE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY
+ * OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
@@ -31,7 +31,7 @@
  * A type bridge knows about a set of Msg subclasses, and a set of Templates,
  * and uses the libfc cursor interface to read and write Msgs. Used by
  * the IPFIXSource and IPFIXExporter blocks.
- * 
+ *
  * @author Brian Trammell <trammell@tik.ee.ethz.ch>
  * @author Stephan Neuhaus <neuhaust@tik.ee.ethz.ch>
  */
@@ -55,7 +55,7 @@
 namespace blockmon {
 
 /**
- * Interface for IPFIX Type Bridges. 
+ * Interface for IPFIX Type Bridges.
  *
  * A Type Bridge handles export and collection of a Msg type or a set
  * of related Msg types via the libfc IPFIX random-access (record)
@@ -118,7 +118,7 @@ namespace blockmon {
  * namespace blockmon {
  *   class IPFIXMyBridge : public IPFIXTypeBridge {
  *     IPFIX::MatchTemplate m_my_mtmpl;
- * 
+ *
  *   public:
  *     IPFIXMyBridge();
  *
@@ -127,9 +127,9 @@ namespace blockmon {
  *     }
  *
  *     bool canExport (std::shared_ptr<const Msg>& m);
- *       
+ *
  *     void exportMsg(std::shared_ptr<const Msg>& m, IPFIX::Exporter& e);
- *       
+ *
  *     void prepareCollector(IPFIX::Collector& c, OutGate& g) {
  *       defaultPrepareCollector(c, g);
  *     }
@@ -157,7 +157,7 @@ namespace blockmon {
  * things: (1) initialise the base class, IPFIXTypeBridge, (2)
  * initialise member variables, and (3) find (and possibly install)
  * the correct Information Elements in the Information Model.
- * 
+ *
  * The base class is initialised by passing the name of the Msg type
  * to the base class.  The only member variable in the skeleton is
  * m_my_mtmpl, which needs no initialisation (the default
@@ -184,7 +184,7 @@ namespace blockmon {
  * @endcode
  *
  * (This is not a tutorial on how to write IE specs. If you don't know
- * what these specifications above mean, please consult 
+ * what these specifications above mean, please consult
  * draft-ietf-ipfix-ie-doctors)
  *
  * Next we need to tell the exporter if we can export a certain
@@ -222,7 +222,7 @@ namespace blockmon {
  * and committed before any values are put in the record, so that the
  * exporter knows the offset to each information element and can flush
  * any buffers beforehand that would be overflowed by the export.
- * 
+ *
  * Now, let's go into the opposite direction, importing a value from
  * IPFIX:
  *
@@ -290,7 +290,7 @@ namespace blockmon {
          * Variadic function taking a list of partial or full
          * IE specifiers. Information elements not already in the model
          * will be added (assuming a full specifier is present). The resulting
-         * cached IE pointers can be accessed through m_ievec. Should be 
+         * cached IE pointers can be accessed through m_ievec. Should be
          * called in derived member constructors if used, and the return value
          * checked.
          *
@@ -302,9 +302,9 @@ namespace blockmon {
         /**
          * Variadic function taking a list of partial or full
          * IE specifiers. Information elements not already in the model
-         * will be added (assuming a full specifier is present). Caches IE 
+         * will be added (assuming a full specifier is present). Caches IE
          * pointers in the supplied vector; used when a bridge needs
-         * multiple IE vectors (i.e., for multiple templates). Should be 
+         * multiple IE vectors (i.e., for multiple templates). Should be
          * called in derived member constructors if used, and the return value
          * checked.
          *
@@ -315,40 +315,40 @@ namespace blockmon {
                           const char* spec1, ...);
 
         /**
-        * The default implementation of exporter preparation, creates a 
-        * single template using all the InfoElements in m_ievec 
-        * (declared by declareIEVec in the constructor) in order, and 
+        * The default implementation of exporter preparation, creates a
+        * single template using all the InfoElements in m_ievec
+        * (declared by declareIEVec in the constructor) in order, and
         * stores the ID of this template in m_tid. Call from prepareExporter
         * unless the bridge requires multiple templates.
-        * 
+        *
         * @param e exporter to prepare
         */
         void defaultPrepareExporter(IPFIX::Exporter& e);
 
         /**
-        * The default implementation of collector preperation, registers 
+        * The default implementation of collector preperation, registers
         * the bridge as receiver for a match template, stored in m_mtmpl,
-        * using all the InfoElements in m_ievec 
+        * using all the InfoElements in m_ievec
         * (declared by declareIEVec() in the constructor). Call from
         * prepareCollector() unless the bridge requires alternation (multiple
         * match templates) or other custom preparation. Bridges supporting
-        * optional values can use the three-argument form of 
+        * optional values can use the three-argument form of
         * defaultPrepareCollector() instead.
-        * 
+        *
         * @param c collector to prepare
         * @param g gate through which messages will be sent
         */
         void defaultPrepareCollector(IPFIX::Collector& c, OutGate& g);
 
        /**
-        * The default implementation of collector preperation, registers 
+        * The default implementation of collector preperation, registers
         * the bridge as receiver for a match template, stored in m_mtmpl,
         * using the InfoElements in m_ievec listed in match_indices. Call from
         * prepareCollector() unless the bridge requires alternation (multiple
         * match templates) or other custom preparation. Bridges supporting
-        * optional values can use the three-argument form of 
+        * optional values can use the three-argument form of
         * defaultPrepareCollector() instead.
-        * 
+        *
         * @param c collector to prepare
         * @param g gate through which messages will be sent
         * @param match_indices indices into m_ievec which must be
@@ -365,7 +365,7 @@ namespace blockmon {
          *
          * Must be implemented by subclasses, which can generally just
          * delegate this to defaultPrepareExporter().
-         * 
+         *
          * @param e exporter to prepare
          */
          virtual void prepareExporter(IPFIX::Exporter& e) = 0;
@@ -373,7 +373,7 @@ namespace blockmon {
         /**
         * Examine a Message to see if it can be exported using this Bridge.
         * This method generally examines the message's msg_type() to determine this.
-        * 
+        *
         * @param m message to examine
         * @return true if the message can be exported by this bridge
         */
@@ -386,13 +386,13 @@ namespace blockmon {
          * Message already checked using canExport(). Can use
          * either the exportStruct() or exportRecord() interfaces provided by
          * Exporter.
-         * 
+         *
          * @param m message to export
          * @param e exporter to use
          */
 
         virtual void exportMsg(std::shared_ptr<const Msg>& m, IPFIX::Exporter& e) = 0;
-        
+
         /**
          * Prepare a collector to receive records using this bridge,
          * by registering the bridge as a reciever for a minimal match
@@ -407,14 +407,14 @@ namespace blockmon {
          */
 
         virtual void prepareCollector(IPFIX::Collector& c, OutGate& g) = 0;
-        
+
         /**
          * Return the typename by which this bridge is known; this
          * matches the datatype name attribute in parameters for the
          * IPFIXExporter and IPFIXSource blocks, and is used by default
-         * implementations as the template name for the template ID 
+         * implementations as the template name for the template ID
          * registry. The type name is set in the constructor.
-         * 
+         *
          * @return type name.
          */
         const std::string& typeName() const {

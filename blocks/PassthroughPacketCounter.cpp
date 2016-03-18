@@ -1,7 +1,7 @@
 /* Copyright (c) 2011, NEC Europe Ltd.
  * All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without 
+ * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *    * Redistributions of source code must retain the above copyright
  *      notice, this list of conditions and the following disclaimer.
@@ -9,20 +9,20 @@
  *      notice, this list of conditions and the following disclaimer in the
  *      documentation and/or other materials provided with the distribution.
  *    * Neither the names of NEC Europe Ltd. nor the names of its contributors
- *      may be used to endorse or promote products derived from this software 
+ *      may be used to endorse or promote products derived from this software
  *      without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT 
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR 
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT 
- * HOLDERBE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, 
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, 
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT
+ * HOLDERBE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
  * PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER 
- * IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
- * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER
+ * IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+ * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
  */
 
@@ -51,7 +51,7 @@
  *        <params>
  *              <notimer/>
  *          </params>
- *       
+ *
  *   </paramsexample>
  *
  *   <variables>
@@ -70,7 +70,7 @@ namespace blockmon
 {
     void PassthroughPacketCounter::_handle_timer(std::shared_ptr<Timer>&& )
     {
-        std::chrono::system_clock::time_point n= std::chrono::system_clock::now(); 
+        std::chrono::system_clock::time_point n= std::chrono::system_clock::now();
         auto d = std::chrono::duration_cast<std::chrono::microseconds>(n-m_last_t);
 
         unsigned long long tmp_pkt_cnt = m_pkt_cnt;
@@ -80,6 +80,6 @@ namespace blockmon
         m_byte_rate = (double)(tmp_byte_cnt - m_byte_cnt_prev) / ((double)d.count() / 1000000.0);
 	m_pkt_cnt_prev = m_pkt_cnt;
 	m_byte_cnt_prev = m_byte_cnt;
-        m_last_t = n;	  
+        m_last_t = n;
     }
 } // namespace blockmon

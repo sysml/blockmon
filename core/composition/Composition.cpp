@@ -1,31 +1,31 @@
-/* Copyright (c) 2011, NEC Europe Ltd, Consorzio Nazionale 
- * Interuniversitario per le Telecomunicazioni, Institut 
+/* Copyright (c) 2011, NEC Europe Ltd, Consorzio Nazionale
+ * Interuniversitario per le Telecomunicazioni, Institut
  * Telecom/Telecom Bretagne, ETH Zürich, INVEA-TECH a.s. All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without 
+ * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *    * Redistributions of source code must retain the above copyright
  *      notice, this list of conditions and the following disclaimer.
  *    * Redistributions in binary form must reproduce the above copyright
  *      notice, this list of conditions and the following disclaimer in the
  *      documentation and/or other materials provided with the distribution.
- *    * Neither the names of NEC Europe Ltd, Consorzio Nazionale 
- *      Interuniversitario per le Telecomunicazioni, Institut Telecom/Telecom 
- *      Bretagne, ETH Zürich, INVEA-TECH a.s. nor the names of its contributors 
- *      may be used to endorse or promote products derived from this software 
+ *    * Neither the names of NEC Europe Ltd, Consorzio Nazionale
+ *      Interuniversitario per le Telecomunicazioni, Institut Telecom/Telecom
+ *      Bretagne, ETH Zürich, INVEA-TECH a.s. nor the names of its contributors
+ *      may be used to endorse or promote products derived from this software
  *      without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT 
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR 
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT 
- * HOLDERBE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, 
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, 
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT
+ * HOLDERBE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
  * PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER 
- * IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
- * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER
+ * IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+ * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
  */
 
@@ -78,9 +78,9 @@ void Composition::delete_link(const std::string& from_block,const std::string& f
     from.disconnect(&to);
 }
 
-void Composition::create_block_from_parsed(const std::string& type, 
-                                  const std::string& name, 
-                                  invocation_type invocation, 
+void Composition::create_block_from_parsed(const std::string& type,
+                                  const std::string& name,
+                                  invocation_type invocation,
                                   const pugi::xml_node & blocknode)
 {
     std::shared_ptr<Block> sp = BlockFactory::instantiate(type, name, invocation);
@@ -99,7 +99,7 @@ void Composition::initialize()
 {
     auto it = m_map.begin(),
          it_e = m_map.end();
-    
+
     for(; it != it_e; ++it)
     {
         std::cout << "Composition: Initializing " << it->first << " block" << std::endl;
@@ -121,8 +121,8 @@ void Composition::install(const pugi::xml_node& config)
         std::string threadpool=blocknode.attribute("threadpool").value();
 
         invocation_type invocation = invocation_type::Direct;
-        
-        /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+
+        /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
          * OLD AND BUSTED sched_type attribute
          * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
         std::string sched_type=blocknode.attribute("sched_type").value();
@@ -134,7 +134,7 @@ void Composition::install(const pugi::xml_node& config)
             }
         }
 
-        /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+        /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
          * NEW invocation attribute (wins)
          * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
         std::string invocation_str=blocknode.attribute("invocation").value();
@@ -165,16 +165,16 @@ void Composition::install(const pugi::xml_node& config)
     {
         std::string from_block=link.attribute("src_block").value();
         if (from_block.length() == 0) throw std::runtime_error("missing begin block in connection");
-        
+
         std::string from_gate=link.attribute("src_gate").value();
         if (from_gate.length() == 0) throw std::runtime_error("missing begin gate in connection");
-        
+
         std::string to_block=link.attribute("dst_block").value();
         if (to_block.length() == 0) throw std::runtime_error("missing dst block in connection");
-        
+
         std::string to_gate=link.attribute("dst_gate").value();
         if (to_gate.length() == 0) throw std::runtime_error("missing begin gate in connection");
-        
+
         create_link(from_block, from_gate, to_block, to_gate);
     }
 

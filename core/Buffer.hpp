@@ -1,39 +1,39 @@
-/* Copyright (c) 2011, NEC Europe Ltd, Consorzio Nazionale 
- * Interuniversitario per le Telecomunicazioni, Institut 
+/* Copyright (c) 2011, NEC Europe Ltd, Consorzio Nazionale
+ * Interuniversitario per le Telecomunicazioni, Institut
  * Telecom/Telecom Bretagne, ETH Zürich, INVEA-TECH a.s. All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without 
+ * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *    * Redistributions of source code must retain the above copyright
  *      notice, this list of conditions and the following disclaimer.
  *    * Redistributions in binary form must reproduce the above copyright
  *      notice, this list of conditions and the following disclaimer in the
  *      documentation and/or other materials provided with the distribution.
- *    * Neither the names of NEC Europe Ltd, Consorzio Nazionale 
- *      Interuniversitario per le Telecomunicazioni, Institut Telecom/Telecom 
- *      Bretagne, ETH Zürich, INVEA-TECH a.s. nor the names of its contributors 
- *      may be used to endorse or promote products derived from this software 
+ *    * Neither the names of NEC Europe Ltd, Consorzio Nazionale
+ *      Interuniversitario per le Telecomunicazioni, Institut Telecom/Telecom
+ *      Bretagne, ETH Zürich, INVEA-TECH a.s. nor the names of its contributors
+ *      may be used to endorse or promote products derived from this software
  *      without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT 
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR 
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT 
- * HOLDERBE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, 
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, 
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT
+ * HOLDERBE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
  * PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER 
- * IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
- * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER
+ * IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+ * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
  */
 
 #ifndef _CORE_BUFFER_HPP_
-#define _CORE_BUFFER_HPP_ 
+#define _CORE_BUFFER_HPP_
 
 /**
- * @file 
+ * @file
  *
  * This is a simple implementation of buffer class, inspired by
  * boost::asio.  It provides a template version of both const_buffer
@@ -49,7 +49,7 @@
 #include <utility>
 #include <string>
 
-namespace blockmon { 
+namespace blockmon {
 
     /**
      * forward declaration of const_buffer class;
@@ -60,7 +60,7 @@ namespace blockmon {
     struct const_buffer;
 
     /**
-     *  The mutable_buffer class provides a safe representation of a buffer of Tp objects 
+     *  The mutable_buffer class provides a safe representation of a buffer of Tp objects
      *  that can be modified. It does not own the underlying data, and so is cheap to copy or
      *  assign.
      */
@@ -71,7 +71,7 @@ namespace blockmon {
         friend struct const_buffer<Tp>;
 
         /**
-         * default constructor: create a null mutable_buffer 
+         * default constructor: create a null mutable_buffer
          */
 
         mutable_buffer()
@@ -95,7 +95,7 @@ namespace blockmon {
          * contiguous memory of numb Tp objects.
          *
          * @param: addr Address of the first object
-         * @param: numb Number of objects  
+         * @param: numb Number of objects
          */
 
         mutable_buffer(Tp *addr, size_t numb)
@@ -127,8 +127,8 @@ namespace blockmon {
         }
 
         /**
-         * addr: return the pointer to the first Tp object referenced by 
-         * this mutable_buffer 
+         * addr: return the pointer to the first Tp object referenced by
+         * this mutable_buffer
          *
          */
 
@@ -139,8 +139,8 @@ namespace blockmon {
         }
 
         /**
-         * len: return the number of Tp objects * referenced by 
-         * this mutable_buffer 
+         * len: return the number of Tp objects * referenced by
+         * this mutable_buffer
          *
          */
 
@@ -151,7 +151,7 @@ namespace blockmon {
         }
 
         /**
-         * explicit conversion to boolean 
+         * explicit conversion to boolean
          */
         explicit operator bool() const
         {
@@ -160,7 +160,7 @@ namespace blockmon {
 
     private:
         Tp       *m_addr;
-        size_t    m_len; 
+        size_t    m_len;
     };
 
     /**
@@ -173,7 +173,7 @@ namespace blockmon {
     struct const_buffer
     {
         /**
-         * default constructor: create a null const_buffer 
+         * default constructor: create a null const_buffer
          */
 
         const_buffer()
@@ -197,7 +197,7 @@ namespace blockmon {
          * contiguous memory of numb const Tp objects.
          *
          * @param: addr Address of the first object
-         * @param: numb Number of objects  
+         * @param: numb Number of objects
          */
 
         const_buffer(const Tp *addr, size_t numb)
@@ -241,7 +241,7 @@ namespace blockmon {
 
         /**
          * addr: return the pointer to the first
-         * Tp object referenced by this const_buffer 
+         * Tp object referenced by this const_buffer
          *
          */
 
@@ -252,8 +252,8 @@ namespace blockmon {
         }
 
         /**
-         * len: return the number of Tp objects 
-         * referenced by this const_buffer 
+         * len: return the number of Tp objects
+         * referenced by this const_buffer
          *
          */
 
@@ -264,7 +264,7 @@ namespace blockmon {
         }
 
         /**
-         * explicit conversion to boolean 
+         * explicit conversion to boolean
          */
         explicit operator bool() const
         {
@@ -273,7 +273,7 @@ namespace blockmon {
 
     private:
         const Tp *m_addr;
-        size_t    m_len; 
+        size_t    m_len;
     };
 
 } // namespace blockmon

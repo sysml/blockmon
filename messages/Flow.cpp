@@ -1,31 +1,31 @@
-/* Copyright (c) 2011, NEC Europe Ltd, Consorzio Nazionale 
- * Interuniversitario per le Telecomunicazioni, Institut 
+/* Copyright (c) 2011, NEC Europe Ltd, Consorzio Nazionale
+ * Interuniversitario per le Telecomunicazioni, Institut
  * Telecom/Telecom Bretagne, ETH Zürich, INVEA-TECH a.s. All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without 
+ * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *    * Redistributions of source code must retain the above copyright
  *      notice, this list of conditions and the following disclaimer.
  *    * Redistributions in binary form must reproduce the above copyright
  *      notice, this list of conditions and the following disclaimer in the
  *      documentation and/or other materials provided with the distribution.
- *    * Neither the names of NEC Europe Ltd, Consorzio Nazionale 
- *      Interuniversitario per le Telecomunicazioni, Institut Telecom/Telecom 
- *      Bretagne, ETH Zürich, INVEA-TECH a.s. nor the names of its contributors 
- *      may be used to endorse or promote products derived from this software 
+ *    * Neither the names of NEC Europe Ltd, Consorzio Nazionale
+ *      Interuniversitario per le Telecomunicazioni, Institut Telecom/Telecom
+ *      Bretagne, ETH Zürich, INVEA-TECH a.s. nor the names of its contributors
+ *      may be used to endorse or promote products derived from this software
  *      without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT 
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR 
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT 
- * HOLDERBE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, 
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, 
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT
+ * HOLDERBE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
  * PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER 
- * IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
- * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER
+ * IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+ * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
  */
 
@@ -36,7 +36,7 @@ namespace blockmon {
   size_t Flow::get_payload(uint8_t* buffer, size_t offset, size_t nbytes) {
     if (m_flow_packets.empty())
       return 0;
-    
+
       /* Doing TCP stream reassembly by sorting the list on the
        * sequence number does not work if those sequence numbers wrap
        * around.  It also does not work in the presence of adversaries
@@ -87,7 +87,7 @@ namespace blockmon {
 	     i != m_flow_packets.end();
 	     ++i) {
 	  const Packet* packet = i->get();
-	  
+
 	  if (!packet->is_tcp() && !packet->is_udp())
 	    throw std::runtime_error("FlowMeter: can get flow payload "
 				   "only for TCP or UDP flows at "
@@ -108,7 +108,7 @@ namespace blockmon {
 	if (packet_type == packets_tcp) {
 	  m_flow_packets.sort([](const std::shared_ptr<const Packet> a,
 				 const std::shared_ptr<const Packet> b) {
-				return a->tcp_seq() < b->tcp_seq(); 
+				return a->tcp_seq() < b->tcp_seq();
 			      });
 
 	  /* You may ask yourself, is the SYN variable, containing an
@@ -144,7 +144,7 @@ namespace blockmon {
       m_list_sorted = true;
     }
 
-    
+
     size_t effective_offset = offset;
     size_t bytes_skipped = 0;
     size_t bytes_copied = 0;
@@ -154,8 +154,8 @@ namespace blockmon {
     uint32_t expected_sequence_number = 0;
     bool first = true;
     bool more = true;
-    
-    for (auto i = m_flow_packets.begin(); 
+
+    for (auto i = m_flow_packets.begin();
 	 i != m_flow_packets.end() && more && bytes_remaining > 0;
 	 ++i) {
       const Packet* packet = i->get();
@@ -176,19 +176,19 @@ namespace blockmon {
       }
 
       if (packet->is_tcp())
-	payload_length = packet->ip_length() - packet->ip_header_length() 
+	payload_length = packet->ip_length() - packet->ip_header_length()
 	  - packet->tcp_header_length();
       else if (packet->is_udp())
 	payload_length = packet->udp_length() - sizeof(udphdr);
       else
 	throw std::runtime_error("FlowMeter: subsequent packet in flow "
 				 "neither TCP nor UDP");;
-      
+
       if (more) {
 	if (bytes_skipped + bytes_copied + payload_length > effective_offset) {
 	  size_t bytes_to_copy = std::min<size_t>(bytes_remaining,
 						  payload_length);
-	  size_t payload_offset = 
+	  size_t payload_offset =
 	    bytes_skipped + bytes_copied == 0 ? effective_offset : 0;
 	  std::memcpy(p, packet->payload() + payload_offset, bytes_to_copy);
 	  bytes_copied += bytes_to_copy;

@@ -1,31 +1,31 @@
-/* Copyright (c) 2011, NEC Europe Ltd, Consorzio Nazionale 
- * Interuniversitario per le Telecomunicazioni, Institut 
+/* Copyright (c) 2011, NEC Europe Ltd, Consorzio Nazionale
+ * Interuniversitario per le Telecomunicazioni, Institut
  * Telecom/Telecom Bretagne, ETH Zürich, INVEA-TECH a.s. All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without 
+ * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *    * Redistributions of source code must retain the above copyright
  *      notice, this list of conditions and the following disclaimer.
  *    * Redistributions in binary form must reproduce the above copyright
  *      notice, this list of conditions and the following disclaimer in the
  *      documentation and/or other materials provided with the distribution.
- *    * Neither the names of NEC Europe Ltd, Consorzio Nazionale 
- *      Interuniversitario per le Telecomunicazioni, Institut Telecom/Telecom 
- *      Bretagne, ETH Zürich, INVEA-TECH a.s. nor the names of its contributors 
- *      may be used to endorse or promote products derived from this software 
+ *    * Neither the names of NEC Europe Ltd, Consorzio Nazionale
+ *      Interuniversitario per le Telecomunicazioni, Institut Telecom/Telecom
+ *      Bretagne, ETH Zürich, INVEA-TECH a.s. nor the names of its contributors
+ *      may be used to endorse or promote products derived from this software
  *      without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT 
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR 
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT 
- * HOLDERBE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, 
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, 
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT
+ * HOLDERBE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
  * PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER 
- * IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
- * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER
+ * IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+ * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
  */
 
@@ -58,7 +58,7 @@ namespace blockmon
         unsigned long long m_pkt_cnt_prev;
         unsigned long long m_byte_cnt_prev;
         unsigned long long m_flow_cnt_prev;
-        std::chrono::system_clock::time_point m_last_t; 
+        std::chrono::system_clock::time_point m_last_t;
         bool m_timer;
 
         int m_ingate_id;
@@ -70,9 +70,9 @@ namespace blockmon
          * @param name         The name of the flow counter block
          * @param invocation   Invocation type of the block (Indirect, Direct, Async)
          */
-        FlowCounter(const std::string &name, invocation_type invocation) 
-        : Block(name, invocation), 
-        m_pkt_cnt(0), 
+        FlowCounter(const std::string &name, invocation_type invocation)
+        : Block(name, invocation),
+        m_pkt_cnt(0),
         m_byte_cnt(0),
 	m_pkt_rate(0),
 	m_byte_rate(0),
@@ -100,9 +100,9 @@ namespace blockmon
         /**
          * @brief Configures the block, in this case the export time is hard-coded
          * to 0.5 seconds
-         * @param n The configuration parameters 
+         * @param n The configuration parameters
          */
-        virtual void _configure(const pugi::xml_node&  n ) 
+        virtual void _configure(const pugi::xml_node&  n )
         {
             if(!n.child("notimer"))
             {
@@ -113,7 +113,7 @@ namespace blockmon
         /**
          * @brief Initialize the block
          */
-        virtual void _initialize() 
+        virtual void _initialize()
         {
         }
 
@@ -139,12 +139,12 @@ namespace blockmon
                 m_byte_rate = 0;
                 m_reset = 0;
             }
-            const Flow* f = static_cast<const Flow*>(m.get()); 
+            const Flow* f = static_cast<const Flow*>(m.get());
               m_flow_cnt++;
               m_pkt_cnt += f->packets();
               m_byte_cnt += f->bytes();
         }
-        
+
         virtual void _handle_timer(std::shared_ptr<Timer> &&t);
 
     };

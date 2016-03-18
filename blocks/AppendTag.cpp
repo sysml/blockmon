@@ -1,31 +1,31 @@
-/* Copyright (c) 2011, NEC Europe Ltd, Consorzio Nazionale 
- * Interuniversitario per le Telecomunicazioni, Institut 
+/* Copyright (c) 2011, NEC Europe Ltd, Consorzio Nazionale
+ * Interuniversitario per le Telecomunicazioni, Institut
  * Telecom/Telecom Bretagne, ETH Zürich, INVEA-TECH a.s. All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without 
+ * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *    * Redistributions of source code must retain the above copyright
  *      notice, this list of conditions and the following disclaimer.
  *    * Redistributions in binary form must reproduce the above copyright
  *      notice, this list of conditions and the following disclaimer in the
  *      documentation and/or other materials provided with the distribution.
- *    * Neither the names of NEC Europe Ltd, Consorzio Nazionale 
- *      Interuniversitario per le Telecomunicazioni, Institut Telecom/Telecom 
- *      Bretagne, ETH Zürich, INVEA-TECH a.s. nor the names of its contributors 
- *      may be used to endorse or promote products derived from this software 
+ *    * Neither the names of NEC Europe Ltd, Consorzio Nazionale
+ *      Interuniversitario per le Telecomunicazioni, Institut Telecom/Telecom
+ *      Bretagne, ETH Zürich, INVEA-TECH a.s. nor the names of its contributors
+ *      may be used to endorse or promote products derived from this software
  *      without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT 
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR 
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT 
- * HOLDERBE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, 
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, 
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT
+ * HOLDERBE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
  * PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER 
- * IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
- * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER
+ * IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+ * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
  */
 
@@ -122,7 +122,7 @@ namespace blockmon
                 m->emplace_tag<uint64_t>(m_handle,(uint64_t)random_garbage);
                 break;
             default:
-                throw std::runtime_error("wrong tag type");  
+                throw std::runtime_error("wrong tag type");
             }
             send_out_through(std::move(m),m_outgate_id);
         }
@@ -136,36 +136,36 @@ namespace blockmon
                 {
                     m_tag_name = name.value();
                 }
-                else  
+                else
                     throw std::runtime_error("no name attribute");
 
                 if(pugi::xml_attribute type = tag.attribute("type") )
                 {
                     if(!(std::string(type.value()).compare("double")))
                     {
-                        m_tag_type = fl; 
+                        m_tag_type = fl;
                         m_handle = TagRegistry<Packet>::register_tag<double>(m_tag_name);
                     }
                     else if(!(std::string(type.value()).compare("int")))
                     {
-                        m_tag_type = in; 
+                        m_tag_type = in;
                         m_handle = TagRegistry<Packet>::register_tag<int>(m_tag_name);
                     }
                     else if(!(std::string(type.value()).compare("long")))
                     {
-                        m_tag_type = ll; 
+                        m_tag_type = ll;
                         m_handle = TagRegistry<Packet>::register_tag<uint64_t>(m_tag_name);
                     }
-                    else 
+                    else
                         throw std::runtime_error("unrecognized tag type");
 
                     if(m_handle == TAG_INVALID)
                         throw std::runtime_error("invalid tag handler");
                 }
-                else  
+                else
                     throw std::runtime_error("no type attribute");
             }
-            else  
+            else
                 throw std::runtime_error("no tag node");
         }
 
@@ -175,13 +175,13 @@ namespace blockmon
         std::string m_tag_name;
         int m_ingate_id;
         int m_outgate_id;
-        tag_handle<Packet> m_handle; 
+        tag_handle<Packet> m_handle;
 
 #if __GNUC__ == 4 &&  __GNUC_MINOR__ == 4
         std::mt19937 m_generator;
 #else
-        std::mt19937_64 m_generator; 
-#endif 
+        std::mt19937_64 m_generator;
+#endif
 
     };
 

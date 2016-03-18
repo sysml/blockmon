@@ -46,7 +46,7 @@ namespace blockmon
     public:
 
         WordRecord(std::vector<std::string> _word) : Msg(MSG_ID(WordRecord)),word(_word)  {}
-        
+
         WordRecord() : Msg(MSG_ID(WordRecord)) {}
 
         virtual ~WordRecord() {}
@@ -69,7 +69,7 @@ namespace blockmon
         {
             return word.size();
         }
-        
+
         void clear_words()
         {
             word.clear();

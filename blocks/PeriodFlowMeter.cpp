@@ -1,31 +1,31 @@
-/* Copyright (c) 2011, NEC Europe Ltd, Consorzio Nazionale 
- * Interuniversitario per le Telecomunicazioni, Institut 
+/* Copyright (c) 2011, NEC Europe Ltd, Consorzio Nazionale
+ * Interuniversitario per le Telecomunicazioni, Institut
  * Telecom/Telecom Bretagne, ETH Zürich, INVEA-TECH a.s. All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without 
+ * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *    * Redistributions of source code must retain the above copyright
  *      notice, this list of conditions and the following disclaimer.
  *    * Redistributions in binary form must reproduce the above copyright
  *      notice, this list of conditions and the following disclaimer in the
  *      documentation and/or other materials provided with the distribution.
- *    * Neither the names of NEC Europe Ltd, Consorzio Nazionale 
- *      Interuniversitario per le Telecomunicazioni, Institut Telecom/Telecom 
- *      Bretagne, ETH Zürich, INVEA-TECH a.s. nor the names of its contributors 
- *      may be used to endorse or promote products derived from this software 
+ *    * Neither the names of NEC Europe Ltd, Consorzio Nazionale
+ *      Interuniversitario per le Telecomunicazioni, Institut Telecom/Telecom
+ *      Bretagne, ETH Zürich, INVEA-TECH a.s. nor the names of its contributors
+ *      may be used to endorse or promote products derived from this software
  *      without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT 
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR 
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT 
- * HOLDERBE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, 
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, 
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT
+ * HOLDERBE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
  * PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER 
- * IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
- * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER
+ * IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+ * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
  */
 
@@ -73,13 +73,13 @@
 
 namespace blockmon
 {
-    
+
     /**
       * Class implementing a flow table
       * A hash table stores the flow entries while a circular list keeps track of which
       * entries have to be checked for expiration
       */
-    
+
     class PeriodFlowMeter: public Block
     {
 
@@ -110,19 +110,19 @@ namespace blockmon
                     hash ^= (hash <<  7) ^ (*it) * (hash >> 3);
                 }
                 return hash;
-            }     
+            }
         public:
             /**
               * computes the hash of a flow_key object
-              * First it copies the content of the key into a zeroed area so that 
+              * First it copies the content of the key into a zeroed area so that
               * there is not random garbage in the padding bytes
               * @param t the flow key
               */
-            size_t operator()(const FlowKey& t) const    
+            size_t operator()(const FlowKey& t) const
             {
                 FlowKey local;
                 memset(&local,0,sizeof(local)); //we need to 0 any random garbage in the padding
-                local = t; 
+                local = t;
                 return simplehash(reinterpret_cast<const char*> (&local),sizeof(FlowKey) );
             }
         };
@@ -141,7 +141,7 @@ namespace blockmon
         std::unordered_map<FlowKey, std::shared_ptr<const Msg>, my_hash, my_equal_to  > m_flow_table;
         int m_in_gate_id;
         int m_out_gate_id;
-        int  m_timeout_ms; 
+        int  m_timeout_ms;
 
 
     public:
@@ -158,7 +158,7 @@ namespace blockmon
         m_out_gate_id(register_output_gate("out_flow")),
         m_timeout_ms(100)
         {
-            if (invocation != invocation_type::Indirect) 
+            if (invocation != invocation_type::Indirect)
             {
                 blocklog("PeriodFlowMeter must be Indirect, ignoring configuration", log_warning);
             }
@@ -171,11 +171,11 @@ namespace blockmon
         PeriodFlowMeter& operator=(PeriodFlowMeter&&) = delete;
 
         /**
-         * @brief Configures the block: defines whether reports should only concern expired flows 
+         * @brief Configures the block: defines whether reports should only concern expired flows
          * and sets the timeout value
-         * @param n The configuration parameters 
+         * @param n The configuration parameters
          */
-        virtual void _configure(const pugi::xml_node&  n ) 
+        virtual void _configure(const pugi::xml_node&  n )
         {
            pugi::xml_node timeout = n.child("timeout");
             if(timeout)
@@ -206,10 +206,10 @@ namespace blockmon
           * It receives a Packet message (if not, it throws an exception)
           * It checks if the corresponding flow is already in the table.
           * If so, it updates the corresponding entry, otherwise it inserts
-          * a new entry into the table 
+          * a new entry into the table
           * @param m a Packet message
           */
-        virtual void _receive_msg(std::shared_ptr<const Msg>&& m, int /* index */) 
+        virtual void _receive_msg(std::shared_ptr<const Msg>&& m, int /* index */)
         {
             if(m->type()!=MSG_ID(Packet))
                 throw std::runtime_error("PeriodFlowMeter:: wrong message type");

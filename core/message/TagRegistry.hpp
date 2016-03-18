@@ -1,8 +1,8 @@
-/* Copyright (c) 2011, Consorzio Nazionale Interuniversitario 
- * per le Telecomunicazioni. 
+/* Copyright (c) 2011, Consorzio Nazionale Interuniversitario
+ * per le Telecomunicazioni.
  * All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without 
+ * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *    * Redistributions of source code must retain the above copyright
  *      notice, this list of conditions and the following disclaimer.
@@ -13,17 +13,17 @@
  *      names of its contributors may be used to endorse or promote products
  *      derived from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT 
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR 
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT 
- * HOLDERBE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, 
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, 
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT
+ * HOLDERBE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
  * PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER 
- * IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
- * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER
+ * IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+ * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
  */
 
@@ -42,22 +42,22 @@
 #include <tuple>
 #include <mutex>
 
-#if __GNUC__ == 4 &&  __GNUC_MINOR__ == 4  
+#if __GNUC__ == 4 &&  __GNUC_MINOR__ == 4
 #include <cstdatomic>
-#else 
+#else
 #include <atomic>
 #endif
 
 #include <Buffer.hpp>
 #include <Assert.hpp>
 
-namespace blockmon { 
+namespace blockmon {
 
-    /** 
+    /**
      * @brief
-     * tag_object class is used to enforce the correct internal alignemnt 
+     * tag_object class is used to enforce the correct internal alignemnt
      * for tags allocated in the tag buffer...
-     * value is the value of the Tag that be trivially destructible. 
+     * value is the value of the Tag that be trivially destructible.
      * valid is an atomic flag used for synchronization.
      */
     struct tag_base
@@ -82,7 +82,7 @@ namespace blockmon {
 #endif
 
         tag_object()
-        : tag_base() 
+        : tag_base()
         , value()
         {
         }
@@ -97,16 +97,16 @@ namespace blockmon {
 
         Tag          value;
     };
- 
+
     struct tag_invalid {};
-    
-    namespace 
+
+    namespace
     {
         tag_invalid TAG_INVALID = {};
     }
 
     template <typename T>
-    struct tag_handle 
+    struct tag_handle
     {
         constexpr explicit tag_handle(size_t v = std::numeric_limits<size_t>::max())
         : value(v)
@@ -133,7 +133,7 @@ namespace blockmon {
     {
         return h.value == std::numeric_limits<size_t>::max();
     }
-    
+
   /** Compares two tag handles for equality.
    *
    * Version where first argument is tag_invalid.
@@ -184,7 +184,7 @@ namespace blockmon {
      * @brief
      * TagRegistry class implements a registry of the tags for the message type MsgType.
      * This is a template singleton class, according to Meyer's idiom.
-     * When a message tag is registered, an associated handle is returned. Such an handle is then used in 
+     * When a message tag is registered, an associated handle is returned. Such an handle is then used in
      * order to read and write the tags associated to a message.
      */
 
@@ -206,7 +206,7 @@ namespace blockmon {
             size_t offset;
             size_t hash_code;
             std::string tag_id;
-        };                                       
+        };
 
         TagRegistry()
         : next_offset_()
@@ -218,7 +218,7 @@ namespace blockmon {
         {
         }
 
-        tag_handle<MsgType> 
+        tag_handle<MsgType>
         find_tag_(const char *id) const
         {
             auto end = tag_info_.size();
@@ -252,7 +252,7 @@ namespace blockmon {
         /**
          * TagRegistry is a non-copyable, Meyers' singleton class
          */
-        
+
         TagRegistry(TagRegistry const&) = delete;
         TagRegistry& operator=(TagRegistry const&) = delete;
 
@@ -276,14 +276,14 @@ namespace blockmon {
          */
 
         static tag_handle<MsgType>
-        get_handle_by_name(const char *tag_id) 
+        get_handle_by_name(const char *tag_id)
         {
             auto h = instance().find_tag_(tag_id);
             if (h == TAG_INVALID)
                 throw std::runtime_error("TagRegistery::find_tag: No tags registered for this name");
             return h;
         }
-        
+
         static tag_handle<MsgType>
         get_handle_by_name(const std::string &tag_id)
         {
@@ -293,17 +293,17 @@ namespace blockmon {
         /**
          * Returns size, offset and hash_code for a given tag in the message's tag buffer for the message MsgType.
          * @param tag_h the tag handle
-         * @return a tuple where: the first field is the size, the second is the offset and the third is the hash_code 
+         * @return a tuple where: the first field is the size, the second is the offset and the third is the hash_code
          * of the given tag associated with the handle
          */
 
-        static std::tuple<size_t, size_t, size_t> 
-        get_info(tag_handle<MsgType> tag_h) 
+        static std::tuple<size_t, size_t, size_t>
+        get_info(tag_handle<MsgType> tag_h)
         {
             auto & ref = instance();
             if (tag_h.value >= ref.tag_info_.size())
                 throw std::runtime_error("TagRegistry::get_info: bad tag handler");
-            return std::make_tuple(ref.tag_info_[tag_h.value].size, 
+            return std::make_tuple(ref.tag_info_[tag_h.value].size,
                                    ref.tag_info_[tag_h.value].offset,
                                    ref.tag_info_[tag_h.value].hash_code);
         }
@@ -334,18 +334,18 @@ namespace blockmon {
             }
 
             std::lock_guard<std::mutex> lock(ref.mutex_);
-            
+
             tag_h.value = ref.tag_info_.size();
 
             /* enforce aligment fot this tag_object */
             auto rem = ref.next_offset_ % sizeof(tag_object<Tag>);
-            if (rem) 
+            if (rem)
                 ref.next_offset_ += sizeof(tag_object<Tag>) - rem;
-           
+
             auto offset = ref.next_offset_;
-            ref.next_offset_ += sizeof(tag_object<Tag>); 
+            ref.next_offset_ += sizeof(tag_object<Tag>);
             ref.tag_info_.emplace_back(sizeof(Tag), offset, hash_code, std::move(tag_id));
-            
+
             return tag_h;
         }
 
@@ -355,12 +355,12 @@ namespace blockmon {
          * @return the buffer size
          */
 
-        static size_t buffer_size() 
+        static size_t buffer_size()
         {
             return instance().next_offset_;
         }
 
-        
+
         template <typename Tag, typename ...Ts>
         static void emplace_tag(mutable_buffer<char> buf, tag_handle<MsgType> h, Ts && ...args)
         {
@@ -370,7 +370,7 @@ namespace blockmon {
             blockmon_assert( hash_code == hash_code_<Tag>(), "emplace_tag: Tag type mismatch");
 
             auto ptr = reinterpret_cast<tag_object<Tag> *>(buf.addr() + offset);
-            
+
             new (ptr) tag_object<Tag>(std::forward<Ts>(args)...);
         }
 
@@ -380,28 +380,28 @@ namespace blockmon {
         {
             size_t size, offset, hash_code;
             std::tie(size, offset, hash_code) = instance().get_info(h);
-            
+
             blockmon_assert((offset + size <= buf.len()), "get_tag: buffer overflow");
             blockmon_assert( hash_code == hash_code_<Tag>(), "get_tag: Tag type mismatch");
-            
+
             auto ptr = reinterpret_cast<const tag_object<Tag> *>(buf.addr() + offset);
 
-            if (!ptr->valid.load(std::memory_order_acquire)) 
+            if (!ptr->valid.load(std::memory_order_acquire))
                 return NULL;
             else
-                return &ptr->value; 
+                return &ptr->value;
         }
-        
+
 
         static bool is_available_tag(const_buffer<char> buf, tag_handle<MsgType> h)
         {
             size_t size, offset;
             std::tie(size, offset, std::ignore) = instance().get_info(h);
-            
+
             blockmon_assert((offset + size <= buf.len()), "is_valid_tag: buffer overflow");
-            
+
             auto ptr = reinterpret_cast<const tag_base *>(buf.addr() + offset);
-            
+
             return ptr->valid.load(std::memory_order_acquire);
         }
 

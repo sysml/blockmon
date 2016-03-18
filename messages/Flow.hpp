@@ -1,31 +1,31 @@
-/* Copyright (c) 2011, NEC Europe Ltd, Consorzio Nazionale 
- * Interuniversitario per le Telecomunicazioni, Institut 
+/* Copyright (c) 2011, NEC Europe Ltd, Consorzio Nazionale
+ * Interuniversitario per le Telecomunicazioni, Institut
  * Telecom/Telecom Bretagne, ETH Zürich, INVEA-TECH a.s. All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without 
+ * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *    * Redistributions of source code must retain the above copyright
  *      notice, this list of conditions and the following disclaimer.
  *    * Redistributions in binary form must reproduce the above copyright
  *      notice, this list of conditions and the following disclaimer in the
  *      documentation and/or other materials provided with the distribution.
- *    * Neither the names of NEC Europe Ltd, Consorzio Nazionale 
- *      Interuniversitario per le Telecomunicazioni, Institut Telecom/Telecom 
- *      Bretagne, ETH Zürich, INVEA-TECH a.s. nor the names of its contributors 
- *      may be used to endorse or promote products derived from this software 
+ *    * Neither the names of NEC Europe Ltd, Consorzio Nazionale
+ *      Interuniversitario per le Telecomunicazioni, Institut Telecom/Telecom
+ *      Bretagne, ETH Zürich, INVEA-TECH a.s. nor the names of its contributors
+ *      may be used to endorse or promote products derived from this software
  *      without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT 
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR 
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT 
- * HOLDERBE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, 
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, 
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT
+ * HOLDERBE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
  * PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER 
- * IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
- * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER
+ * IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+ * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
  */
 
@@ -55,7 +55,7 @@ namespace blockmon
     public:
 
         /**
-         * regular constructor          
+         * regular constructor
          */
         Flow(const FlowKey& key):
         Msg(MSG_ID(Flow)),
@@ -104,12 +104,12 @@ namespace blockmon
         {
             return m_stime;
         }
-        
+
         ustime_t end_time() const
         {
             return m_etime;
         }
-        
+
         void expand_interval(ustime_t us) {
             if (m_stime == 0 || m_stime > us) m_stime = us;
             if (m_stime == 0 || m_etime < us) m_etime = us;
@@ -132,19 +132,19 @@ namespace blockmon
         void increment_packets(uint64_t val) {
             m_packets += val;
         }
-          
+
         bool matches(const Packet& p) {
             return m_key == p.key();
         }
-        
+
         bool matches(const Flow& f) {
             return m_key == f.key();
         }
-        
+
         /*
          * destructor
          */
-        virtual ~Flow() 
+        virtual ~Flow()
         {}
 
 
@@ -192,7 +192,7 @@ namespace blockmon
        * - the packets constituting this flow had been sorted into
        *   increasing TCP sequence number;
        * - the payloads of the packets in the sorted list laid end to
-       *   end in a buffer @a p of length @l; and 
+       *   end in a buffer @a p of length @l; and
        * - if @a offset + @a length <= @a l, bytes @a p + @a offset
        *   through @a p + @a nbytes - 1 will be copied, otherwise
        *   bytes @a p + @a offset through @a p + @l - 1 will be copied,
@@ -234,7 +234,7 @@ namespace blockmon
         std::list<std::shared_ptr<const Packet>> m_flow_packets;
         bool m_list_sorted;
     };
-            
+
     // DELETEME removed old IPFIX code
     // REGISTER_MESSAGE_CLASS(Flow, Flow::Descriptor)
 }

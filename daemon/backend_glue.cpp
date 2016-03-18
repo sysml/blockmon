@@ -1,31 +1,31 @@
-/* Copyright (c) 2011, NEC Europe Ltd, Consorzio Nazionale 
- * Interuniversitario per le Telecomunicazioni, Institut 
+/* Copyright (c) 2011, NEC Europe Ltd, Consorzio Nazionale
+ * Interuniversitario per le Telecomunicazioni, Institut
  * Telecom/Telecom Bretagne, ETH Zürich, INVEA-TECH a.s. All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without 
+ * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *    * Redistributions of source code must retain the above copyright
  *      notice, this list of conditions and the following disclaimer.
  *    * Redistributions in binary form must reproduce the above copyright
  *      notice, this list of conditions and the following disclaimer in the
  *      documentation and/or other materials provided with the distribution.
- *    * Neither the names of NEC Europe Ltd, Consorzio Nazionale 
- *      Interuniversitario per le Telecomunicazioni, Institut Telecom/Telecom 
- *      Bretagne, ETH Zürich, INVEA-TECH a.s. nor the names of its contributors 
- *      may be used to endorse or promote products derived from this software 
+ *    * Neither the names of NEC Europe Ltd, Consorzio Nazionale
+ *      Interuniversitario per le Telecomunicazioni, Institut Telecom/Telecom
+ *      Bretagne, ETH Zürich, INVEA-TECH a.s. nor the names of its contributors
+ *      may be used to endorse or promote products derived from this software
  *      without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT 
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR 
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT 
- * HOLDERBE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, 
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, 
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT
+ * HOLDERBE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
  * PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER 
- * IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
- * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER
+ * IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+ * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
  */
 
@@ -48,9 +48,9 @@ namespace
 {
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- * Timer thread handline 
+ * Timer thread handline
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
- 
+
   std::thread* tt=NULL;
 
   void start_timer_thread() {
@@ -59,7 +59,7 @@ namespace
 #endif
     tt = new std::thread(std::ref(TimerThread::instance()));
   }
-	
+
   void stop_timer_thread() {
 #ifdef C_DEBUG
     std::cout << "c++: stop_timer_thread" << std::endl;
@@ -98,7 +98,7 @@ namespace
 #endif
     CompositionManager::instance().delete_composition(comp_id);
   }
-   
+
   void start_schedulers()
   {
 #ifdef C_DEBUG
@@ -144,7 +144,7 @@ namespace
                          const std::string& to_composition, \
                          const std::string& to_block,       \
                          const std::string& to_gate)
-  {  
+  {
 #ifdef C_DEBUG
   std::cout << "c++: delete_connection"\
             << from_composition\
@@ -166,7 +166,7 @@ namespace
                     const std::string& type,\
                     invocation_type invocation,\
                     const std::string& config)
-  {  
+  {
 #ifdef C_DEBUG
     std::cout << "c++: create_block" << comp_id << name << type << std::endl;
 #endif
@@ -174,7 +174,7 @@ namespace
   }
 
   void delete_block(const std::string& comp_id, const std::string& name)
-  {  
+  {
 #ifdef C_DEBUG
     std::cout << "c++: delete_block" << comp_id << name <<std::endl;
 #endif
@@ -198,7 +198,7 @@ namespace
     CompositionManager::instance().get_composition(comp_id).get_block(name)->set_invocation(invocation);
     return CompositionManager::instance().get_composition(comp_id).get_block(name)->update_config(confxml);
   }
-   
+
   void add_block_to_thread_pool(const std::string& comp_id,\
                                 const std::string& name,\
                                 const std::string& pool)
@@ -222,7 +222,7 @@ namespace
   }
 
   void add_thread_pool(const std::string& pool_config)
-  {                   
+  {
 #ifdef C_DEBUG
     std::cout << "c++: add thread pool" << pool_config << std::endl;
 #endif
@@ -233,17 +233,17 @@ namespace
    pugi::xml_node poolxml = config_info.child("threadpool");
     if(!poolxml)
        throw std::runtime_error("Configuration: cannot find block node");
-    PoolManager::instance().create_pool(poolxml);  
+    PoolManager::instance().create_pool(poolxml);
   }
 
    void remove_thread_pool(const std::string& poolname)
-   {  
+   {
 #ifdef C_DEBUG
      std::cout << "c++: remove thread pool" << poolname << std::endl;
 #endif
      PoolManager::instance().delete_pool(poolname);
    }
-	
+
    std::string read_block_variable(const std::string& comp_id,\
                                    const std::string& name,\
                                    const std::string& variable)
@@ -277,7 +277,7 @@ namespace
 
 
 BOOST_PYTHON_MODULE(blockmon)
-{     
+{
     using namespace boost::python;
 
     // Needed to convert from within Python to invocation_type enum

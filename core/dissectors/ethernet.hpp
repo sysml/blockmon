@@ -1,8 +1,8 @@
-/* Copyright (c) 2011, Consorzio Nazionale Interuniversitario 
- * per le Telecomunicazioni. 
+/* Copyright (c) 2011, Consorzio Nazionale Interuniversitario
+ * per le Telecomunicazioni.
  * All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without 
+ * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *    * Redistributions of source code must retain the above copyright
  *      notice, this list of conditions and the following disclaimer.
@@ -13,17 +13,17 @@
  *      names of its contributors may be used to endorse or promote products
  *      derived from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT 
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR 
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT 
- * HOLDERBE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, 
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, 
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT
+ * HOLDERBE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
  * PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER 
- * IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
- * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER
+ * IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+ * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
  */
 
@@ -45,7 +45,7 @@
 namespace net {
 
     /*
-     * 802.1q VLAN extended header 
+     * 802.1q VLAN extended header
      */
 
     struct h8021q_t {
@@ -75,7 +75,7 @@ namespace net {
         {
             char buf[20];
             ether_ntoa_r(reinterpret_cast<struct ether_addr const *>(ether_dhost), buf);
-            return buf;  
+            return buf;
         }
 
         std::string
@@ -83,10 +83,10 @@ namespace net {
         {
             char buf[20];
             ether_ntoa_r(reinterpret_cast<struct ether_addr const *>(ether_shost), buf);
-            return buf;  
+            return buf;
         }
 
-        uint16_t 
+        uint16_t
         ether_type_() const
         {
             return ntohs(ether_type);
@@ -102,7 +102,7 @@ namespace net {
 
         // size_of and proto member functions:
         //
-        
+
         size_t size_of() const
         {
             if (ntohs(ether_type) == ETHERTYPE_VLAN)

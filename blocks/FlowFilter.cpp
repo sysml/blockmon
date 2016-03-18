@@ -1,31 +1,31 @@
-/* Copyright (c) 2011, NEC Europe Ltd, Consorzio Nazionale 
- * Interuniversitario per le Telecomunicazioni, Institut 
+/* Copyright (c) 2011, NEC Europe Ltd, Consorzio Nazionale
+ * Interuniversitario per le Telecomunicazioni, Institut
  * Telecom/Telecom Bretagne, ETH Zürich, INVEA-TECH a.s. All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without 
+ * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *    * Redistributions of source code must retain the above copyright
  *      notice, this list of conditions and the following disclaimer.
  *    * Redistributions in binary form must reproduce the above copyright
  *      notice, this list of conditions and the following disclaimer in the
  *      documentation and/or other materials provided with the distribution.
- *    * Neither the names of NEC Europe Ltd, Consorzio Nazionale 
- *      Interuniversitario per le Telecomunicazioni, Institut Telecom/Telecom 
- *      Bretagne, ETH Zürich, INVEA-TECH a.s. nor the names of its contributors 
- *      may be used to endorse or promote products derived from this software 
+ *    * Neither the names of NEC Europe Ltd, Consorzio Nazionale
+ *      Interuniversitario per le Telecomunicazioni, Institut Telecom/Telecom
+ *      Bretagne, ETH Zürich, INVEA-TECH a.s. nor the names of its contributors
+ *      may be used to endorse or promote products derived from this software
  *      without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT 
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR 
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT 
- * HOLDERBE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, 
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, 
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT
+ * HOLDERBE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
  * PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER 
- * IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
- * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER
+ * IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+ * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
  */
 
@@ -37,21 +37,21 @@
  * sent to the block's output gate, non-selected ones are dropped. A packet
  * is selected if it matches *all* of the given conditions, and each of the
  * conditions can be negated. Logically the selection resolves to
- *                                                                                            
- * select = [not]cond1=val AND [not]cond2=val AND [not]cond3=val ...                          
- *                                                                                             
- * where [not] means that the negation is optional. The conditions can be of                   
- * the following kind:                                                                         
- *                                                                                                                                                                              
- * ip_src                                                                                      
- * ip_dst                                                                                      
- * l4_protocol                                                                                 
- * src_port                                                                                    
- * dst_port                                                                                    
- *                                                                                             
- * Please refer to the schema and examples below to see how to specify                         
- * selection filters. Note that the negation (i.e., "not") is done via the                     
- * "behavior" parameter, which can be set to "accept" or "discard" = negate.                  
+ *
+ * select = [not]cond1=val AND [not]cond2=val AND [not]cond3=val ...
+ *
+ * where [not] means that the negation is optional. The conditions can be of
+ * the following kind:
+ *
+ * ip_src
+ * ip_dst
+ * l4_protocol
+ * src_port
+ * dst_port
+ *
+ * Please refer to the schema and examples below to see how to specify
+ * selection filters. Note that the negation (i.e., "not") is done via the
+ * "behavior" parameter, which can be set to "accept" or "discard" = negate.
  * Default is "accept".
  *
  * <shortdesc>Selects packets based on conditions specified over the 5-tuple</shortdesc>
@@ -191,7 +191,7 @@ namespace blockmon
                 else if (strcmp(behavior.value(),"accept"))
                     return false;
             }
-            else 
+            else
                 return false;
 
             return true;
@@ -236,7 +236,7 @@ namespace blockmon
         /*
          * constructor
          */
-        FlowFilter(const std::string &name, invocation_type invocation) : 
+        FlowFilter(const std::string &name, invocation_type invocation) :
         Block(name, invocation),
         m_in_gate(register_input_gate("in_flow")),
         m_out_gate(register_output_gate("out_flow")),
@@ -284,7 +284,7 @@ namespace blockmon
                         m_ip_src_address = string_to_ip(attr.value());
                     }
                     else signal_error ("ip_src");
-                    
+
                     if(pugi::xml_attribute attr = c.attribute("netmask"))
                     {
                         m_ip_src_mask = string_to_ip(attr.value());
@@ -304,7 +304,7 @@ namespace blockmon
                         m_ip_dst_address = string_to_ip(attr.value());
                     }
                     else signal_error ("ip_dst");
-                    
+
                     if(pugi::xml_attribute attr = c.attribute("netmask"))
                     {
                         m_ip_dst_mask = string_to_ip(attr.value());
@@ -370,19 +370,19 @@ namespace blockmon
           * the actual filtering function
           * Expects Flow messages, otherwise it throws
           * @param m the message to be checked
-         */ 
+         */
         virtual void _receive_msg(std::shared_ptr<const Msg>&& m, int /* index */)
         {
             if(m->type() != MSG_ID(Flow))
                 throw std::runtime_error("FlowFilter: wrong message type");
             const Flow* flow = static_cast<const Flow* > (m.get());
-            
+
             if(is_indirect(m_ip_src_mode))
             {
                 if(!go_ahead( (m_ip_src_address & m_ip_src_mask) == (flow->key().src_ip4 & m_ip_src_mask), m_ip_src_mode))
                     return;
             }
-            
+
             if(is_indirect(m_ip_dst_mode))
             {
                 if(!go_ahead( (m_ip_dst_address & m_ip_dst_mask) == (flow->key().dst_ip4 & m_ip_dst_mask), m_ip_dst_mode))
@@ -403,13 +403,13 @@ namespace blockmon
                 if(!go_ahead(m_src_port == flow->key().src_port, m_src_port_mode))
                     return;
             }
-            
+
             if(is_indirect(m_dst_port_mode))
             {
                 if(!go_ahead(m_dst_port == flow->key().dst_port, m_dst_port_mode))
                     return;
             }
-            
+
             flow_passed(std::move(m));
 
         }

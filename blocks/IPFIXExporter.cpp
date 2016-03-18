@@ -1,31 +1,31 @@
-/* Copyright (c) 2011, NEC Europe Ltd, Consorzio Nazionale 
- * Interuniversitario per le Telecomunicazioni, Institut 
+/* Copyright (c) 2011, NEC Europe Ltd, Consorzio Nazionale
+ * Interuniversitario per le Telecomunicazioni, Institut
  * Telecom/Telecom Bretagne, ETH Zürich, INVEA-TECH a.s. All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without 
+ * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *    * Redistributions of source code must retain the above copyright
  *      notice, this list of conditions and the following disclaimer.
  *    * Redistributions in binary form must reproduce the above copyright
  *      notice, this list of conditions and the following disclaimer in the
  *      documentation and/or other materials provided with the distribution.
- *    * Neither the names of NEC Europe Ltd, Consorzio Nazionale 
- *      Interuniversitario per le Telecomunicazioni, Institut Telecom/Telecom 
- *      Bretagne, ETH Zürich, INVEA-TECH a.s. nor the names of its contributors 
- *      may be used to endorse or promote products derived from this software 
+ *    * Neither the names of NEC Europe Ltd, Consorzio Nazionale
+ *      Interuniversitario per le Telecomunicazioni, Institut Telecom/Telecom
+ *      Bretagne, ETH Zürich, INVEA-TECH a.s. nor the names of its contributors
+ *      may be used to endorse or promote products derived from this software
  *      without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT 
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR 
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT 
- * HOLDERBE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, 
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, 
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT
+ * HOLDERBE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
  * PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER 
- * IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
- * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER
+ * IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+ * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
  */
 
@@ -37,7 +37,7 @@
  *  is a registered record type.
  *
  *  Note that this block can handle any message class for which an associated
- *  datatype entry exists in the configuration. Messages sent to this block 
+ *  datatype entry exists in the configuration. Messages sent to this block
  *  for which no datatype entry is available are ignored but logged.
  *  </humandesc>
  *
@@ -75,13 +75,13 @@
  *       <datatype name="ipv4flow"/>
  *     </params>
  *   </paramsexample>
- *      
+ *
  *   <variables>
  *   </variables>
  *
  * </blockinfo>
  */
- 
+
 #include <boost/lexical_cast.hpp>
 #include <list>
 #include <Block.hpp>
@@ -99,7 +99,7 @@ namespace blockmon {
 class IPFIXExporter : public Block {
 
 private:
-    
+
     std::list<std::shared_ptr<IPFIXTypeBridge> >    m_bridges;
     std::unique_ptr<IPFIX::Exporter>                m_exporter;
     int m_gate_id;
@@ -110,7 +110,7 @@ private:
         m_exporter = std::unique_ptr<IPFIX::Exporter>(
             new IPFIX::UDPExporter(na, odid));
     }
-    
+
     void configTCPExport(uint32_t odid, std::string& host, std::string& port) {
         blocklog(std::string("will export to tcp ") + host + ":" + port, log_info);
         IPFIX::NetAddress na(host, port, 6);
@@ -160,7 +160,7 @@ public:
             odid = boost::lexical_cast<uint32_t>(domain_id);
         }
 
-        // create an exporter        
+        // create an exporter
         pugi::xml_node exp_node;
         if ((exp_node = params_node.child("export"))) {
             // Parse export (transport, host, port)
@@ -194,41 +194,41 @@ public:
             }
             configFileExport(odid, name);
         }
-        
+
         // Set fast flush mode if required
         if (params_node.child("fastflush")) {
             m_exporter->setFastFlush();
         }
 
-        // Populate list of bridges (data types) 
-        for (pugi::xml_node dt_node = params_node.child("datatype"); 
-                            dt_node; 
+        // Populate list of bridges (data types)
+        for (pugi::xml_node dt_node = params_node.child("datatype");
+                            dt_node;
                             dt_node = dt_node.next_sibling("datatype"))
         {
             std::string dt_name = dt_node.attribute("name").value();
             if (dt_name.empty()) {
                 throw std::runtime_error("Datatype missing name");
             }
-        
-            std::shared_ptr<IPFIXTypeBridge> bridge = 
+
+            std::shared_ptr<IPFIXTypeBridge> bridge =
                 IPFIXTypeRegistry::instance().bridgeForTypeName(dt_name);
             if (bridge.get() == NULL) {
                 throw std::runtime_error("Unknown datatype " + dt_name);
             }
-            
+
             // prepare the exporter (populate templates)
             bridge->prepareExporter(*m_exporter);
-            
+
             // store the bridge
             m_bridges.push_back(bridge);
         }
-        
+
         // export all templates
         m_exporter->exportTemplatesForDomain();
     }
-    
+
     virtual void _receive_msg(std::shared_ptr<const Msg>&& m, int gate_id) {
-       
+
         // select the first suitable bridge for the message
         for (auto iter = m_bridges.begin(); iter != m_bridges.end(); iter++) {
             if ((*iter)->canExport(m)) {
@@ -237,7 +237,7 @@ public:
                 return;
             }
         }
-    
+
         blocklog("no suitable datatype for message: not exported", log_warning);
     }
 };

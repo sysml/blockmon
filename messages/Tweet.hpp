@@ -45,7 +45,7 @@ namespace blockmon
     public:
 
         Tweet(std::string _tweet) : Msg(MSG_ID(Tweet)),tweet(_tweet)  {}
-        
+
         Tweet() : Msg(MSG_ID(Tweet)) {}
 
         virtual ~Tweet() {}

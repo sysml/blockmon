@@ -1,42 +1,42 @@
-/* Copyright (c) 2011, NEC Europe Ltd, Consorzio Nazionale 
- * Interuniversitario per le Telecomunicazioni, Institut 
+/* Copyright (c) 2011, NEC Europe Ltd, Consorzio Nazionale
+ * Interuniversitario per le Telecomunicazioni, Institut
  * Telecom/Telecom Bretagne, ETH Zürich, INVEA-TECH a.s. All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without 
+ * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *    * Redistributions of source code must retain the above copyright
  *      notice, this list of conditions and the following disclaimer.
  *    * Redistributions in binary form must reproduce the above copyright
  *      notice, this list of conditions and the following disclaimer in the
  *      documentation and/or other materials provided with the distribution.
- *    * Neither the names of NEC Europe Ltd, Consorzio Nazionale 
- *      Interuniversitario per le Telecomunicazioni, Institut Telecom/Telecom 
- *      Bretagne, ETH Zürich, INVEA-TECH a.s. nor the names of its contributors 
- *      may be used to endorse or promote products derived from this software 
+ *    * Neither the names of NEC Europe Ltd, Consorzio Nazionale
+ *      Interuniversitario per le Telecomunicazioni, Institut Telecom/Telecom
+ *      Bretagne, ETH Zürich, INVEA-TECH a.s. nor the names of its contributors
+ *      may be used to endorse or promote products derived from this software
  *      without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT 
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR 
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT 
- * HOLDERBE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, 
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, 
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT
+ * HOLDERBE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
  * PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER 
- * IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
- * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER
+ * IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+ * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
  */
 
 #ifndef _MESSAGES_ALERT_HPP_
 #define _MESSAGES_ALERT_HPP_
 /**
- * @file 
+ * @file
  *
  * This message represents an alert to be sent for further analysis or mitigation.
  */
- 
+
 #include "Msg.hpp"
 #include "ClassId.hpp"
 #include <stdint.h>
@@ -72,7 +72,7 @@ namespace blockmon
 			bool m_domain_name_set;
 			std::string m_domain_name;
 
-		public:				
+		public:
 			/**
 			 * Constructor: both IPv4 and domain name
 			 */
@@ -86,7 +86,7 @@ namespace blockmon
 			Node(uint32_t ipv4)
 			: m_ipv4_set(true), m_ipv4(ipv4), m_domain_name_set(false), m_domain_name("")
 			{}
-				
+
 			/**
 			 * Constructor: domain name only
 			 */
@@ -131,18 +131,18 @@ namespace blockmon
 			sev_medium,
 			sev_high
 		} severity_level_t;
-			
+
 		typedef enum {
 			conf_low,
 			conf_medium,
 			conf_high
 		} confidence_level_t;
-			
+
 		typedef struct {
 			severity_level_t severity;
 			confidence_level_t confidence;
 		} assesment_t;
-			
+
 	protected:
 		/**
 		 * Identifier of the analyzer
@@ -153,7 +153,7 @@ namespace blockmon
 		 * Identifier of the alarm (unique for an analyzer)
 		 */
 		int m_identifier;
-		
+
 		/**
 		 * Name of the alert type (SYN flooding for example)
 		 */
@@ -184,12 +184,12 @@ namespace blockmon
 		 * Assessment of the confidence of the analyzer
 		 */
 		float m_confidence;
-		
+
     public:
 
         /**
          *  Create a new Alert
-         */        
+         */
         Alert(std::string analyzer, int identifier, std::string alert_name)
         : Msg(MSG_ID(Alert)), m_analyzer(analyzer), m_identifier(identifier), m_alert_name(alert_name),
 		  m_create_time(time(NULL)), m_sources(std::vector<Node>()), m_targets(std::vector<Node>()),
@@ -270,37 +270,37 @@ namespace blockmon
 
 		/**
 		 * Gets the indentifier for this alert.
-		 */	
+		 */
 		int get_identifier() const;
 
 		/**
 		 * Gets the analyzer for this alert.
-		 */	
+		 */
 		std::string get_analyzer() const;
 
 		/**
 		 * Is the assesment set?
-		 */	
+		 */
 		bool is_assessment_set() const;
 
 		/**
 		 * Gets the impact for this alert.
-		 */	
+		 */
 		severity_level_t get_severity() const;
 
 		/**
 		 * Gets the impact for this alert.
-		 */	
+		 */
 		confidence_level_t get_confidence() const;
 
 		/**
 		 * Gets the alert name for this alert.
-		 */	
+		 */
 		std::string get_alert_name() const;
 
 		/**
 		 * Gets the create time for this alert.
-		 */	
+		 */
 		time_t get_create_time() const;
 
 		/**
@@ -311,7 +311,7 @@ namespace blockmon
         /** Forbids copy and move constructors.
 	 */
         Alert(const Alert &) = delete;
-        
+
         /** Forbids copy and move assignment.
 	 */
         Alert& operator=(const Alert &) = delete;
@@ -319,7 +319,7 @@ namespace blockmon
         /**
         * Destroy this Alert.
         */
-        ~Alert() 
+        ~Alert()
         {
         }
 
@@ -327,7 +327,7 @@ namespace blockmon
          * Clone this message; the new Packet will have the same content, own
          * its buffer, and will lose its parsed field cache.
          */
-        std::shared_ptr<Msg> clone() const 
+        std::shared_ptr<Msg> clone() const
         {
             std::shared_ptr<Alert> copy = std::make_shared<Alert>(m_analyzer, m_identifier, m_alert_name);
 			if (m_assessment_set)
@@ -336,7 +336,7 @@ namespace blockmon
 			copy.get()->set_targets(m_targets);
 			return copy;
         }
-        
+
 	private:
 
 		/**
