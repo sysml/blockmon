@@ -1,31 +1,31 @@
-/* Copyright (c) 2011, NEC Europe Ltd, Consorzio Nazionale 
- * Interuniversitario per le Telecomunicazioni, Institut 
+/* Copyright (c) 2011, NEC Europe Ltd, Consorzio Nazionale
+ * Interuniversitario per le Telecomunicazioni, Institut
  * Telecom/Telecom Bretagne, ETH Zürich, INVEA-TECH a.s. All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without 
+ * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *    * Redistributions of source code must retain the above copyright
  *      notice, this list of conditions and the following disclaimer.
  *    * Redistributions in binary form must reproduce the above copyright
  *      notice, this list of conditions and the following disclaimer in the
  *      documentation and/or other materials provided with the distribution.
- *    * Neither the names of NEC Europe Ltd, Consorzio Nazionale 
- *      Interuniversitario per le Telecomunicazioni, Institut Telecom/Telecom 
- *      Bretagne, ETH Zürich, INVEA-TECH a.s. nor the names of its contributors 
- *      may be used to endorse or promote products derived from this software 
+ *    * Neither the names of NEC Europe Ltd, Consorzio Nazionale
+ *      Interuniversitario per le Telecomunicazioni, Institut Telecom/Telecom
+ *      Bretagne, ETH Zürich, INVEA-TECH a.s. nor the names of its contributors
+ *      may be used to endorse or promote products derived from this software
  *      without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT 
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR 
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT 
- * HOLDERBE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, 
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, 
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT
+ * HOLDERBE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
  * PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER 
- * IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
- * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER
+ * IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+ * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
  */
 
@@ -105,16 +105,16 @@ namespace blockmon
     public:
 
 #if   defined(USE_SIMPLE_PACKET)
-        typedef blockmon::slice_allocator<blockmon::NewPacket, 
+        typedef blockmon::slice_allocator<blockmon::NewPacket,
                 #ifdef USE_PACKET_TAG
-                net::TagBuffer, 
+                net::TagBuffer,
                 #endif
                 #ifdef USE_PACKET_FLOW
                 blockmon::FlowKey,
                 #endif
                 net::payload> allocator_type;
 #elif defined(USE_SLICED_PACKET)
-        typedef blockmon::slice_allocator<blockmon::NewPacket, 
+        typedef blockmon::slice_allocator<blockmon::NewPacket,
                 #ifdef USE_PACKET_TAG
                 net::TagBuffer,
                 #endif
@@ -137,7 +137,7 @@ namespace blockmon
 #if   defined(USE_SIMPLE_PACKET) || defined(USE_SLICED_PACKET)
         std::unique_ptr<allocator_type> m_allocator;
 #else
-        std::shared_ptr<MemoryBatch> m_mem_block;  
+        std::shared_ptr<MemoryBatch> m_mem_block;
 #endif
         PacketTimeWriter m_writer;
         long	m_pkt_cnt;
@@ -158,9 +158,9 @@ namespace blockmon
         PcapSource(const std::string &name, invocation_type invocation)
         : Block(name, invocation_type::Async) //ignore options, source must be indirect
         , m_source(NULL)
-        , m_live(false) 
-        , end_displayed(false) 
-        , m_gate_id(register_output_gate("source_out"))  
+        , m_live(false)
+        , end_displayed(false)
+        , m_gate_id(register_output_gate("source_out"))
 #if defined(USE_SIMPLE_PACKET) || defined(USE_SLICED_PACKET)
         , m_allocator()
 #else
@@ -179,7 +179,7 @@ namespace blockmon
         /**
          * @brief Destructor
          */
-        virtual ~PcapSource() 
+        virtual ~PcapSource()
         {
             if(m_source)
                 pcap_close(m_source);
@@ -192,12 +192,12 @@ namespace blockmon
         /**
          * @brief Configures the block: defines the capture interface, whether it's a trace or a live socket and (optional filters)
          * also, it opens the socket for capturing
-         * @param n The configuration parameters 
+         * @param n The configuration parameters
          */
-        virtual void _configure(const pugi::xml_node& n) 
+        virtual void _configure(const pugi::xml_node& n)
         {
             pugi::xml_node source=n.child("source");
-            if(!source) 
+            if(!source)
                 throw std::runtime_error("pcapsource: missing parameter source");
             std::string type=source.attribute("type").value();
             std::string name=source.attribute("name").value();
@@ -217,7 +217,7 @@ namespace blockmon
             {
                 m_source = pcap_open_live(name.c_str(),snaplen,1 ,10,errbuf);
                 if(!m_source)
-                { 
+                {
                     blocklog(std::string(errbuf), log_error);
                     throw(std::invalid_argument("TcpPcapSource::error within pcap_open_live"));
                 }
@@ -265,10 +265,10 @@ namespace blockmon
                     blocklog(pcap_geterr(m_source), log_error);
                     throw(std::invalid_argument("TcpPcapSource::error within pcap_setfilter"));
                 }
-            }             
+            }
 
             net::payload::size_of(BUFSIZ);
-           
+
             // the slice_allocator must be created once the dynamic_buffer (net::payload)
             // is set to a given size.
             //
@@ -278,7 +278,7 @@ namespace blockmon
 
         }
 
-        /** 
+        /**
          * listens on the capture socket, retrieves packets and sends them out as Packet messages
          * Uses optimized allocation.
          * As the socket call is blocking (although it returns after a timeout expires) this cannot share a thread
@@ -288,7 +288,7 @@ namespace blockmon
             struct pcap_pkthdr* hdr=NULL;
             const u_char* pkt = NULL;
 
-            int ret_code = pcap_next_ex(m_source,&hdr,&pkt);  
+            int ret_code = pcap_next_ex(m_source,&hdr,&pkt);
             if (ret_code == 1)
             {
                 m_pkt_cnt++;
@@ -307,9 +307,9 @@ namespace blockmon
 #elif defined(USE_SLICED_PACKET)
                 auto sp = blockmon::NewPacket::SlicedPacket(const_buffer<uint8_t>(actual_payload, hdr->caplen), *m_allocator, hdr->len, hdr->caplen, hdr->ts.tv_sec, hdr->ts.tv_usec);
 #else
-                auto sp = alloc_msg_from_buffer<Packet>(m_mem_block, (size_t)(hdr->caplen), 
+                auto sp = alloc_msg_from_buffer<Packet>(m_mem_block, (size_t)(hdr->caplen),
                                                         const_buffer<uint8_t>(actual_payload, hdr->caplen), p_tstamp, hdr->len);
-#endif                
+#endif
                 send_out_through(std::move(sp), m_gate_id);
 
             }
@@ -317,7 +317,7 @@ namespace blockmon
             if (ret_code == -1)
             {
                 blocklog(std::string(pcap_geterr(m_source)), log_warning);
-            } else if(ret_code == 0) 
+            } else if(ret_code == 0)
             {
                 //timeout expired
             } else if(ret_code == -2) {

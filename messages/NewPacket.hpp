@@ -1,8 +1,8 @@
-/* Copyright (c) 2011, Consorzio Nazionale Interuniversitario 
- * per le Telecomunicazioni. 
+/* Copyright (c) 2011, Consorzio Nazionale Interuniversitario
+ * per le Telecomunicazioni.
  * All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without 
+ * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *    * Redistributions of source code must retain the above copyright
  *      notice, this list of conditions and the following disclaimer.
@@ -13,17 +13,17 @@
  *      names of its contributors may be used to endorse or promote products
  *      derived from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT 
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR 
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT 
- * HOLDERBE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, 
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, 
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT
+ * HOLDERBE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
  * PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER 
- * IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
- * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER
+ * IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+ * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
  */
 
@@ -41,7 +41,7 @@
 
 #if defined(USE_SIMPLE_PACKET) || defined(USE_SLICED_PACKET)
 
-namespace blockmon { 
+namespace blockmon {
 
     class NewPacket : public Msg
     {
@@ -49,19 +49,19 @@ namespace blockmon {
 
         /** Runt packet missing full layer 2 header */
         static const uint16_t  kPktTypeRuntL2 = 0xFFF2;
-        
+
         /** Runt IP packet missing full layer 3 header */
         static const uint16_t  kPktTypeRuntL3 = 0xFFF3;
-        
+
         /** Runt IP packet missing full layer 4 header */
         static const uint16_t  kPktTypeRuntL4 = 0xFFF4;
-        
+
         /** IPv4 packet */
         static const uint16_t  kPktTypeIP4 = 0x0800;
-        
-        /** 802.1q packet; temporary packet type used during MAC parsing */        
+
+        /** 802.1q packet; temporary packet type used during MAC parsing */
         static const uint16_t  kPktType1q  = 0x8100;
-        
+
         /** IPv6 packet. Not yet supported. */
         static const uint16_t  kPktTypeIP6 = 0x86FF;
 
@@ -79,7 +79,7 @@ namespace blockmon {
 
     public:
 
-        NewPacket(uint16_t len, uint16_t caplen, uint32_t sec, uint32_t nsec, 
+        NewPacket(uint16_t len, uint16_t caplen, uint32_t sec, uint32_t nsec,
                   int msg_id = 0)
         : Msg(msg_id ? msg_id : MSG_ID(NewPacket))
         , slice_()
@@ -108,10 +108,10 @@ namespace blockmon {
 
         template <typename ...Ts>
         static std::shared_ptr<NewPacket>
-        SimplePacket(const_buffer<uint8_t> raw_packet, 
-                     blockmon::slice_allocator<NewPacket, 
+        SimplePacket(const_buffer<uint8_t> raw_packet,
+                     blockmon::slice_allocator<NewPacket,
                                                #ifdef USE_PACKET_TAG
-                                               net::TagBuffer, 
+                                               net::TagBuffer,
                                                #endif
                                                #ifdef USE_PACKET_FLOW
                                                blockmon::FlowKey,
@@ -119,16 +119,16 @@ namespace blockmon {
                                                net::payload> &alloc,
                      Ts&& ...args) // arguments passed to the NewPacket ctor: len, caplen, sec, nsec
         {
-            // Note that slice_allocator does not perform value-initialization (only default-initialization). 
+            // Note that slice_allocator does not perform value-initialization (only default-initialization).
             // -> scalar types are not zero-initialized!
-            
+
             auto slice = alloc.new_slice(std::forward<Ts>(args)...);
 
             auto this_packet = get<NewPacket>(slice);
 
             // setup the slice for this packet:
             //
-            
+
             this_packet->slice_ = std::make_tuple(
                                                   #ifdef USE_PACKET_TAG
                                                   get<net::TagBuffer>(slice),
@@ -142,17 +142,17 @@ namespace blockmon {
                                                   undefinedptr,
                                                   undefinedptr,
                                                   undefinedptr);
-            
+
 #ifdef USE_PACKET_TAG
             // reset TagBuffer
             //
             memset(get<net::TagBuffer>(slice), 0, sizeof(net::TagBuffer));
-            
-            // setup the tagbuffer 
+
+            // setup the tagbuffer
             //
-            
-            this_packet->set_tagbuf(mutable_buffer<char>(&get<net::TagBuffer>(slice)->front(), 
-                                                          get<net::TagBuffer>(slice)->size()), 
+
+            this_packet->set_tagbuf(mutable_buffer<char>(&get<net::TagBuffer>(slice)->front(),
+                                                          get<net::TagBuffer>(slice)->size()),
                                     false);
 #endif
 
@@ -189,9 +189,9 @@ namespace blockmon {
                                              net::icmp,
                                              net::payload> &alloc, Ts&& ... args) // : len, caplen, sec, nsec
         {
-            // Note: slice_allocator does not perform value-initialization (only default-initialization). 
+            // Note: slice_allocator does not perform value-initialization (only default-initialization).
             // -> scalar types are not zero-initialized!
-            
+
             auto slice = alloc.new_slice(std::forward<Ts>(args)...);
 
             auto this_packet = get<NewPacket>(slice);
@@ -214,30 +214,30 @@ namespace blockmon {
 #ifdef USE_PACKET_TAG
             // reset TagBuffer
             //
-            
+
             memset(get<net::TagBuffer>(slice), 0, sizeof(net::TagBuffer));
-            
-            // setup the tagbuffer 
+
+            // setup the tagbuffer
             //
-            
-            this_packet->set_tagbuf(mutable_buffer<char>(&get<net::TagBuffer>(slice)->front(), 
-                                                          get<net::TagBuffer>(slice)->size()), 
+
+            this_packet->set_tagbuf(mutable_buffer<char>(&get<net::TagBuffer>(slice)->front(),
+                                                          get<net::TagBuffer>(slice)->size()),
                                     false);
 #endif
 
             // setup the slice for this packet:
             //
-            
+
             auto len = std::min(net::payload::size_of(), raw_packet.len());
 
             // copy the headers in the corresponding slices
             //
-            
-            if (len && net::get_header<const net::ethernet>(parser)) 
+
+            if (len && net::get_header<const net::ethernet>(parser))
             {
                 auto this_len = net::get_header<const net::ethernet>(parser)->size_of();
                 if (len >= this_len) {
-                    len -= this_len;  
+                    len -= this_len;
                     memcpy(get<net::ethernet>(slice), net::get_header<const net::ethernet>(parser), this_len);
                 }
                 else len = 0;
@@ -246,11 +246,11 @@ namespace blockmon {
                 get<net::ethernet>(slice) = NULL;
             }
 
-            if (len && net::get_header<const net::ipv4>(parser)) 
+            if (len && net::get_header<const net::ipv4>(parser))
             {
                 auto this_len = net::get_header<const net::ipv4>(parser)->size_of();
                 if (len >= this_len) {
-                    len -= this_len;       
+                    len -= this_len;
                     memcpy(get<net::ipv4>(slice), net::get_header<const net::ipv4>(parser), this_len);
                 }
                 else
@@ -260,12 +260,12 @@ namespace blockmon {
             	get<net::ipv4>(slice) = NULL;
             }
 
-            if (len && net::get_header<const net::tcp>(parser)) 
+            if (len && net::get_header<const net::tcp>(parser))
             {
                 auto this_len = net::get_header<const net::tcp>(parser)->size_of();
                 if (len >= this_len) {
                     len -= this_len;
-                    memcpy(get<net::tcp>(slice), net::get_header<const net::tcp>(parser), this_len); 
+                    memcpy(get<net::tcp>(slice), net::get_header<const net::tcp>(parser), this_len);
                 }
                 else
                 	len = 0;
@@ -273,7 +273,7 @@ namespace blockmon {
             else {
             	get<net::tcp>(slice) = NULL;
 
-                if (len && net::get_header<const net::udp>(parser)) 
+                if (len && net::get_header<const net::udp>(parser))
                 {
                     auto this_len = net::get_header<const net::udp>(parser)->size_of();
                     if (len >= this_len) {
@@ -284,17 +284,17 @@ namespace blockmon {
                 }
                 else  {
                 	get<net::udp>(slice) = NULL;
-                    
-                    if (len && net::get_header<const net::icmp>(parser)) 
+
+                    if (len && net::get_header<const net::icmp>(parser))
                     {
                         auto this_len = net::get_header<const net::icmp>(parser)->size_of();
-                        if (len >= this_len) 
+                        if (len >= this_len)
                         {
                             len -= this_len;
-                            memcpy(get<net::icmp>(slice), net::get_header<const net::icmp>(parser), this_len); 
+                            memcpy(get<net::icmp>(slice), net::get_header<const net::icmp>(parser), this_len);
                         }
                         else len = 0;
-                    }  
+                    }
                     else { get<net::icmp>(slice) = NULL;
                     }
                 }
@@ -302,16 +302,16 @@ namespace blockmon {
 
             if (len && net::get_header<const net::payload>(parser))
             {
-                memcpy(get<net::payload>(slice), net::get_header<const net::payload>(parser), len); 
-            }                                                
+                memcpy(get<net::payload>(slice), net::get_header<const net::payload>(parser), len);
+            }
             else
             {
                 get<net::payload>(slice) = NULL;
-            }                                                
+            }
 
             // save the slice in the current packet..
             //
-            this_packet->slice_ = std::make_tuple( 
+            this_packet->slice_ = std::make_tuple(
                                                   #ifdef USE_PACKET_TAG
                                                   get<net::TagBuffer>(slice),
                                                   #endif
@@ -324,15 +324,15 @@ namespace blockmon {
                                                   get<net::udp>(slice),
                                                   get<net::icmp>(slice),
                                                   get<net::payload>(slice));
-            
+
 
             return alloc.bind_shared(this_packet);
         }
-        
+
         //////////////////////////////////////////////////////////
         // clone!
-        
-        std::shared_ptr<Msg> clone() const 
+
+        std::shared_ptr<Msg> clone() const
         {
             throw std::runtime_error(std::string(__PRETTY_FUNCTION__ ).append(": not implemented"));
         }
@@ -342,7 +342,7 @@ namespace blockmon {
         //
 
         template <typename Tp>
-        Tp * get_header() 
+        Tp * get_header()
         {
             return net::get_header<Tp>(slice_);
         }
@@ -352,26 +352,26 @@ namespace blockmon {
             return net::get_header<Tp>(slice_);
         }
 
-        const void *iphdr() const 
+        const void *iphdr() const
         {
             return net::get_header<net::ipv4>(slice_);
         }
-        
-        const void *l4hdr() const 
+
+        const void *l4hdr() const
         {
             auto udp = net::get_header<net::udp>(slice_);
             if (udp) {
                 return udp;
-            }                
+            }
             return net::get_header<net::tcp>(slice_);
         }
-        
-        const uint8_t *payload() const 
+
+        const uint8_t *payload() const
         {
             return reinterpret_cast<const uint8_t *>(net::get_header<net::payload>(slice_));
         }
 
-        
+
         uint16_t payload_len() const
         {
             auto eth = net::get_header<net::ethernet>(slice_);
@@ -401,7 +401,7 @@ namespace blockmon {
         }
 
         //////////////////////////////////////////////////////////
-        // accessors 
+        // accessors
         //
 
         uint16_t length() const
@@ -417,9 +417,9 @@ namespace blockmon {
         struct timespec
         timestamp() const
         {
-            return { sec_, nsec_ }; 
+            return { sec_, nsec_ };
         }
-        
+
         uint32_t timestamp_s() const {
             return sec_;
         }
@@ -433,54 +433,54 @@ namespace blockmon {
             return static_cast<uint64_t>(sec_)  * 1000000 +
                    static_cast<uint64_t>(nsec_) / 1000;
         }
-        
+
         uint16_t l3_protocol() const
         {
             return net::get_header<net::ethernet>(slice_)->ether_type_();
         }
 
-        uint8_t l4_protocol() const 
+        uint8_t l4_protocol() const
         {
             return net::get_header<net::ipv4>(slice_)->protocol_();
         }
 
         ////////////////////////////////////////////////////////////
-        
+
         // Not yet implemented or unused...
         //
 
         const uint8_t *base() const = delete;
-        
+
         int mac_type() const = delete;
-	
+
         uint8_t tcp_flags() const = delete;
 
-        
+
         ////////////////////////////////////////////////////////////
         // IPv4
         //
 
-        uint8_t ip_tos() const 
+        uint8_t ip_tos() const
         {
             return net::get_header<net::ipv4>(slice_)->tos_();
         }
 
-        uint8_t  ip_ttl() const 
+        uint8_t  ip_ttl() const
         {
             return net::get_header<net::ipv4>(slice_)->ttl_();
         }
-       
-        uint32_t ip_src() const 
+
+        uint32_t ip_src() const
         {
             return net::get_header<net::ipv4>(slice_)->saddr;
         }
 
-        uint32_t ip_dst() const 
+        uint32_t ip_dst() const
         {
             return net::get_header<net::ipv4>(slice_)->daddr;
         }
 
-        uint16_t ip_length() const 
+        uint16_t ip_length() const
         {
             return net::get_header<net::ipv4>(slice_)->tot_len_();
         }
@@ -505,18 +505,18 @@ namespace blockmon {
         ////////////////////////////////////////////////////////////
         // TCP
         //
-        
-        uint8_t tcp_header_length() const 
+
+        uint8_t tcp_header_length() const
         {
             return net::get_header<net::tcp>(slice_)->doff_() << 2;
         }
 
-        bool tcp_has_syn() const 
+        bool tcp_has_syn() const
         {
             return is_tcp() && (net::get_header<net::tcp>(slice_)->syn_() != 0);
         }
-        
-        bool tcp_has_ack() const 
+
+        bool tcp_has_ack() const
         {
             return is_tcp() && (net::get_header<net::tcp>(slice_)->ack_() != 0);
         }
@@ -526,7 +526,7 @@ namespace blockmon {
             return is_tcp() && (net::get_header<net::tcp>(slice_)->fin_() != 0);
         }
 
-        bool tcp_has_rst() const 
+        bool tcp_has_rst() const
         {
             return is_tcp() && (net::get_header<net::tcp>(slice_)->rst_() != 0);
         }
@@ -541,7 +541,7 @@ namespace blockmon {
             return is_tcp() && (net::get_header<net::tcp>(slice_)->urg_() != 0);
         }
 
-        uint32_t tcp_seq() const 
+        uint32_t tcp_seq() const
         {
             return net::get_header<net::tcp>(slice_)->seq_();
         }
@@ -582,7 +582,7 @@ namespace blockmon {
                 flow_key_.dst_port = this->dst_port();
                 flow_key_.proto    = this->l4_protocol();
             }
-        
+
             return flow_key_;
 #else
             if (!*net::get_header<blockmon::FlowKey>(slice_))
@@ -597,13 +597,13 @@ namespace blockmon {
 
             return *net::get_header<blockmon::FlowKey>(slice_);
 #endif
-        }   
+        }
 
         uint16_t udp_length() const
         {
             return net::get_header<net::udp>(slice_)->len_();
         }
-        
+
         //////////////////////////////////////////////////////////
         // L3 predicates
         //
@@ -614,20 +614,20 @@ namespace blockmon {
             return net::get_header<net::ipv4>(slice_)->protocol_() == PROTO;
         }
 
-        bool is_tcp() const 
+        bool is_tcp() const
         {
             if(l3_protocol()!=kPktTypeIP4)
             	return false;
             return net::get_header<net::ipv4>(slice_)->protocol_() == IPPROTO_TCP;
         }
 
-        bool is_udp() const 
+        bool is_udp() const
         {
         	if(l3_protocol()!=kPktTypeIP4)
         		return false;
             return net::get_header<net::ipv4>(slice_)->protocol_() == IPPROTO_UDP;
         }
-        
+
         bool is_icmp() const
         {
             return net::get_header<net::ipv4>(slice_)->protocol_() == IPPROTO_ICMP;
@@ -636,7 +636,7 @@ namespace blockmon {
         //////////////////////////////////////////////////////////
         // udp/tcp ports accessors...
         //
-        
+
         uint16_t src_port() const
         {
             if (is_udp())
@@ -655,7 +655,7 @@ namespace blockmon {
                     throw std::runtime_error("NewPacket::dst_port");
         }
 
-        
+
         void dump_slice() const
         {
             std::cout << "slice ---\n";
@@ -671,19 +671,19 @@ namespace blockmon {
 
     private:
         mutable net::packet_slice slice_;
-        
+
         uint16_t              len_;
         uint16_t              caplen_;
 
         uint32_t              sec_;
         uint32_t              nsec_;
 
-#if !defined(USE_PACKET_FLOW)        
+#if !defined(USE_PACKET_FLOW)
         mutable FlowKey       flow_key_;
 #endif
 
    };
-    
+
     typedef NewPacket Packet;
 
 } // namespace blockmon

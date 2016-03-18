@@ -1,31 +1,31 @@
-/* Copyright (c) 2011, NEC Europe Ltd, Consorzio Nazionale 
- * Interuniversitario per le Telecomunicazioni, Institut 
+/* Copyright (c) 2011, NEC Europe Ltd, Consorzio Nazionale
+ * Interuniversitario per le Telecomunicazioni, Institut
  * Telecom/Telecom Bretagne, ETH Zürich, INVEA-TECH a.s. All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without 
+ * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *    * Redistributions of source code must retain the above copyright
  *      notice, this list of conditions and the following disclaimer.
  *    * Redistributions in binary form must reproduce the above copyright
  *      notice, this list of conditions and the following disclaimer in the
  *      documentation and/or other materials provided with the distribution.
- *    * Neither the names of NEC Europe Ltd, Consorzio Nazionale 
- *      Interuniversitario per le Telecomunicazioni, Institut Telecom/Telecom 
- *      Bretagne, ETH Zürich, INVEA-TECH a.s. nor the names of its contributors 
- *      may be used to endorse or promote products derived from this software 
+ *    * Neither the names of NEC Europe Ltd, Consorzio Nazionale
+ *      Interuniversitario per le Telecomunicazioni, Institut Telecom/Telecom
+ *      Bretagne, ETH Zürich, INVEA-TECH a.s. nor the names of its contributors
+ *      may be used to endorse or promote products derived from this software
  *      without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT 
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR 
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT 
- * HOLDERBE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, 
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, 
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT
+ * HOLDERBE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
  * PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER 
- * IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
- * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER
+ * IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+ * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
  */
 
@@ -49,7 +49,7 @@
 
 #include <Serializer.hpp>
 
-namespace blockmon { 
+namespace blockmon {
 
   /**
    * If present in a constructor, this signals that the object to be
@@ -57,7 +57,7 @@ namespace blockmon {
    *
    * There is only one instance of this class: memory_not_owned.
    *
-   * FIXME: to be removed! 
+   * FIXME: to be removed!
    */
     struct memory_not_owned_t {};
 
@@ -81,15 +81,15 @@ namespace blockmon {
     public:
 
         /**
-         * Creates a new message of a given type. 
+         * Creates a new message of a given type.
          *
          * Type is simply an integer. Derived classes may set the private
-         * m_type field in their own constructors, if they represent only 
+         * m_type field in their own constructors, if they represent only
          * one type of message.
          *
          * @param type message type number
          */
-        Msg(int msg_id, mutable_buffer<char> buf = mutable_buffer<char>(), bool ownership = false) 
+        Msg(int msg_id, mutable_buffer<char> buf = mutable_buffer<char>(), bool ownership = false)
         : m_type(msg_id)
         , m_tagbuf(buf)
         , m_tagowner(ownership)
@@ -134,15 +134,15 @@ namespace blockmon {
          * Set the tag buffer this message.
          *
          * Buf is the mutable_buffer used for this Msg. ownership
-         * tells the Msg where to free the memory or not in the 
+         * tells the Msg where to free the memory or not in the
          * destructor.
          *
          * @param buf the mutable_buffer for the tagbuf
          * @param ownership the boolean value
          */
-        
+
         void set_tagbuf(mutable_buffer<char> buf, bool ownership)
-        {  
+        {
             if (m_tagowner)
                 delete [] m_tagbuf.addr();
 
@@ -166,7 +166,7 @@ namespace blockmon {
         {
             if (!m_tagbuf)
                 throw std::runtime_error("tag buffer not available");
-            TagRegistry<MsgType>::template emplace_tag<Tag>(m_tagbuf, handle, 
+            TagRegistry<MsgType>::template emplace_tag<Tag>(m_tagbuf, handle,
                                                             std::forward<Ts>(args)...);
         }
 
@@ -180,7 +180,7 @@ namespace blockmon {
 	 * @return a pointer to the tag object if its valid bit has
          * been set, NULL otherwise @param tag_h the tag handler
          * obtained upon registration
-         */ 
+         */
         template<typename Tag, typename MsgType>
         const Tag * get_tag(tag_handle<MsgType> handle) const
         {
@@ -195,7 +195,7 @@ namespace blockmon {
          * @param tag_h the tag handler obtained upon registration
 	 *
          * @return true whether the tag has been written, false otherwise
-         */ 
+         */
         template <typename MsgType>
         bool is_available_tag(tag_handle<MsgType> handle) const
         {
@@ -214,7 +214,7 @@ namespace blockmon {
          */
         void swap(Msg &rhs)
         {
-            std::swap(m_type, rhs.m_type);            
+            std::swap(m_type, rhs.m_type);
             std::swap(m_tagbuf, rhs.m_tagbuf);
             std::swap(m_tagowner, rhs.m_tagowner);
         }
@@ -240,18 +240,18 @@ namespace blockmon {
          * classes should implement the proper copy constructor and an
          * overridden clone() method as the following one:
          *
-         * std::shared_ptr<Msg> clone() const 
+         * std::shared_ptr<Msg> clone() const
          * {
 	 *     // This invokes copy-ctor of DerivedType
          *     return std::make_shared<DerivedType>(*this);
-         * }    
+         * }
          *
          */
-        virtual std::shared_ptr<Msg> clone() const 
-        {   
+        virtual std::shared_ptr<Msg> clone() const
+        {
             throw std::runtime_error(std::string("Msg::clone: virtual method not implemented in msg type ").
                                      append(classid::instance().get_name(m_type)));
-            
+
             return std::shared_ptr<Msg>();
         }
 
@@ -269,19 +269,19 @@ namespace blockmon {
       virtual size_t pod_size() const {
           throw std::runtime_error(__PRETTY_FUNCTION__);
       }
-        
+
 
     protected:
-        void assert_pod_size(size_t len) const 
+        void assert_pod_size(size_t len) const
         {
             if (len < pod_size()) {
                 throw std::runtime_error("buffer too small for pod_copy/create_from_pod()");
-            }            
+            }
         }
 
-		/* 
+		/*
          * Copy constructor
-         */        
+         */
         Msg(Msg const &other)
         : m_type(other.m_type)
         , m_tagbuf(mutable_buffer<char>(new char[other.m_tagbuf.len()], other.m_tagbuf.len()))

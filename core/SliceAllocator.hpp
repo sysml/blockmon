@@ -1,8 +1,8 @@
-/* Copyright (c) 2011, Consorzio Nazionale Interuniversitario 
- * per le Telecomunicazioni. 
+/* Copyright (c) 2011, Consorzio Nazionale Interuniversitario
+ * per le Telecomunicazioni.
  * All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without 
+ * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *    * Redistributions of source code must retain the above copyright
  *      notice, this list of conditions and the following disclaimer.
@@ -13,22 +13,22 @@
  *      names of its contributors may be used to endorse or promote products
  *      derived from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT 
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR 
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT 
- * HOLDERBE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, 
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, 
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT
+ * HOLDERBE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
  * PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER 
- * IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
- * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER
+ * IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+ * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
  */
 
 #ifndef _CORE_SLICE_ALLOCATOR_HPP_
-#define _CORE_SLICE_ALLOCATOR_HPP_ 
+#define _CORE_SLICE_ALLOCATOR_HPP_
 
 /*
  * Author: Nicola Bonelli <nicola.bonelli@cnit.it>
@@ -45,33 +45,33 @@
 namespace blockmon {
 
     /////////////////////////////////////////////////////////////////////////
-    
-    namespace details 
-    { 
+
+    namespace details
+    {
         template <size_t M, typename Tp>
-        static void allocate(Tp &t, std::integral_constant<size_t,0>) 
+        static void allocate(Tp &t, std::integral_constant<size_t,0>)
         {
-            typedef typename 
+            typedef typename
             std::remove_pointer<
                 typename std::tuple_element<0, Tp>::type>::type current_type;
 
             std::get<0>(t) = reinterpret_cast<current_type *>(new char[size_of<current_type>() * M]);
         }
         template <size_t M, size_t N, typename Tp>
-        static void allocate(Tp &t, std::integral_constant<size_t, N>) 
+        static void allocate(Tp &t, std::integral_constant<size_t, N>)
         {
-            typedef typename 
+            typedef typename
             std::remove_pointer<
                 typename std::tuple_element<N, Tp>::type>::type current_type;
 
             std::get<N>(t) = reinterpret_cast<current_type *>(new char[size_of<current_type>() * M]);
             allocate<M>(t, std::integral_constant<size_t, N-1>());
         }
-        
+
         template <typename Tp>
-        void destroy(Tp &t, size_t s, std::integral_constant<size_t, 0>) 
+        void destroy(Tp &t, size_t s, std::integral_constant<size_t, 0>)
         {
-            typedef typename 
+            typedef typename
             std::remove_pointer<
                 typename std::tuple_element<0, Tp>::type>::type current_type;
 #if __GNUC__ == 4 && __GNUC_MINOR__ <= 7
@@ -87,9 +87,9 @@ namespace blockmon {
             delete []reinterpret_cast<char *>(std::get<0>(t));
         }
         template <size_t N, typename Tp>
-        void destroy(Tp &t, size_t s, std::integral_constant<size_t,N>) 
+        void destroy(Tp &t, size_t s, std::integral_constant<size_t,N>)
         {
-            typedef typename 
+            typedef typename
             std::remove_pointer<
                 typename std::tuple_element<N, Tp>::type>::type current_type;
 #if __GNUC__ == 4 && __GNUC_MINOR__ <= 7
@@ -107,7 +107,7 @@ namespace blockmon {
         }
 
         template <typename Tp, typename ...Ts>
-        static void construct(Tp &r, Tp const &t, size_t offset, std::integral_constant<size_t, 0>, Ts&& ...args) 
+        static void construct(Tp &r, Tp const &t, size_t offset, std::integral_constant<size_t, 0>, Ts&& ...args)
         {
             typedef typename std::remove_pointer<
                 typename std::tuple_element<0, Tp>::type>::type current_type;
@@ -119,8 +119,8 @@ namespace blockmon {
             std::get<0>(r) = ptr;
         }
         template <size_t N, typename Tp, typename ...Ts>
-        static void construct(Tp &r, Tp const &t, size_t offset, std::integral_constant<size_t, N>, Ts&& ...args) 
-        {    
+        static void construct(Tp &r, Tp const &t, size_t offset, std::integral_constant<size_t, N>, Ts&& ...args)
+        {
             typedef typename std::remove_pointer<
                 typename std::tuple_element<N, Tp>::type>::type current_type;
             auto ptr = advance_ptr(std::get<N>(t),offset);
@@ -142,7 +142,7 @@ namespace blockmon {
     struct slice
     {
         typedef std::tuple<typename std::add_pointer<Ts>::type...> tuple_type;
-        
+
         tuple_type tuple_;
 
         slice() = default;
@@ -164,7 +164,7 @@ namespace blockmon {
         explicit operator tuple_type()
         {
             return tuple_;
-        }    
+        }
     };
 
     template <typename Tp> struct slice_size;
@@ -173,7 +173,7 @@ namespace blockmon {
 
     // utility to make a slice from a set of pointers
     //
-    
+
   /** Creates a slice from a set of pointers.
    *
    * @param args the pointers to slice.
@@ -252,12 +252,12 @@ namespace blockmon {
     /////////////////////////////////////////////////////////////////////////
     // slice manager: utility class used to manage memory
     //
-    
+
     template <size_t M, typename ...Ts>
     struct slice_manager
     {
         typedef slice<Ts...> slice_type;
-        
+
         slice_manager()
         : index_(0)
         , slice_()
@@ -274,8 +274,8 @@ namespace blockmon {
         slice_manager& operator=(const slice_manager &) = delete;
 
         template <typename ...Xs>
-        slice_type 
-        alloc(Xs && ...args) 
+        slice_type
+        alloc(Xs && ...args)
         {
             slice_type ret;
             if (index_ == M)
@@ -284,13 +284,13 @@ namespace blockmon {
             return ret;
         }
 
-        size_t 
-        size() const 
+        size_t
+        size() const
         {
             return index_;
         }
 
-    private:          
+    private:
         size_t      index_;
         slice_type  slice_;
     };
@@ -302,7 +302,7 @@ namespace blockmon {
     struct slice_allocator
     {
         typedef slice<Ts...> slice_type;
-        
+
         static constexpr size_t NSlots = 4096*32;
 
         slice_allocator()

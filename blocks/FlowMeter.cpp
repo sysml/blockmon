@@ -1,31 +1,31 @@
-/* Copyright (c) 2011, NEC Europe Ltd, Consorzio Nazionale 
- * Interuniversitario per le Telecomunicazioni, Institut 
+/* Copyright (c) 2011, NEC Europe Ltd, Consorzio Nazionale
+ * Interuniversitario per le Telecomunicazioni, Institut
  * Telecom/Telecom Bretagne, ETH Zürich, INVEA-TECH a.s. All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without 
+ * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *    * Redistributions of source code must retain the above copyright
  *      notice, this list of conditions and the following disclaimer.
  *    * Redistributions in binary form must reproduce the above copyright
  *      notice, this list of conditions and the following disclaimer in the
  *      documentation and/or other materials provided with the distribution.
- *    * Neither the names of NEC Europe Ltd, Consorzio Nazionale 
- *      Interuniversitario per le Telecomunicazioni, Institut Telecom/Telecom 
- *      Bretagne, ETH Zürich, INVEA-TECH a.s. nor the names of its contributors 
- *      may be used to endorse or promote products derived from this software 
+ *    * Neither the names of NEC Europe Ltd, Consorzio Nazionale
+ *      Interuniversitario per le Telecomunicazioni, Institut Telecom/Telecom
+ *      Bretagne, ETH Zürich, INVEA-TECH a.s. nor the names of its contributors
+ *      may be used to endorse or promote products derived from this software
  *      without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT 
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR 
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT 
- * HOLDERBE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, 
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, 
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT
+ * HOLDERBE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
  * PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER 
- * IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
- * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER
+ * IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+ * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
  */
 
@@ -33,14 +33,14 @@
  * <blockinfo type="FlowMeter" invocation="indirect" thread_exclusive="False">
  *   <humandesc>
  *       Receives packet messages and keeps a table of per-flow statistics, and, depending on the configuration, also the packets making up that flow.
- *       A circular queue is used to keep track of the last time a flow has been checked for 
- *       expiration. 
+ *       A circular queue is used to keep track of the last time a flow has been checked for
+ *       expiration.
  *       Two timeout values are used. The first one is the idle timeout (default value is 500 ms): whenever a flow record has not been
  *       receiving a packet for more than such time interval, the flow is considered as expired, its associated
  *       record is sent out and its table entry erased
  *.      The second one, the active timeout (default value is 100 ms), is activated when a flow has been active for longer than the corresponding time
  *       interval. When such timeout expires, a record about the flow is sent out and the counters in the corresponding table entry
- *       are reset. 
+ *       are reset.
  *       Notice that, while the idle timeout is checked by using a Blockmon timer mechanism, the indirect timeout is checked upon
  *       arrival of a new packet belonging to the flow.
  *   </humandesc>
@@ -88,13 +88,13 @@
 
 namespace blockmon
 {
-    
+
     /**
       * Class implementing a flow table
       * A hash table stores the flow entries while a circular list keeps track of which
       * entries have to be checked for expiration
       */
-    
+
     class FlowMeter: public Block
     {
 
@@ -102,7 +102,7 @@ namespace blockmon
       {
 
 	char addr_buffer[INET_ADDRSTRLEN];
-	//inet_ntop expects network byte order                                                                                                                      
+	//inet_ntop expects network byte order
 	uint32_t flipped_ip=htonl(ip);
 
 	if(!inet_ntop(AF_INET, &flipped_ip, addr_buffer, INET_ADDRSTRLEN))
@@ -136,19 +136,19 @@ namespace blockmon
                     hash ^= (hash <<  7) ^ (*it) * (hash >> 3);
                 }
                 return hash;
-            }     
+            }
         public:
             /**
               * computes the hash of a flow_key object
-              * First it copies the content of the key into a zeroed area so that 
+              * First it copies the content of the key into a zeroed area so that
               * there is not random garbage in the padding bytes
               * @param t the flow key
               */
-            size_t operator()(const FlowKey& t) const    
+            size_t operator()(const FlowKey& t) const
             {
                 FlowKey local;
                 memset(&local,0,sizeof(local)); //we need to 0 any random garbage in the padding
-                local = t; 
+                local = t;
                 return simplehash(reinterpret_cast<const char*> (&local),sizeof(FlowKey) );
             }
         };
@@ -188,8 +188,8 @@ namespace blockmon
         unsigned int m_queue_tail;
         int m_in_gate_id;
         int m_out_gate_id;
-        int  m_idle_timeout_ms; 
-        unsigned int  m_active_timeout_ms; 
+        int  m_idle_timeout_ms;
+        unsigned int  m_active_timeout_ms;
         bool m_store_packets;
 
         /**
@@ -242,7 +242,7 @@ namespace blockmon
 	m_active_timeout_ms(100),
 	m_store_packets(false)
         {
-            if (invocation != invocation_type::Indirect) 
+            if (invocation != invocation_type::Indirect)
             {
                 blocklog("FlowMeter must be Indirect, ignoring configuration", log_warning);
             }
@@ -254,13 +254,13 @@ namespace blockmon
         FlowMeter& operator=(FlowMeter&&) = delete;
 
         /**
-         * @brief Configures the block: defines whether reports should only concern expired flows 
+         * @brief Configures the block: defines whether reports should only concern expired flows
          * and sets the timeout value.
          * This routine also sets a periodic timer for checking the table for expired flows.
          * The timer period is set to the value of the idle timeout.
-         * @param n The configuration parameters 
+         * @param n The configuration parameters
          */
-        virtual void _configure(const pugi::xml_node&  n ) 
+        virtual void _configure(const pugi::xml_node&  n )
         {
             pugi::xml_node idle_timeout = n.child("idle_timeout");
             if(idle_timeout)
@@ -302,7 +302,7 @@ namespace blockmon
                 queue_slot cur_slot;
                 if(!pop_slot(cur_slot)) {
                     std::cout << "no new flows to export" << std::endl;
-                    return; //queue is empty    
+                    return; //queue is empty
                 }
                 const Flow* cur_flow = static_cast<const Flow*> (cur_slot.flow_ptr.get());
                 if(cur_flow->end_time() < us_limit) //timeout expired for this flow+
@@ -311,7 +311,7 @@ namespace blockmon
 		    //printf("sending info out from handle_timer!\n");
                     send_out_through(std::move(cur_slot.flow_ptr),m_out_gate_id);
                 }
-                else 
+                else
                 {
                     bool last_slot = (cur_slot.last_checked > us_limit);
                     cur_slot.last_checked = tnow;
@@ -342,7 +342,7 @@ namespace blockmon
             {
                 Flow* new_flow = new Flow (packet->key());
 
-		/*printf("insert flow: <%s:%d -> %s:%d proto=%d>\n", 
+		/*printf("insert flow: <%s:%d -> %s:%d proto=%d>\n",
 		       ip_to_string(new_flow->key().src_ip4).c_str(),
 		       new_flow->key().src_port,
 		       ip_to_string(new_flow->key().dst_ip4).c_str(),
@@ -368,14 +368,14 @@ namespace blockmon
                 if( ((us_now - flow->start_time()) / 1000) > m_active_timeout_ms )
                 {
                     flow->expand_interval (us_now);
-                    
-                    /* printf("exporting flow: <%s:%d -> %s:%d proto=%d>\n", 
+
+                    /* printf("exporting flow: <%s:%d -> %s:%d proto=%d>\n",
                            ip_to_string(flow->key().src_ip4).c_str(),
                            flow->key().src_port,
                            ip_to_string(flow->key().dst_ip4).c_str(),
                            flow->key().dst_port,
                            flow->key().proto);*/
-            
+
                     send_out_through(flow_it->second->clone(),m_out_gate_id);
                     flow->reset();
                 }

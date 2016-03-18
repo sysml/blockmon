@@ -1,31 +1,31 @@
-/* Copyright (c) 2011, NEC Europe Ltd, Consorzio Nazionale 
- * Interuniversitario per le Telecomunicazioni, Institut 
+/* Copyright (c) 2011, NEC Europe Ltd, Consorzio Nazionale
+ * Interuniversitario per le Telecomunicazioni, Institut
  * Telecom/Telecom Bretagne, ETH Zürich, INVEA-TECH a.s. All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without 
+ * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *    * Redistributions of source code must retain the above copyright
  *      notice, this list of conditions and the following disclaimer.
  *    * Redistributions in binary form must reproduce the above copyright
  *      notice, this list of conditions and the following disclaimer in the
  *      documentation and/or other materials provided with the distribution.
- *    * Neither the names of NEC Europe Ltd, Consorzio Nazionale 
- *      Interuniversitario per le Telecomunicazioni, Institut Telecom/Telecom 
- *      Bretagne, ETH Zürich, INVEA-TECH a.s. nor the names of its contributors 
- *      may be used to endorse or promote products derived from this software 
+ *    * Neither the names of NEC Europe Ltd, Consorzio Nazionale
+ *      Interuniversitario per le Telecomunicazioni, Institut Telecom/Telecom
+ *      Bretagne, ETH Zürich, INVEA-TECH a.s. nor the names of its contributors
+ *      may be used to endorse or promote products derived from this software
  *      without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT 
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR 
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT 
- * HOLDERBE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, 
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, 
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT
+ * HOLDERBE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
  * PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER 
- * IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
- * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER
+ * IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+ * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
  */
 
@@ -33,9 +33,9 @@
 #define __DB_QUEUE_H__
 
 
-#if __GNUC__ == 4 &&  __GNUC_MINOR__ == 4  
+#if __GNUC__ == 4 &&  __GNUC_MINOR__ == 4
 #include <cstdatomic>
-#else 
+#else
 #include <atomic>
 #endif
 
@@ -70,16 +70,16 @@ class DBQueue
         return q == 0 ? 1 : 0;
     }
 
-    
+
 
     std::array<buffer,2> m_queues;
-    std::atomic_uint m_pointer;        
+    std::atomic_uint m_pointer;
     unsigned int m_read;
     unsigned int m_consumer_q;
     unsigned int m_full_slots;
     std::atomic_bool m_full;
     static const unsigned int MASK=0|(1<<31)|(1<<30);
-    
+
     void swap_queues()
     {
         for(unsigned int i=0; i<m_full_slots; ++i)
@@ -88,7 +88,7 @@ class DBQueue
         }
         unsigned int newpoint=m_consumer_q<<30;
         m_consumer_q=exchange_queue(m_consumer_q);
-        unsigned int old_pointer=m_pointer.exchange(newpoint,std::memory_order_release); 
+        unsigned int old_pointer=m_pointer.exchange(newpoint,std::memory_order_release);
         m_full.store(false,std::memory_order_release);
         old_pointer&=~MASK;
         m_full_slots=std::min(old_pointer,Qlen);
@@ -108,7 +108,7 @@ class DBQueue
                     return true;
                 }
                 std::this_thread::sleep_for(std::chrono::microseconds(10));
-            } 
+            }
             m_read++;
         }
         return false;
@@ -204,13 +204,13 @@ public:
         unsigned int cur_queue=(cur_pointer&MASK)>>30;
         assert((cur_queue==0)||(cur_queue==1));
 
-        unsigned int my_slot = cur_pointer&(~MASK); 
+        unsigned int my_slot = cur_pointer&(~MASK);
         if (my_slot >= Qlen - 1)
         {
             if (my_slot == Qlen -1)
                 m_full.store(true,std::memory_order_release);
             else
-                return false;        
+                return false;
         }
 
         m_queues[cur_queue].vec[my_slot].payload=std::forward<Tp>(in);
@@ -227,7 +227,7 @@ public:
         return false;
     }
 
-    //this has to be executed out of the critical session 
+    //this has to be executed out of the critical session
     void reset()
     {
         for (auto qit=m_queues.begin(); qit!=m_queues.end(); ++qit)
@@ -247,8 +247,8 @@ public:
     }
 
 
-};    
-    
+};
+
 
 #endif //__DB_QUEUE_H__
 

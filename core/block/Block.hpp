@@ -1,31 +1,31 @@
-/* Copyright (c) 2011, NEC Europe Ltd, Consorzio Nazionale 
- * Interuniversitario per le Telecomunicazioni, Institut 
+/* Copyright (c) 2011, NEC Europe Ltd, Consorzio Nazionale
+ * Interuniversitario per le Telecomunicazioni, Institut
  * Telecom/Telecom Bretagne, ETH Zürich, INVEA-TECH a.s. All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without 
+ * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *    * Redistributions of source code must retain the above copyright
  *      notice, this list of conditions and the following disclaimer.
  *    * Redistributions in binary form must reproduce the above copyright
  *      notice, this list of conditions and the following disclaimer in the
  *      documentation and/or other materials provided with the distribution.
- *    * Neither the names of NEC Europe Ltd, Consorzio Nazionale 
- *      Interuniversitario per le Telecomunicazioni, Institut Telecom/Telecom 
- *      Bretagne, ETH Zürich, INVEA-TECH a.s. nor the names of its contributors 
- *      may be used to endorse or promote products derived from this software 
+ *    * Neither the names of NEC Europe Ltd, Consorzio Nazionale
+ *      Interuniversitario per le Telecomunicazioni, Institut Telecom/Telecom
+ *      Bretagne, ETH Zürich, INVEA-TECH a.s. nor the names of its contributors
+ *      may be used to endorse or promote products derived from this software
  *      without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT 
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR 
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT 
- * HOLDERBE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, 
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, 
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT
+ * HOLDERBE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
  * PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER 
- * IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
- * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER
+ * IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+ * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
  */
 
@@ -33,7 +33,7 @@
  * Copyright notice goes here.
  */
 #ifndef _CORE_BLOCK_BLOCK_HPP_
-#define _CORE_BLOCK_BLOCK_HPP_ 
+#define _CORE_BLOCK_BLOCK_HPP_
 
 #include <map>
 #include <memory>
@@ -43,9 +43,9 @@
 #include <stdexcept>
 #include <algorithm>
 
-#if __GNUC__ == 4 &&  __GNUC_MINOR__ == 4  
+#if __GNUC__ == 4 &&  __GNUC_MINOR__ == 4
 #include <cstdatomic>
-#else 
+#else
 #include <atomic>
 #endif
 
@@ -63,7 +63,7 @@
  * The blockmon namespace contains all classes and functions belonging
  * to Blockmon.
  */
-namespace blockmon { 
+namespace blockmon {
 
     class Timer;	// forward definition
 
@@ -99,7 +99,7 @@ namespace blockmon {
  * @section How to Build a Block
  *
  * -# create a subclass of Block ( class MyBlock : public Block { ... }; )
- *    to make it easier on other developers, put this in the blocks/ 
+ *    to make it easier on other developers, put this in the blocks/
  *    directory, and name it SomethingBlock, unless it meets one of the
  *    following two criteria:
  *    -  Messages sources (e.g. IPFIX importers, packet capture blocks)
@@ -107,30 +107,30 @@ namespace blockmon {
  *    -  Message sinks for export (e.g., IPFIX exporters) should be
  *         named SomethingExporter.
  * -# implement your constructor in terms of the Block constructor. Your
- *    block constructor should take two parameters, std::string name and 
+ *    block constructor should take two parameters, std::string name and
  *    bool active, which will be supplied by BlockFactory. Resource-intensive
  *    initialization can be deferred to _configure(), below.
- * -# implement the _configure() method to handle block configuration. 
- *    This receives a pugixml node representing the <params> element 
+ * -# implement the _configure() method to handle block configuration.
+ *    This receives a pugixml node representing the <params> element
  *    containing block parameters. All blocks must implement _configure(),
  *    which in addition to configuration should also do any necessary
  *    creation of periodic timers or other resource-intensive initialization.
  * -# implement the _receive_msg() method to receive messages (which you'll
  *    need to do unless your block is a Source).
- * -# If your block uses timers (see Timer.hpp), implement the _handle_timer() 
+ * -# If your block uses timers (see Timer.hpp), implement the _handle_timer()
  *    method, which gets called when the timers fire.
- * -# If your block is runtime-reconfigurable, implement the 
+ * -# If your block is runtime-reconfigurable, implement the
  *    _update_config() method.
  * -# If your block can be directly invoked, and is thread-safe, implement
  *    the _synchronize_access() method to return false. _synchronize_access()
- *    is called after _configure(), so your block's thread-safety can be 
+ *    is called after _configure(), so your block's thread-safety can be
  *    configuration dependent.
  * -# If your block can only be asynchronously invoked, and requires
  *    high frequency periodic events without timing constraings (e.g., as
  *    a Source block busywaiting on packets, implement _do_async().
  *    This method should do the smallest amount of processing that is
  *    practical, in order to retain scheduling flexibility.
- * -# Use the REGISTER_BLOCK(classname, configname) macro at the end of your 
+ * -# Use the REGISTER_BLOCK(classname, configname) macro at the end of your
  *    SomethingBlock.cpp file macro to register your Block with the factory.
  *
  * @section Block Scheduling
@@ -152,7 +152,7 @@ namespace blockmon {
     protected:
 
 /**
- * Creates a new Block with a given name and type. 
+ * Creates a new Block with a given name and type.
  *
  * @param name the name of the Block
  * @param invocation invocation type of the Block, Direct, Indirect, or Async.
@@ -194,7 +194,7 @@ namespace blockmon {
 
 /**
  * Returns the invocation type of this Block.
- */ 
+ */
 
         invocation_type invocation() const {
             return m_invocation;
@@ -216,18 +216,18 @@ namespace blockmon {
 /**
  * Tests if the Block is directly invoked.
  */
- 
+
         bool is_direct() const {
             return m_invocation == invocation_type::Direct;
         }
 
 /**
- * Returns the running status of this Block. 
+ * Returns the running status of this Block.
  *
  * NOTE: This facility is not yet used by BlockMon, and is included
  * for future reconfiguration support.
  *
- * @return TRUE if the Block is presently running (that is, may 
+ * @return TRUE if the Block is presently running (that is, may
  *         have its receive_msg() and handle_timer() methods called).
  */
         bool is_running() const
@@ -242,7 +242,7 @@ namespace blockmon {
  * NOTE: This facility is not yet used by BlockMon, and is included
  * for future reconfiguration support.
  *
- * @param running TRUE if the Block is presently running (that is, may 
+ * @param running TRUE if the Block is presently running (that is, may
  *         have its receive_msg() and handle_timer() methods called).
  */
         void set_running(bool running)
@@ -300,11 +300,11 @@ namespace blockmon {
  * @param name the name of the output gate to get
  * @return the named gate by reference.
  */
-        OutGate& get_output_gate(const std::string& name) 
+        OutGate& get_output_gate(const std::string& name)
         {
             std::map<std::string, int>::const_iterator it;
             it = m_output_ids.find(name);
-            if (it == m_output_ids.end()) 
+            if (it == m_output_ids.end())
                 throw std::runtime_error(std::string("Gate '").append(name).append("' does not exist."));
             return m_outgates[it->second];
         }
@@ -317,7 +317,7 @@ namespace blockmon {
  * @param id the id of the output gate to get
  * @return the gate by reference.
  */
-        OutGate& get_output_gate(int id) 
+        OutGate& get_output_gate(int id)
         {
             return m_outgates.at(id);
         }
@@ -342,13 +342,13 @@ namespace blockmon {
             // configure needs to take <block> node of XML
             // parsing common block features
 #ifdef BLOCKING_QUEUE
-    	  auto block_attrib=block_node.attribute("blocking_mode");
-    	  if(!block_attrib.empty()){
-    		  if (m_invocation != invocation_type::Indirect){
-    			  std::cerr << "warning: m_queue_blocking attribute is valid only for indirect blocks. The argument is ignored for the block " <<m_name<<"\n";
-    		  }
-    		  else
-    		  {
+          auto block_attrib=block_node.attribute("blocking_mode");
+          if(!block_attrib.empty()){
+              if (m_invocation != invocation_type::Indirect){
+                std::cerr << "warning: m_queue_blocking attribute is valid only for indirect blocks. The argument is ignored for the block " <<m_name<<"\n";
+              }
+              else
+              {
 				  std::string s(block_attrib.value());
 				  std::transform(s.begin(), s.end(), s.begin(), (int (*)(int))std::tolower);
 				  if (s.compare("drop")==0){
@@ -373,12 +373,12 @@ namespace blockmon {
 											  .append("' for block '").append(m_name).append("' is invalid.\n")
 											  .append("Valid parameters are: drop (default), yield, sleep, mutex.")  );
 				  }
-    		  }
-    	  }
-    	  else if (m_invocation != invocation_type::Indirect){
-    		  blocklog("Queues are non-blocking (i.e., messages will be dropped when queue is full)", log_info);
-    		  m_queue_type=QUEUETYPE_DROPPING;
-    	  }
+              }
+          }
+          else if (m_invocation != invocation_type::Indirect){
+                  blocklog("Queues are non-blocking (i.e., messages will be dropped when queue is full)", log_info);
+                  m_queue_type=QUEUETYPE_DROPPING;
+          }
 
 #endif	//BLOCKING_QUEUE
             pugi::xml_node params_node = block_node.child("params");
@@ -391,7 +391,7 @@ namespace blockmon {
 /**
  * Initializes a Block.
  *
- * Called by the BlockMon infrastructure to initialize the Block. 
+ * Called by the BlockMon infrastructure to initialize the Block.
  * Not overridable; derived classes must
  * implement the virtual method _initialize() to handle configuration.
  *
@@ -405,10 +405,10 @@ namespace blockmon {
 /**
  * Updates this Block's configuration.
  *
- * Entry point for reconfiguration. Called by the BlockMon 
- * infrastructure at reconfiguration time. Not overridable; derived 
- * classes must implement the virtual method _update_config() to 
- * handle reconfiguration. 
+ * Entry point for reconfiguration. Called by the BlockMon
+ * infrastructure at reconfiguration time. Not overridable; derived
+ * classes must implement the virtual method _update_config() to
+ * handle reconfiguration.
  *
  * @param xmlnode the <params> XML node containing Block parameters
  * @return TRUE if the configuration is updateable, FALSE otherwise.
@@ -420,16 +420,16 @@ namespace blockmon {
                 return true;
             } else {
                 return false;
-            } 
+            }
         }
 
 /**
  * Receives a message from another Block.
  *
- * Entry point for passive message processing. Called by the BlockMon 
+ * Entry point for passive message processing. Called by the BlockMon
  * infrastructure when a message is sent to this Block.
- * Handles synchronization for thread-unsafe _receive_msg implementations. 
- * Not overridable; derived classes must implement the virtual method 
+ * Handles synchronization for thread-unsafe _receive_msg implementations.
+ * Not overridable; derived classes must implement the virtual method
  * _receive_msg() to receive messages.
  *
  * @param m a shared pointer to the received message
@@ -438,7 +438,7 @@ namespace blockmon {
         void receive_msg(std::shared_ptr<const Msg>&& m, int gate_id)
         {
             if (m_issynchronized) {
-            	std::lock_guard<std::mutex> receive_guard(m_mutex);
+                std::lock_guard<std::mutex> receive_guard(m_mutex);
                 _receive_msg(std::move(m), gate_id);
             } else {
                 _receive_msg(std::move(m), gate_id);
@@ -448,10 +448,10 @@ namespace blockmon {
 /**
  * Handles an expired timer.
  *
- * Entry point for timer processing. Called by the BlockMon 
+ * Entry point for timer processing. Called by the BlockMon
  * infrastructure when a timer event occurs for this Block.
- * Handles queueing for actively scheduled blocks and synchronization 
- * for thread-unsafe _handle_timer implementations. Not overridable; 
+ * Handles queueing for actively scheduled blocks and synchronization
+ * for thread-unsafe _handle_timer implementations. Not overridable;
  * derived classes must implement the virtual method _handle_timer()
  * to handle timers.
  *
@@ -463,9 +463,9 @@ namespace blockmon {
   * Runs this Block.
   *
   * Entry point for the active runloop. Called by the BlockMon infrastructure
-  * within a thread in the assigned threadpool. 
+  * within a thread in the assigned threadpool.
   *
-  * Handles queued timers and messages via _handle_timer() and _receive_msg(), 
+  * Handles queued timers and messages via _handle_timer() and _receive_msg(),
   * and asynchronous processing via _do_async().
   */
         void run();
@@ -531,12 +531,12 @@ namespace blockmon {
     /* only subclasses can register variables */
     protected:
 
-/** 
+/**
  * Registers a variable which can be externally shared outside the Block.
  *
  * See BlockVariable.hpp for documentation on creating and using
  * exposed variables.
- * 
+ *
  * @param name name by which the variable can be accessed
  * @param v a shared pointer to the variable to register (creating it with the helper functions in BlockVariable.hpp is recommended)
  */
@@ -553,7 +553,7 @@ namespace blockmon {
  * Gate accessors for use by derived classes
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
     protected:
- 
+
  /**
   * Sends a message on a given gate.
   *
@@ -561,7 +561,7 @@ namespace blockmon {
   * be invoked directly; otherwise the message will be queued.
   *
   * @param m the message to send
-  * @param gate_id the id of the gate to send the message on, 
+  * @param gate_id the id of the gate to send the message on,
   *                as returned by register_output_gate
   */
         void send_out_through(std::shared_ptr<const Msg>&& m, int id)
@@ -572,7 +572,7 @@ namespace blockmon {
 
  /**
   * Registers an input gate.
-  * 
+  *
   * @param name the name of the gate to register
   * @return the id of the registered gate
   */
@@ -580,7 +580,7 @@ namespace blockmon {
 
  /**
   * Registers an output gate.
-  * 
+  *
   * @param name the name of the gate to register
   * @return the id of the registered gate
   */
@@ -598,8 +598,8 @@ namespace blockmon {
  * @param id the id of the timer; retrievable with Timer::get_id() for later
  *           quick comparison
  */
-        void set_timer_at(ustime_t ts, 
-                          const std::string &name, 
+        void set_timer_at(ustime_t ts,
+                          const std::string &name,
                           unsigned int id);
 
 /**
@@ -610,8 +610,8 @@ namespace blockmon {
  * @param id the id of the timer; retrievable with Timer::get_id() for later
  *           quick comparison
  */
-        void set_periodic_timer(ustime_t us, 
-                                const std::string &name, 
+        void set_periodic_timer(ustime_t us,
+                                const std::string &name,
                                 unsigned int id);
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -620,9 +620,9 @@ namespace blockmon {
 
 /**
  * Prints a log message.
- * 
+ *
  * FIXME make this not suck
- * 
+ *
  * @param l the log message to print
  * @param t the type of the log message (one of debug, info, warning, error)
  */
@@ -635,12 +635,12 @@ namespace blockmon {
  * Entry points to be overriden by derived classes.
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
     protected:
-        
+
 /**
  * Configure the block given an XML element containing configuration.
  * Called before the block will begin receiving messages.
  *
- * SHOULD be overridden in a derived class. 
+ * SHOULD be overridden in a derived class.
  * Configuration errors should be signaled by throwing.
  *
  * @param xmlnode the <params> XML element containing block parameters
@@ -648,17 +648,17 @@ namespace blockmon {
       virtual void _configure(const pugi::xml_node& xmlnode) {}
 
 /**
- * Initializes the Block. 
+ * Initializes the Block.
  * Called before the Block will begin receiving messages.
  *
- * CAN be overridden in a derived class. 
+ * CAN be overridden in a derived class.
  * Configuration errors should be signaled by throwing.
  */
 
         virtual void _initialize() {}
 
 /**
- * Updates the configuration on a running Block given an XML 
+ * Updates the configuration on a running Block given an XML
  * element containing configuration.
  *
  * Can veto a reconfiguration by returning false, after which the
@@ -679,7 +679,7 @@ namespace blockmon {
  * errors should be handled by throwing.
  *
  * @param m a shared pointer to the message to handle
- * @param gate_id the gate ID of the input gate on which the message was 
+ * @param gate_id the gate ID of the input gate on which the message was
  *                received, as returned by register_input_gate()
  *
  */
@@ -690,14 +690,14 @@ namespace blockmon {
  *
  * Should be overridden by any derived class that uses timers;
  * default throws a logic error. Errors should be logged. Fatal
- * errors should be handled by throwing. 
+ * errors should be handled by throwing.
  *
  * @param t the timer on which the event occurred.
  *
  */
         virtual void _handle_timer(std::shared_ptr<Timer>&& t);
-            
-        
+
+
 /**
  * Does asynchronous processing as part of an active Block's runloop.
  *
@@ -712,7 +712,7 @@ namespace blockmon {
  * should be synchronized (i.e., should allow only one thread at a time to
  * execute them. Called after configuration or reconfiguration time.
  *
- * Derived classes SHOULD override this method to return false if they are 
+ * Derived classes SHOULD override this method to return false if they are
  * threadsafe; the default implementation always returns true.
  *
  * @return the synchronized status of the methods in the Block
@@ -731,7 +731,7 @@ namespace blockmon {
         invocation_type m_invocation;
         bool m_issynchronized;
         bool m_running;
-        
+
         // Input and output gates
         std::map<std::string, int > m_input_ids;
         std::map<std::string, int > m_output_ids;

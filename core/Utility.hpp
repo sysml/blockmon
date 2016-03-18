@@ -1,36 +1,36 @@
-/* Copyright (c) 2011, NEC Europe Ltd, Consorzio Nazionale 
- * Interuniversitario per le Telecomunicazioni, Institut 
+/* Copyright (c) 2011, NEC Europe Ltd, Consorzio Nazionale
+ * Interuniversitario per le Telecomunicazioni, Institut
  * Telecom/Telecom Bretagne, ETH Zürich, INVEA-TECH a.s. All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without 
+ * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *    * Redistributions of source code must retain the above copyright
  *      notice, this list of conditions and the following disclaimer.
  *    * Redistributions in binary form must reproduce the above copyright
  *      notice, this list of conditions and the following disclaimer in the
  *      documentation and/or other materials provided with the distribution.
- *    * Neither the names of NEC Europe Ltd, Consorzio Nazionale 
- *      Interuniversitario per le Telecomunicazioni, Institut Telecom/Telecom 
- *      Bretagne, ETH Zürich, INVEA-TECH a.s. nor the names of its contributors 
- *      may be used to endorse or promote products derived from this software 
+ *    * Neither the names of NEC Europe Ltd, Consorzio Nazionale
+ *      Interuniversitario per le Telecomunicazioni, Institut Telecom/Telecom
+ *      Bretagne, ETH Zürich, INVEA-TECH a.s. nor the names of its contributors
+ *      may be used to endorse or promote products derived from this software
  *      without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT 
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR 
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT 
- * HOLDERBE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, 
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, 
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT
+ * HOLDERBE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
  * PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER 
- * IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
- * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER
+ * IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+ * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
  */
 
 #ifndef _CORE_UTILITY_HPP_
-#define _CORE_UTILITY_HPP_ 
+#define _CORE_UTILITY_HPP_
 
 #include <type_traits>
 #include <stdexcept>
@@ -39,17 +39,17 @@
  * Author: Nicola Bonelli <nicola.bonelli@cnit.it>
  */
 
-namespace blockmon { 
+namespace blockmon {
 
   /**
-   * Checks at compile time whether the list of given types are pod. 
+   * Checks at compile time whether the list of given types are pod.
    *
    * Arbitrary number of types. A placeholder.
    */
     template <typename ...Ts> struct static_assert_is_pod;
 
   /**
-   * Checks at compile time whether the list of given types are pod. 
+   * Checks at compile time whether the list of given types are pod.
    *
    * A single type. Used to bootstrap the induction.
    */
@@ -60,7 +60,7 @@ namespace blockmon {
     };
 
   /**
-   * Checks at compile time whether the list of given types are pod. 
+   * Checks at compile time whether the list of given types are pod.
    *
    * More than one type. Induction step.
    */
@@ -85,7 +85,7 @@ namespace blockmon {
     template <typename T>
     struct assert_is_pod<T>
     {
-        assert_is_pod() 
+        assert_is_pod()
         {
             if (!std::is_pod<T>::value)
                 throw std::runtime_error("T is not pod");
@@ -148,20 +148,20 @@ namespace blockmon {
     }
 
     /*
-     * has size_of member using SFINAE... 
+     * has size_of member using SFINAE...
      */
 
-    template <typename T>   
-    class has_size_of  
-    {   
+    template <typename T>
+    class has_size_of
+    {
         typedef char __one;
         typedef struct { char __arr[2]; } __two;
 
-        template <typename C> static __one test(typename std::remove_reference<decltype(C::size_of())>::type *);  
-        template <typename C> static __two test(...);   
+        template <typename C> static __one test(typename std::remove_reference<decltype(C::size_of())>::type *);
+        template <typename C> static __two test(...);
 
-    public: 
-        enum { value = sizeof(test<T>(0)) == sizeof(__one) };   
+    public:
+        enum { value = sizeof(test<T>(0)) == sizeof(__one) };
     };
 
   /** Computes the size of a type.
@@ -173,11 +173,11 @@ namespace blockmon {
    * sizeof(TYPE) otherwise.
    */
      template <typename Tp>
-     inline auto  
-     size_of() 
+     inline auto
+     size_of()
      -> typename std::enable_if<has_size_of<Tp>::value,size_t>::type
      {
-         return Tp::size_of(); 
+         return Tp::size_of();
      }
 
   /** Computes the size of a type.
@@ -187,11 +187,11 @@ namespace blockmon {
    * @return the value of sizeof(TYPE).
    */
      template <typename Tp>
-     inline auto  
-     size_of() 
+     inline auto
+     size_of()
      -> typename std::enable_if<!has_size_of<Tp>::value,size_t>::type
      {
-         return sizeof(Tp);    
+         return sizeof(Tp);
      }
 
   /** Advances the given pointer by the number of slots.
@@ -204,8 +204,8 @@ namespace blockmon {
    */
 
      template <typename Tp>
-     inline auto 
-     advance_ptr(Tp *ptr, std::size_t n) 
+     inline auto
+     advance_ptr(Tp *ptr, std::size_t n)
      -> typename std::enable_if<has_size_of<Tp>::value, Tp *>::type
      {
         return reinterpret_cast<Tp *>(
@@ -222,9 +222,9 @@ namespace blockmon {
    * @param n the number of slots to advance
    */
      template <typename Tp>
-     inline auto 
-     advance_ptr(Tp *ptr, std::size_t n) 
-     -> typename std::enable_if<!has_size_of<Tp>::value, Tp *>::type 
+     inline auto
+     advance_ptr(Tp *ptr, std::size_t n)
+     -> typename std::enable_if<!has_size_of<Tp>::value, Tp *>::type
      {
         return ptr + n;
      }
@@ -232,7 +232,7 @@ namespace blockmon {
 
   /**
    * The N-element from a pack of types.
-   * 
+   *
    * Arbitrary number of types. A placeholder.
    */
 
@@ -263,20 +263,20 @@ namespace blockmon {
     };
 
   /**
-   * Given a type and a pack, return the index of the type, 
+   * Given a type and a pack, return the index of the type,
    * the number of types in the pack otherwise.
    *
    * Version with no matching types.
    */
 
-    template <typename T, typename ...Ts>  
+    template <typename T, typename ...Ts>
     struct get_index
     {
       enum { value = 0 }; // Conflicts with the comment!
     };
 
   /**
-   * Given a type and a pack, return the index of the type, 
+   * Given a type and a pack, return the index of the type,
    * the number of types in the pack otherwise.
    *
    * Version where first type doesn't match.
@@ -288,7 +288,7 @@ namespace blockmon {
     };
 
   /**
-   * Given a type and a pack, return the index of the type, 
+   * Given a type and a pack, return the index of the type,
    * the number of types in the pack otherwise.
    *
    * Version where first type matches.

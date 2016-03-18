@@ -1,8 +1,8 @@
-/* Copyright (c) 2011, Consorzio Nazionale Interuniversitario 
- * per le Telecomunicazioni. 
+/* Copyright (c) 2011, Consorzio Nazionale Interuniversitario
+ * per le Telecomunicazioni.
  * All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without 
+ * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *    * Redistributions of source code must retain the above copyright
  *      notice, this list of conditions and the following disclaimer.
@@ -13,17 +13,17 @@
  *      names of its contributors may be used to endorse or promote products
  *      derived from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT 
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR 
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT 
- * HOLDERBE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, 
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, 
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT
+ * HOLDERBE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
  * PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER 
- * IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
- * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER
+ * IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+ * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
  */
 
@@ -36,12 +36,12 @@
 
 #include <arpa/inet.h>
 #include <netinet/tcp.h>
- 
+
 /*
  * Author: Nicola Bonelli <nicola.bonelli@cnit.it>
  */
 
-namespace net { 
+namespace net {
 
     struct tcp : public tcphdr {
 
@@ -76,19 +76,19 @@ namespace net {
         //     u_int16_t check;
         //     u_int16_t urg_ptr;
 
-        uint16_t 
+        uint16_t
         source_() const
         {
             return ntohs(source);
         }
-        
-        uint16_t 
+
+        uint16_t
         dest_() const
         {
             return ntohs(dest);
         }
 
-        uint32_t seq_() const 
+        uint32_t seq_() const
         {
             return ntohl(seq);
         }
@@ -97,7 +97,7 @@ namespace net {
             return ntohl(ack_seq);
         }
 
-        uint8_t res1_() const 
+        uint8_t res1_() const
         {
             return res1;
         }
@@ -105,54 +105,54 @@ namespace net {
         {
             return doff;
         }
-        uint8_t res2_() const 
-        { 
-            return res2; 
+        uint8_t res2_() const
+        {
+            return res2;
         }
 
-        bool fin_() const 
-        { 
-            return fin; 
+        bool fin_() const
+        {
+            return fin;
         }
-        bool syn_() const 
-        { 
-            return syn; 
+        bool syn_() const
+        {
+            return syn;
         }
-        bool rst_() const 
-        { 
-            return rst; 
+        bool rst_() const
+        {
+            return rst;
         }
-        bool psh_() const 
-        { 
-            return psh; 
+        bool psh_() const
+        {
+            return psh;
         }
-        bool ack_() const 
-        { 
-            return ack; 
+        bool ack_() const
+        {
+            return ack;
         }
-        bool urg_() const 
-        { 
-            return urg; 
-        }
-
-        uint16_t window_() const 
-        { 
-            return ntohs(window); 
+        bool urg_() const
+        {
+            return urg;
         }
 
-        uint16_t check_() const 
-        { 
-            return ntohs(check);  
-        } 
+        uint16_t window_() const
+        {
+            return ntohs(window);
+        }
 
-        uint16_t urg_ptr_() const 
-        { 
+        uint16_t check_() const
+        {
+            return ntohs(check);
+        }
+
+        uint16_t urg_ptr_() const
+        {
             return ntohs(urg_ptr);
         };
-        
+
         // size_of and proto member functions:
         //
-        
+
         size_t size_of() const
         {
             return doff << 2;

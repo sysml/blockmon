@@ -91,7 +91,7 @@ namespace blockmon {
             *tmp = htonl( (uint32_t) val );
             bf.tail += 4;
         }
-        
+
         /**
          * Add 64-bit integer value at the end of the buffer and advance it.
          * @param val The 64-bit integer value.
@@ -191,7 +191,7 @@ namespace blockmon {
          * Fetch all data from the buffer.
          * @param data_buffer The buffer where to store the raw data.
          * @param data_len The length of the data.
-         * @return The length of read data. 
+         * @return The length of read data.
          */
         int consume_all_data(char *data_buffer, int max_data_len)
         {
@@ -255,8 +255,8 @@ namespace blockmon {
         char* data()
         {
             return bf.data;
-        }    
-        
+        }
+
     private:
         long ntohll(long val) {
             // We keep using long, makes no difference if everything is in the CPU

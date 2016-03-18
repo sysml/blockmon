@@ -1,31 +1,31 @@
-/* Copyright (c) 2011, NEC Europe Ltd, Consorzio Nazionale 
- * Interuniversitario per le Telecomunicazioni, Institut 
+/* Copyright (c) 2011, NEC Europe Ltd, Consorzio Nazionale
+ * Interuniversitario per le Telecomunicazioni, Institut
  * Telecom/Telecom Bretagne, ETH Zürich, INVEA-TECH a.s. All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without 
+ * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *    * Redistributions of source code must retain the above copyright
  *      notice, this list of conditions and the following disclaimer.
  *    * Redistributions in binary form must reproduce the above copyright
  *      notice, this list of conditions and the following disclaimer in the
  *      documentation and/or other materials provided with the distribution.
- *    * Neither the names of NEC Europe Ltd, Consorzio Nazionale 
- *      Interuniversitario per le Telecomunicazioni, Institut Telecom/Telecom 
- *      Bretagne, ETH Zürich, INVEA-TECH a.s. nor the names of its contributors 
- *      may be used to endorse or promote products derived from this software 
+ *    * Neither the names of NEC Europe Ltd, Consorzio Nazionale
+ *      Interuniversitario per le Telecomunicazioni, Institut Telecom/Telecom
+ *      Bretagne, ETH Zürich, INVEA-TECH a.s. nor the names of its contributors
+ *      may be used to endorse or promote products derived from this software
  *      without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT 
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR 
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT 
- * HOLDERBE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, 
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, 
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT
+ * HOLDERBE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
  * PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER 
- * IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
- * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER
+ * IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+ * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
  */
 
@@ -58,7 +58,7 @@ namespace blockmon
     /*
      * small header for marshalling:(precedes the actual buffer)
      *8 bytes:
-     *int code 
+     *int code
      *unsigned int length
      * */
 
@@ -75,14 +75,14 @@ namespace blockmon
     public:
         static const int HEAD_SIZE = 2*sizeof(unsigned int);
 
-        static MarshallFactory& 
+        static MarshallFactory&
         instance()
         {
             static MarshallFactory the_factory;
             return the_factory;
         }
 
-        int 
+        int
         marshall(const Msg& inm, mutable_buffer<char> inb)
         {
             int newlen=inb.len()-HEAD_SIZE;
@@ -101,11 +101,11 @@ namespace blockmon
             return m_len+HEAD_SIZE;
         }
 
-        std::shared_ptr<const Msg> 
+        std::shared_ptr<const Msg>
         unmarshall(const_buffer<char> inb)
         {
             std::map<int, std::shared_ptr<BaseMarshall> >::iterator it;
-            int type=ntohl(*reinterpret_cast<const int*> (inb.addr()));	
+            int type=ntohl(*reinterpret_cast<const int*> (inb.addr()));
             unsigned int len=ntohl(*reinterpret_cast<const unsigned int*> (inb.addr()+sizeof(int)));
 
             it=m_map.find(type);
@@ -131,7 +131,7 @@ namespace blockmon
         marshall_factory_register()
         {
             MarshallFactory::instance().f_register(type_to_id<T>::id(), typename std::shared_ptr<BaseMarshall>(static_cast<BaseMarshall*>(new M)));
-        }	
+        }
     };
 
 
@@ -139,7 +139,7 @@ namespace blockmon
     namespace\
     {\
         marshall_factory_register<module,type> the_local_factory_register; \
-    } 
+    }
 }
 
 #endif // _CORE_MARSHFACTORY_HPP_
