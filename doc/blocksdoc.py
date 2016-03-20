@@ -1,31 +1,31 @@
-# Copyright (c) 2011, NEC Europe Ltd, Consorzio Nazionale 
-# Interuniversitario per le Telecomunicazioni, Institut 
+# Copyright (c) 2011, NEC Europe Ltd, Consorzio Nazionale
+# Interuniversitario per le Telecomunicazioni, Institut
 # Telecom/Telecom Bretagne, ETH Zuerich, INVEA-TECH a.s. All rights reserved.
 #
-# Redistribution and use in source and binary forms, with or without 
+# Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
 #    * Redistributions of source code must retain the above copyright
 #      notice, this list of conditions and the following disclaimer.
 #    * Redistributions in binary form must reproduce the above copyright
 #      notice, this list of conditions and the following disclaimer in the
 #      documentation and/or other materials provided with the distribution.
-#    * Neither the names of NEC Europe Ltd, Consorzio Nazionale 
-#      Interuniversitario per le Telecomunicazioni, Institut Telecom/Telecom 
-#      Bretagne, ETH Zuerich, INVEA-TECH a.s. nor the names of its contributors 
-#      may be used to endorse or promote products derived from this software 
+#    * Neither the names of NEC Europe Ltd, Consorzio Nazionale
+#      Interuniversitario per le Telecomunicazioni, Institut Telecom/Telecom
+#      Bretagne, ETH Zuerich, INVEA-TECH a.s. nor the names of its contributors
+#      may be used to endorse or promote products derived from this software
 #      without specific prior written permission.
-# 
-# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 
-# "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT 
-# LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR 
-# A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT 
-# HOLDERBE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, 
-# EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, 
-# PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR 
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+# "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+# LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+# A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT
+# HOLDERBE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+# EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+# PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
 # PROFITS; OR BUSINESS
-# INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER 
-# IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
-# OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
+# INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER
+# IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+# OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 # ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
 #
 
@@ -37,17 +37,17 @@ class BlocksdocGenerator:
 
     """\brief Generates HTML-based documentation for blockmon blocks. The
               information about blocks is assumed to be in:
-              
-              daemon/core/blockinfo.py 
+
+              daemon/core/blockinfo.py
 
               If the file does not exist and you have access to the block's
               source files, you can generate the file by running:
 
               python core/blockinfoparser.py config
-              
+
               To see the documentation open:
 
-              doc/blocks/index.html              
+              doc/blocks/index.html
     """
 
     def __init__(self, doc_dir, doc_home, block_infos):
@@ -106,7 +106,7 @@ class BlocksdocGenerator:
         """
         blockref = block.get_type().lower() + ".html"
         hd = block.get_human_desc()
-        
+
         pe = block.get_params_example()
         pe = self.__remove_xml_tags(pe, ["paramsexample", "params"])
         pe = self.__escape_html(pe).replace('\n', '<br>')
@@ -119,7 +119,7 @@ class BlocksdocGenerator:
         vi = self.__generate_variables_info(block.get_variables())
         st = '\t\t' + str(block.get_invocation())
         te = '\t\t' + str(block.is_thread_exclusive())
-                                
+
         block_str = self.__html_hdr + \
                     self.__get_section_hdr(block.get_type()) + hd + \
                     self.__get_section_hdr("Parameters Schema") + ps + \
@@ -162,7 +162,7 @@ class BlocksdocGenerator:
             info += '\t\t<h2>variable: ' + var.get_name() + '</h2>\n' + \
                     '\t\t<b>description: </b>' + var.get_human_desc() + '<br>\n' + \
                     '\t\t<b>access type: </b>' + var.get_access_type() + '<br><br>\n'
-                    
+
         return info
 
     def __get_section_hdr(self, title):
@@ -173,7 +173,7 @@ class BlocksdocGenerator:
         return '\n\t<h1>' + title + '</h1>\n\t<hr />\n'
 
     def __escape_html(self, string):
-        """\brief Replaces "<" and ">" characters in the given string with 
+        """\brief Replaces "<" and ">" characters in the given string with
                   "&lt;" and "&gt;"
         \param string (\c string) The string to replace from
         \return       (\c string) The string with the characters replaced
