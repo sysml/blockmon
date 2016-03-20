@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-#NOTE: must u+x this file for things to work with the bm daemon!!!!
 
 # Copyright (c) 2011, NEC Europe Ltd, Consorzio Nazionale
 # Interuniversitario per le Telecomunicazioni, Institut
