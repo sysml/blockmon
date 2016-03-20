@@ -1,31 +1,31 @@
-# Copyright (c) 2011, NEC Europe Ltd, Consorzio Nazionale 
-# Interuniversitario per le Telecomunicazioni, Institut 
+# Copyright (c) 2011, NEC Europe Ltd, Consorzio Nazionale
+# Interuniversitario per le Telecomunicazioni, Institut
 # Telecom/Telecom Bretagne, ETH Zuerich, INVEA-TECH a.s. All rights reserved.
 #
-# Redistribution and use in source and binary forms, with or without 
+# Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
 #    * Redistributions of source code must retain the above copyright
 #      notice, this list of conditions and the following disclaimer.
 #    * Redistributions in binary form must reproduce the above copyright
 #      notice, this list of conditions and the following disclaimer in the
 #      documentation and/or other materials provided with the distribution.
-#    * Neither the names of NEC Europe Ltd, Consorzio Nazionale 
-#      Interuniversitario per le Telecomunicazioni, Institut Telecom/Telecom 
-#      Bretagne, ETH Zuerich, INVEA-TECH a.s. nor the names of its contributors 
-#      may be used to endorse or promote products derived from this software 
+#    * Neither the names of NEC Europe Ltd, Consorzio Nazionale
+#      Interuniversitario per le Telecomunicazioni, Institut Telecom/Telecom
+#      Bretagne, ETH Zuerich, INVEA-TECH a.s. nor the names of its contributors
+#      may be used to endorse or promote products derived from this software
 #      without specific prior written permission.
-# 
-# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 
-# "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT 
-# LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR 
-# A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT 
-# HOLDERBE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, 
-# EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, 
-# PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR 
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+# "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+# LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+# A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT
+# HOLDERBE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+# EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+# PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
 # PROFITS; OR BUSINESS
-# INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER 
-# IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
-# OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
+# INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER
+# IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+# OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 # ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
 #
 
@@ -62,7 +62,7 @@ class BlockInfoParser:
             for root, subFolders, files in os.walk(path):
                 for file in files:
                     if file.endswith(".hpp") or \
-                       file.endswith(".cpp"):                    
+                       file.endswith(".cpp"):
                         src_file = os.path.join(root,file)
                         print "processing " + str(src_file)
                         f = open(src_file, "r")
@@ -72,20 +72,20 @@ class BlockInfoParser:
                         info = []
 
                         for line in lines:
-                            if line.strip().startswith("*"):                            
+                            if line.strip().startswith("*"):
                                 if line.find("<blockinfo") != -1:
                                     print "found documentation, processing"
                                     in_block_info = True
                                 if line.find("</blockinfo") != -1:
                                     info.append(line.replace("*", ""))
                                     in_block_info = False
-                        
+
                             if in_block_info:
                                 info.append(line.replace("*", ""))
-                    
+
                         if len(info) > 0:
                             info_str += self.__append_blockinfo(info) + ', '
-        
+
         info_str = info_str[:len(info_str) - 2]
 
         # append end of file and write it out
@@ -103,11 +103,11 @@ class BlockInfoParser:
         """
         (trimmed, params_example) = self.__extract_section("paramsexample", lines)
         (trimmed, params_schema) = self.__extract_section("paramsschema", trimmed)
-        
+
         xml_str = ""
         for line in trimmed:
             xml_str += line + "\n"
-        
+
         dom = self.__get_DOM(xml_str, False)
         if (dom == None):
             print "blockinforparser::append_blockinfo: error while getting DOM object"
@@ -144,7 +144,7 @@ class BlockInfoParser:
         string += str(thread_exclusive) + ")"
 
         return string
- 
+
 
     def __append_gates_info(self, gates_xml):
         """\brief Given parsed XML with information about gates, returns a
@@ -173,7 +173,7 @@ class BlockInfoParser:
         \param variables_xml (\c Node)   An XML node with the variables information
         \param block_type    (\c string) The block type
         \return              (\c string) The variables information
-        """        
+        """
         string = "["
         for variable_xml in variables_xml:
             name = self.__get_label("name", variable_xml)
@@ -206,7 +206,7 @@ class BlockInfoParser:
             if line.find("</" + section_name) != -1:
                 in_section = False
                 section += line + '\\n'
-            
+
             if in_section:
                 section += line + '\\n'
             elif line.find("</" + section_name) == -1:
@@ -244,8 +244,8 @@ class BlockInfoParser:
         if xml_object.attributes.has_key(key):
             return xml_object.attributes[key].value
         else:
-            return None        
-        
+            return None
+
 
 
 if __name__ == "__main__":

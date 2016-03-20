@@ -1,33 +1,33 @@
 #!/usr/bin/env python
 
-# Copyright (c) 2011, NEC Europe Ltd, Consorzio Nazionale 
-# Interuniversitario per le Telecomunicazioni, Institut 
+# Copyright (c) 2011, NEC Europe Ltd, Consorzio Nazionale
+# Interuniversitario per le Telecomunicazioni, Institut
 # Telecom/Telecom Bretagne, ETH Zuerich, INVEA-TECH a.s. All rights reserved.
 #
-# Redistribution and use in source and binary forms, with or without 
+# Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
 #    * Redistributions of source code must retain the above copyright
 #      notice, this list of conditions and the following disclaimer.
 #    * Redistributions in binary form must reproduce the above copyright
 #      notice, this list of conditions and the following disclaimer in the
 #      documentation and/or other materials provided with the distribution.
-#    * Neither the names of NEC Europe Ltd, Consorzio Nazionale 
-#      Interuniversitario per le Telecomunicazioni, Institut Telecom/Telecom 
-#      Bretagne, ETH Zuerich, INVEA-TECH a.s. nor the names of its contributors 
-#      may be used to endorse or promote products derived from this software 
+#    * Neither the names of NEC Europe Ltd, Consorzio Nazionale
+#      Interuniversitario per le Telecomunicazioni, Institut Telecom/Telecom
+#      Bretagne, ETH Zuerich, INVEA-TECH a.s. nor the names of its contributors
+#      may be used to endorse or promote products derived from this software
 #      without specific prior written permission.
-# 
-# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 
-# "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT 
-# LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR 
-# A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT 
-# HOLDERBE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, 
-# EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, 
-# PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR 
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+# "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+# LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+# A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT
+# HOLDERBE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+# EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+# PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
 # PROFITS; OR BUSINESS
-# INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER 
-# IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
-# OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
+# INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER
+# IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+# OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 # ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
 #
 
@@ -58,8 +58,8 @@ import socket, fcntl, struct
 class BMDaemon(jsonrpc.JSONRPC):
 
 	"""\brief Uses a json-rpc server on a well-known port to present a
-			  Blockmon API to the outside world (json is also used for 
-			  marshalling and demarshalling objects). All calls return a 
+			  Blockmon API to the outside world (json is also used for
+			  marshalling and demarshalling objects). All calls return a
 			  core.returnvalue.ReturnValue object. Note that function
 			  documentation will list ReturnValue as the return type, but
 			  the human-readable description refers to ReturnValue.value.
@@ -86,7 +86,7 @@ class BMDaemon(jsonrpc.JSONRPC):
 		self.__bm_base_path = None
 		self.__tmp_dir = None
 		self.__logger = None
-		
+
 		self.__bc_ipaddr = None
 		self.__bc_listening_port = None
 		self.__bc_connected = False
@@ -96,10 +96,10 @@ class BMDaemon(jsonrpc.JSONRPC):
 		self.__init_logging()
 		self.__spawn_proc_id = 1
 		self.__logger.info("starting bm daemon on port %s", str(self.__listening_port))
-		
+
 		TIMEOUT = 3
 		self.__MAX_ATTEMPTS = 5
-		self.__attempts = 0 
+		self.__attempts = 0
 		self.__registration_loop = task.LoopingCall(self.__registration)
 		self.__registration_loop.start(TIMEOUT)
 
@@ -115,9 +115,9 @@ class BMDaemon(jsonrpc.JSONRPC):
 				  "blockinfoparser.py script to generate this file"
 			r = ReturnValue(ReturnValue.CODE_FAILURE, msg, None)
 			return jsonpickle.encode(r)
-		
+
 		f.close()
-		
+
 		from core.blockinfo import block_infos
 		r = ReturnValue(ReturnValue.CODE_SUCCESS, "", block_infos.keys())
 		return jsonpickle.encode(r)
@@ -143,9 +143,9 @@ class BMDaemon(jsonrpc.JSONRPC):
 				  "blockinfoparser.py script to generate this file"
 			r = ReturnValue(ReturnValue.CODE_FAILURE, msg, None)
 			return jsonpickle.encode(r)
-		
+
 		f.close()
-		
+
 		from core.blockinfo import block_infos
 		blocks = []
 		not_found = []
@@ -164,7 +164,7 @@ class BMDaemon(jsonrpc.JSONRPC):
 
 	@defer.inlineCallbacks
 	def jsonrpc_start_composition(self, comp, datafiles = []):
-		"""\brief Starts a new Blockmon instance based on the given 
+		"""\brief Starts a new Blockmon instance based on the given
 				  composition XML. The instance will run in a newly
 				  spawned process.
 		\param  comp (\c string)	  The composition XML
@@ -213,8 +213,8 @@ class BMDaemon(jsonrpc.JSONRPC):
 		defer.returnValue(jsonpickle.encode(r))
 
 	def jsonrpc_update_composition(self, comp):
-		"""\brief Updates a Blockmon instance based on the given 
-				  composition XML. 
+		"""\brief Updates a Blockmon instance based on the given
+				  composition XML.
 		\param  comp (\c string)	  The composition XML
 		\return	  (\c ReturnValue) Value member is empty
 		"""
@@ -224,10 +224,10 @@ class BMDaemon(jsonrpc.JSONRPC):
 		url = "http://localhost:" + str(port) + "/"
 		proxy = xmlrpclib.ServerProxy(url)
 		r = pickle.loads(proxy.update_composition(comp))
-		return jsonpickle.encode(r)		
+		return jsonpickle.encode(r)
 
 	def jsonrpc_stop_composition(self, comp_id):
-		"""\brief Stops a Blockmon instance identified by the given 
+		"""\brief Stops a Blockmon instance identified by the given
 				  composition id.
 		\param  (\c string)	  The composition's id
 		\return (\c ReturnValue) Value member is empty
@@ -245,7 +245,7 @@ class BMDaemon(jsonrpc.JSONRPC):
 		self.__logger.info("killed bm process for composition " + comp_id)
 		print "killed bm process for composition " + comp_id
 		return jsonpickle.encode(r)
- 
+
 	def jsonrpc_get_composition_ids(self):
 		"""\brief Gets the ids of all compositions currently running
 		\return (\c ReturnValue) The ids (list[string])
@@ -263,7 +263,7 @@ class BMDaemon(jsonrpc.JSONRPC):
 			if self.__bm_processes.has_key(comp_id):
 				comps.append(self.__bm_processes[comp_id].get_comp())
 		r = ReturnValue(ReturnValue.CODE_SUCCESS, "", comps)
-		return jsonpickle.encode(r)		
+		return jsonpickle.encode(r)
 
 	def jsonrpc_read_variables(self, comp_id, json_variables):
 		"""\brief Reads a set of block variables. Each VariableInfo object
@@ -302,7 +302,7 @@ class BMDaemon(jsonrpc.JSONRPC):
 	def jsonrpc_write_variables(self, comp_id, json_variables):
 		"""\brief Writes to a set of block variables. Each VariableInfo object
 				  needs to have the name of the block, the variable name and the
-				  value set. The access_type member should be set to "write". 
+				  value set. The access_type member should be set to "write".
 		\param comp_id		(\c string)			 The composition id
 		\param json_variables (\c list[VariableInfo]) Json-encode variables
 		\return		  (\c ReturnValue)		Value member is empty
@@ -335,7 +335,7 @@ class BMDaemon(jsonrpc.JSONRPC):
 		import base64
 		data = base64.b64decode(fbin)
 		f = open(self.__tmp_dir +'/'+fname,'w')
-		try: f.write(data) 
+		try: f.write(data)
 		except: return False
 		f.close()
 		return True
@@ -360,16 +360,16 @@ class BMDaemon(jsonrpc.JSONRPC):
 				return port
 
 	def __parse_config(self):
-		cp = ConfigParser.ConfigParser()		
+		cp = ConfigParser.ConfigParser()
 		cp.read(self.__config)
-		self.__logging_dir = cp.get('MAIN', 'logging_dir')		
-		self.__tmp_dir = cp.get('MAIN', 'tmp_dir')		
+		self.__logging_dir = cp.get('MAIN', 'logging_dir')
+		self.__tmp_dir = cp.get('MAIN', 'tmp_dir')
 		self.__listening_port = int(cp.get('NETWORK', 'listening_port'))
 		try:
 			self.__bc_ipaddr = cp.get('NETWORK', 'bc_ipaddr')
 			self.__bc_listening_port = int(cp.get('NETWORK', 'bc_listening_port'))
 			iface = cp.get('NETWORK', 'iface')
-			self.__local_ip = self.__get_ip_address(iface) 
+			self.__local_ip = self.__get_ip_address(iface)
 		except ConfigParser.NoOptionError: pass
 		self.__block_ext = cp.get('BLOCKS', 'block_ext')
 		self.__blocks_path = cp.get('BLOCKS', 'blocks_path')
@@ -389,17 +389,17 @@ class BMDaemon(jsonrpc.JSONRPC):
 		formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
 		hdlr.setFormatter(formatter)
 		self.__logger.addHandler(hdlr)
-		self.__logger.setLevel(logging.INFO)	   
+		self.__logger.setLevel(logging.INFO)
 
 	def __registration_results(self, value):
 		r = jsonpickle.decode(value)
 		self.__bc_connected = (True if r.get_code() is ReturnValue.CODE_SUCCESS else False)
-		self.__attempts = 0 
+		self.__attempts = 0
 
 	def __registration_error(self, error):
 		self.__bc_connected = False
 		self.__attempts += 1
-		if self.__attempts == self.__MAX_ATTEMPTS: 
+		if self.__attempts == self.__MAX_ATTEMPTS:
 			print "giving up registering to BC"
 			self.__registration_loop.stop()
 
@@ -422,9 +422,9 @@ class BMDaemon(jsonrpc.JSONRPC):
 			specs = jsonpickle.encode(host_specs)
 			from core.blockinfo import block_infos
 			blocks =  block_infos.keys()
-			blocks_descr = [block_infos[b] for b in blocks] 
+			blocks_descr = [block_infos[b] for b in blocks]
 			descr = jsonpickle.encode(blocks_descr)
-			#blocks_descr = [str(block_infos[b]) for b in blocks] 
+			#blocks_descr = [str(block_infos[b]) for b in blocks]
 			#d = bc_register.callRemote('register', self.__local_ip, port, specs, blocks)
 			#d = bc_register.callRemote('register', self.__local_ip, port, specs, blocks, blocks_descr)
 			d = bc_register.callRemote('register', self.__local_ip, port, specs, blocks, descr)
@@ -445,7 +445,7 @@ if __name__ == "__main__":
 	port = bmd.get_listening_port()
 
 	reactor.listenTCP(port, server.Site(bmd))
-	
+
 	print "starting bm daemon on port " + str(port)
-	
+
 	reactor.run()

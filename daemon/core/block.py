@@ -1,31 +1,31 @@
-# Copyright (c) 2011, NEC Europe Ltd, Consorzio Nazionale 
-# Interuniversitario per le Telecomunicazioni, Institut 
+# Copyright (c) 2011, NEC Europe Ltd, Consorzio Nazionale
+# Interuniversitario per le Telecomunicazioni, Institut
 # Telecom/Telecom Bretagne, ETH Zuerich, INVEA-TECH a.s. All rights reserved.
 #
-# Redistribution and use in source and binary forms, with or without 
+# Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
 #    * Redistributions of source code must retain the above copyright
 #      notice, this list of conditions and the following disclaimer.
 #    * Redistributions in binary form must reproduce the above copyright
 #      notice, this list of conditions and the following disclaimer in the
 #      documentation and/or other materials provided with the distribution.
-#    * Neither the names of NEC Europe Ltd, Consorzio Nazionale 
-#      Interuniversitario per le Telecomunicazioni, Institut Telecom/Telecom 
-#      Bretagne, ETH Zuerich, INVEA-TECH a.s. nor the names of its contributors 
-#      may be used to endorse or promote products derived from this software 
+#    * Neither the names of NEC Europe Ltd, Consorzio Nazionale
+#      Interuniversitario per le Telecomunicazioni, Institut Telecom/Telecom
+#      Bretagne, ETH Zuerich, INVEA-TECH a.s. nor the names of its contributors
+#      may be used to endorse or promote products derived from this software
 #      without specific prior written permission.
-# 
-# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 
-# "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT 
-# LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR 
-# A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT 
-# HOLDERBE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, 
-# EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, 
-# PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR 
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+# "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+# LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+# A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT
+# HOLDERBE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+# EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+# PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
 # PROFITS; OR BUSINESS
-# INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER 
-# IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
-# OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
+# INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER
+# IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+# OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 # ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
 #
 
@@ -108,7 +108,7 @@ class BlockInfo(object):
                   "\nShort Description:\n" + str(self.get_short_desc()) + \
                   "\nParams Example:\n" + str(self.get_params_example()) + \
                   "\nParams Schema:\n" + str(self.get_params_schema())
-        
+
         return string
 
 class GateInfo(object):
@@ -174,7 +174,7 @@ class VariableInfo(object):
 
     def get_name(self):
         return self.__name
-    
+
     def get_human_desc(self):
         return self.__human_desc
 
@@ -218,17 +218,17 @@ class IntegerRange(object):
         return "IntegerRange: " + str(self.get_begin()) + "-" + str(self.get_end())
 
 class Connection:
-    
+
     def __init__(self, src_gate, dst_block, dst_gate):
         self.src_gate = src_gate
         self.dst_block = dst_block
         self.dst_gate = dst_gate
-        
+
     def __str__(self):
         return "src_gate=" + str(self.src_gate) + \
                ",dst_block=" + str(self.dst_block.name) + \
                ",dst_gate=" + str(self.dst_gate)
-    
+
 
 class Block:
 
@@ -260,22 +260,22 @@ class Block:
         self.outgates = {}
         self.connections = []
         self.blockmon = blockmon
-        
+
         inv = self.blockmon.to_invoc_type("direct")
         if invocation == "indirect":
             inv = self.blockmon.to_invoc_type("indirect")
         elif invocation == "async":
             inv = self.blockmon.to_invoc_type("async")
-        self.inv = inv   
+        self.inv = inv
         self.blockmon.create_block(self.comp_id, \
                                    self.name,\
                                    self.block_type, \
                                    inv,\
                                    self.params)
 
-        if invocation == "indirect" or invocation == "async": 
+        if invocation == "indirect" or invocation == "async":
             self.tpool.add_block(self.comp_id, self.name)
-                    
+
     def update(self, invocation, params, tpool_id, tpool):
         """\brief Updates a block
         \param invocation (\c string)         Invocation type (direct, indirect, async)
@@ -288,17 +288,17 @@ class Block:
             inv = self.blockmon.to_invoc_type("indirect")
         elif invocation == "async":
             inv = self.blockmon.to_invoc_type("async")
-                    
+
         self.params = params
         self.invocation = invocation
         self.inv = inv
-        
+
         if ( (invocation == "indirect" or invocation == "async") and (tpool_id != self.tpool_id) ):
             self.tpool.add_block(self.comp_id, self.name)
             self.tpool_id = tpool_id
             self.tpool = tpool
-            self.tpool.remove_block(self.comp_id, self.name) 
-            
+            self.tpool.remove_block(self.comp_id, self.name)
+
         if (not self.blockmon.update_block(self.comp_id,\
                                            self.name,\
                                            inv,\
@@ -308,8 +308,8 @@ class Block:
                                self.comp_id + ":" + self.name + \
                                ", deleting and rebuilding")
             self.remove()
-            self.restore() 
-                              
+            self.restore()
+
     def remove(self):
         """\brief Deletes this block from a composition and its thread pool if indirect or async
         """
@@ -319,25 +319,25 @@ class Block:
 
     def restore(self):
         """\brief Re-creates the block and re-adds it to the thread pool if indirect or async.
-                  This function also re-generates any connection that the Block had. This 
+                  This function also re-generates any connection that the Block had. This
                   information is saved in self.connections during the creation of the original
                   connections (see CompositionManager::__connect_blocks).
-        """    
+        """
         self.blockmon.create_block(self.comp_id,\
                                    self.name,\
                                    self.block_type,\
                                    self.inv,\
                                    self.params)
 
-        # re-create connections               
-        for c in self.connections:        
+        # re-create connections
+        for c in self.connections:
             self.blockmon.create_connection(self.comp_id,\
                                             self.name,\
                                             c.src_gate,\
                                             c.dst_block.comp_id,\
                                             c.dst_block.name,\
                                             c.dst_gate)
-                
+
         if self.invocation == "indirect" or self.invocation == "async":
             self.tpool.add_block(self.comp_id, self.name)
 

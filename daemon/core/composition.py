@@ -1,31 +1,31 @@
-# Copyright (c) 2011, NEC Europe Ltd, Consorzio Nazionale 
-# Interuniversitario per le Telecomunicazioni, Institut 
+# Copyright (c) 2011, NEC Europe Ltd, Consorzio Nazionale
+# Interuniversitario per le Telecomunicazioni, Institut
 # Telecom/Telecom Bretagne, ETH Zuerich, INVEA-TECH a.s. All rights reserved.
 #
-# Redistribution and use in source and binary forms, with or without 
+# Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
 #    * Redistributions of source code must retain the above copyright
 #      notice, this list of conditions and the following disclaimer.
 #    * Redistributions in binary form must reproduce the above copyright
 #      notice, this list of conditions and the following disclaimer in the
 #      documentation and/or other materials provided with the distribution.
-#    * Neither the names of NEC Europe Ltd, Consorzio Nazionale 
-#      Interuniversitario per le Telecomunicazioni, Institut Telecom/Telecom 
-#      Bretagne, ETH Zuerich, INVEA-TECH a.s. nor the names of its contributors 
-#      may be used to endorse or promote products derived from this software 
+#    * Neither the names of NEC Europe Ltd, Consorzio Nazionale
+#      Interuniversitario per le Telecomunicazioni, Institut Telecom/Telecom
+#      Bretagne, ETH Zuerich, INVEA-TECH a.s. nor the names of its contributors
+#      may be used to endorse or promote products derived from this software
 #      without specific prior written permission.
-# 
-# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 
-# "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT 
-# LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR 
-# A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT 
-# HOLDERBE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, 
-# EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, 
-# PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR 
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+# "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+# LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+# A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT
+# HOLDERBE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+# EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+# PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
 # PROFITS; OR BUSINESS
-# INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER 
-# IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
-# OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
+# INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER
+# IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+# OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 # ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
 #
 
@@ -59,13 +59,13 @@ class CompositionManager:
         """\brief Installs a blockmon composition
         \param xmlnode (\c xml.dom.Node) The blockmon composition
         """
-        
+
         generalXML = xmlnode.getElementsByTagName("general")
         if not generalXML:
             print "error, composition has no 'general' tag"
             os._exit(1)
         self.__process_general(generalXML[0])
-            
+
         for n in xmlnode.getElementsByTagName("threadpool"):
             self.__create_pool(n)
 
@@ -76,9 +76,9 @@ class CompositionManager:
             self.__create_connection(n)
 
         self.__blockmon.init_composition(self.__comp_id)
-        
+
         self.__logger.info(self.__comp_id + ' : installed')
-           
+
     def reconfigure(self, xmlnodes):
         """\brief Reconfigures a blockmon composition
         \param xmlnodes (\c xml.dom.Node) The blockmon composition
@@ -104,7 +104,7 @@ class CompositionManager:
                 self.__create_connection(n)
 
         for xmlnode in xmlnodes.getElementsByTagName("reconf"):
-            
+
             for n in xmlnode.getElementsByTagName("block"):
                 self.__update_block(n)
 
@@ -139,7 +139,7 @@ class CompositionManager:
             value = block.read_var(varname)
         except RuntimeError, e:
             return ReturnValue(ReturnValue.CODE_FAILURE, "An exception occurred: '" + str(e)+"'", None)
-        
+
         var_info.set_value(value)
         return ReturnValue(ReturnValue.CODE_SUCCESS, "", var_info)
 
@@ -163,19 +163,19 @@ class CompositionManager:
                 return ReturnValue(ReturnValue.CODE_SUCCESS, "", None)
         except RuntimeError, e:
             return ReturnValue(ReturnValue.CODE_FAILURE, "An exception occurred: '" + str(e)+"'", None)
-        
+
         return ReturnValue(ReturnValue.CODE_FAILURE, "error while writing to variable", None)
 
     def __process_general(self, xmlnode):
         """\brief Processes parameters under the 'general' tag
         \param xmlnode (\c xml.dom.Node) The XML for the general tag
         """
-        clockXML = xmlnode.getElementsByTagName("clock")        
+        clockXML = xmlnode.getElementsByTagName("clock")
         clock_type = "WALL"
         if (clockXML and len(clockXML) > 0):
             clock_type = clockXML[0].attributes['type'].value
         self.__select_clock(str(clock_type))
-        
+
     def __select_clock(self, clock_type):
         """\brief Sets the clock type (PACKET or WALL, case insensitive)
         \param clock_type (\c string)      The clock type
@@ -186,28 +186,28 @@ class CompositionManager:
             self.__blockmon.select_clock(clock_type)
             return ReturnValue(ReturnValue.CODE_SUCCESS, "", None)
         return ReturnValue(ReturnValue.CODE_FAILURE, "invalid value for clock type", None)
-    
+
     def __create_block(self, blocknode):
         """\brief Creates a block
         \param blocknode (\c xml.dom.Node) The block in xml form
         """
         block_name = blocknode.attributes['id'].value
         block_type = blocknode.attributes['type'].value
-        
+
         invocation = "direct"
         tpool_id = ""
         tpool = None
-                
+
 #        params = blocknode.getElementsByTagName('params')
         #params = params[0].toxml()
-        
+
         if blocknode.attributes.has_key('invocation'):
             invocation = blocknode.attributes['invocation'].value
 
         if invocation == "indirect" or invocation == "async":
             tpool_id = blocknode.attributes['threadpool'].value
             tpool = self.__thread_pools[str(tpool_id)]
-        
+
         self.__blocks[block_name] = Block(block_name,\
                                           block_type,\
                                           self.__comp_id,\
@@ -231,22 +231,22 @@ class CompositionManager:
         \param blocknode (\c xml.dom.Node) The block in xml form
         """
         block_name = blocknode.attributes['id'].value
-        
+
         params = blocknode.getElementsByTagName('params')
         params = str(params[0].toxml())
-        
+
         invocation = "direct"
         tpool_id = ""
         tpool = None
         #active = False
- 
+
         if blocknode.attributes.has_key('invocation'):
             invocation = blocknode.attributes['invocation'].value
-        
+
         if invocation == "indirect" or invocation == "async":
             tpool_id = blocknode.attributes['threadpool'].value
             tpool = self.__thread_pools[str(tpool_id)]
-            
+
         self.__blocks[block_name].update(invocation, params, tpool_id, tpool)
 #        if blocknode.attributes.has_key('sched_type'):
 #            active = True if (blocknode.attributes['sched_type'].value == 'active') else False

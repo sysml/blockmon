@@ -1,34 +1,34 @@
 #!/usr/bin/env python
 #NOTE: must u+x this file for things to work with the bm daemon!!!!
 
-# Copyright (c) 2011, NEC Europe Ltd, Consorzio Nazionale 
-# Interuniversitario per le Telecomunicazioni, Institut 
+# Copyright (c) 2011, NEC Europe Ltd, Consorzio Nazionale
+# Interuniversitario per le Telecomunicazioni, Institut
 # Telecom/Telecom Bretagne, ETH Zuerich, INVEA-TECH a.s. All rights reserved.
 #
-# Redistribution and use in source and binary forms, with or without 
+# Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
 #    * Redistributions of source code must retain the above copyright
 #      notice, this list of conditions and the following disclaimer.
 #    * Redistributions in binary form must reproduce the above copyright
 #      notice, this list of conditions and the following disclaimer in the
 #      documentation and/or other materials provided with the distribution.
-#    * Neither the names of NEC Europe Ltd, Consorzio Nazionale 
-#      Interuniversitario per le Telecomunicazioni, Institut Telecom/Telecom 
-#      Bretagne, ETH Zuerich, INVEA-TECH a.s. nor the names of its contributors 
-#      may be used to endorse or promote products derived from this software 
+#    * Neither the names of NEC Europe Ltd, Consorzio Nazionale
+#      Interuniversitario per le Telecomunicazioni, Institut Telecom/Telecom
+#      Bretagne, ETH Zuerich, INVEA-TECH a.s. nor the names of its contributors
+#      may be used to endorse or promote products derived from this software
 #      without specific prior written permission.
-# 
-# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 
-# "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT 
-# LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR 
-# A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT 
-# HOLDERBE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, 
-# EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, 
-# PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR 
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+# "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+# LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+# A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT
+# HOLDERBE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+# EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+# PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
 # PROFITS; OR BUSINESS
-# INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER 
-# IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
-# OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
+# INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER
+# IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+# OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 # ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
 #
 
@@ -59,7 +59,7 @@ class BMProcessManager:
               Further note that all xml-rpc operations return a pickled ReturnValue object.
     """
     bm_running = False
-    
+
     def __init__(self, comp=None, bm_logger=None, port=None, is_comp_str=False):
         """\brief Initializes class
         \param comp       (\c string)         The composition
@@ -144,7 +144,7 @@ class BMProcessManager:
         """\brief Reads a variable from a block
         \param variable (\c VariableInfo) The variable to read, pickled.
         \return         (\c ReturnValue) The result of the operation
-        """        
+        """
         if self.__server:
             variable = pickle.loads(variable)
         r = self.__comp_mngr.read_block_var(variable)
@@ -158,16 +158,16 @@ class BMProcessManager:
         \return           (\c ReturnValue) The result of the operation
         """
         clock_type = clock_type.upper()
-        if clock_type == "WALL" or clock_type == "PACKET":            
+        if clock_type == "WALL" or clock_type == "PACKET":
             blockmon.select_clock(clock_type)
             return ReturnValue(ReturnValue.CODE_SUCCESS, "", None)
         return ReturnValue(ReturnValue.CODE_FAILURE, "invalid value for clock type", None)
-    
+
     def write_variable(self, variable):
         """\brief Writes a value to a block variable
         \param variable (\c VariableInfo) The variable to write to, pickled.
         \return         (\c ReturnValue)  The result of the operation
-        """                
+        """
         if self.__server:
             variable = pickle.loads(variable)
         r = self.__comp_mngr.write_block_var(variable)
@@ -206,8 +206,8 @@ class BMProcessInfo:
 
     def __init__(self, proc, comp, logfile, port=None):
         """\brief Initializes class
-        \param proc    (\c subprocess.Popen) The process 
-        \param comp    (\c string)           The composition XML 
+        \param proc    (\c subprocess.Popen) The process
+        \param comp    (\c string)           The composition XML
         \param logfile (\c string)           The path to the process' log file
         \param port    (\c int)        The port the process' json-rpc server is running on
         """
@@ -232,7 +232,7 @@ class BMProcessInfo:
 
     def get_logfile(self):
         return self.__logfile
-            
+
     def get_proc(self):
         return self.__proc
 
