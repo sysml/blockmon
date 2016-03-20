@@ -6,3 +6,7 @@ blockmon
 lib/external/
 lib/fc/
 libblockmoncore.so
+libblockmonpy.so
+*.pyc
+daemon/cli.log
+doc/blocks/
