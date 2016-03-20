@@ -120,7 +120,7 @@ class Completer(object):
             return self._complete_block_name()
         elif len(args) < 2:
             return self._complete_block_name(args[-1])
-	elif len(args) < 3:
+        elif len(args) < 3:
             return self._complete_var_name(len(args), args[-1], args[0], 0)
         else:
             return []
