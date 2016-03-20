@@ -1,51 +1,51 @@
-/* Copyright (c) 2011, NEC Europe Ltd, Consorzio Nazionale 
- * Interuniversitario per le Telecomunicazioni, Institut 
+/* Copyright (c) 2011, NEC Europe Ltd, Consorzio Nazionale
+ * Interuniversitario per le Telecomunicazioni, Institut
  * Telecom/Telecom Bretagne, ETH Zürich, INVEA-TECH a.s. All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without 
+ * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *    * Redistributions of source code must retain the above copyright
  *      notice, this list of conditions and the following disclaimer.
  *    * Redistributions in binary form must reproduce the above copyright
  *      notice, this list of conditions and the following disclaimer in the
  *      documentation and/or other materials provided with the distribution.
- *    * Neither the names of NEC Europe Ltd, Consorzio Nazionale 
- *      Interuniversitario per le Telecomunicazioni, Institut Telecom/Telecom 
- *      Bretagne, ETH Zürich, INVEA-TECH a.s. nor the names of its contributors 
- *      may be used to endorse or promote products derived from this software 
+ *    * Neither the names of NEC Europe Ltd, Consorzio Nazionale
+ *      Interuniversitario per le Telecomunicazioni, Institut Telecom/Telecom
+ *      Bretagne, ETH Zürich, INVEA-TECH a.s. nor the names of its contributors
+ *      may be used to endorse or promote products derived from this software
  *      without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT 
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR 
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT 
- * HOLDERBE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, 
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, 
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT
+ * HOLDERBE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
  * PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER 
- * IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
- * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER
+ * IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+ * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
  */
 
 /**
  * <blockinfo type="FeaturesExtractor" invocation="direct" thread_exclusive="False">
  *   <humandesc>
- *      Takes packets as input and creates tickets messages (TicketMsg) 
+ *      Takes packets as input and creates tickets messages (TicketMsg)
  *      according to the traffic features selection given in the configuration file.
  *      Features defined as active in the configuration file are extracted
  *      from every single input packet, collected in a TicketMsg and sent to the
  *      block's output gate.
- *      
+ *
  *      Please refer to the schema and examples below to see how to specify
  *      features selection. Note that the activation is done via the
  *      "mode" parameter, which can be set to "on" or "off". Default is "off".
  *      It is optional to specify every traffic feature, it is allowed to set
  *      only those which are active.
  *   </humandesc>
- * 
- * <shortdesc> 
+ *
+ * <shortdesc>
  *      Creates tickets messages containing pairs (id,value) of the extracted traffic features.
  *      The traffic features selection is made through the configuration file.
  * </shortdesc>
@@ -63,9 +63,9 @@
  *          element direction{
  *              attribute type = {"uplink"|"downlink"}
  *          }
- *          
+ *
  *          element features{
- *          
+ *
  *              element Feat_x{
  *                  element layer4{
  *                      attribute prot {"TCP"|"UDP"}
@@ -103,7 +103,7 @@
  *
  *           }
  *   }
- * 
+ *
  *   </paramsschema>
  *
  *   <paramsexample>
@@ -189,7 +189,7 @@ namespace blockmon
         static const int RST = 4;
         static const int PSH = 8;
         static const int ACK = 16;
-        
+
         static const uint16_t TCP = 6;
         static const uint16_t UDP = 17;
 
@@ -232,7 +232,7 @@ namespace blockmon
             //Check whether the field "flags" does exist, otherwise returns false
             if(!(flags_node = feature_node.child("flags")))
                 return false;
-            
+
             flags_byte = FILTER_OUT; //Inizialization -> no flag is set!(Flags = 0)
 
             //If the attribute "name" does exist
@@ -273,7 +273,7 @@ namespace blockmon
                     flags_byte = PSH | FIN | ACK;
                 }
             }else return false; //Otherwise return false
-            
+
             return true;
         }
 
@@ -300,7 +300,7 @@ namespace blockmon
 
             return true;
         }
-        
+
         /**
           * parses the L4Prot_node xlm and sets the feature layer4 protocol accordingly
           * @param feature_node the feature xml subtree
@@ -317,9 +317,9 @@ namespace blockmon
             if(pugi::xml_attribute prot = L4Prot_node.attribute("prot"))
             {
                 if(!strcmp(prot.value(),"TCP"))
-                    layer4_prot = TCP;                    
+                    layer4_prot = TCP;
                 else if(!strcmp(prot.value(),"UDP"))
-                    layer4_prot = UDP;  
+                    layer4_prot = UDP;
             }
             else return false; //Otherwise return false
 
@@ -374,7 +374,7 @@ namespace blockmon
         }
 
         /**
-          * helper function, starting from the strings containing details about 
+          * helper function, starting from the strings containing details about
           * the current feature, creates a string containing the feature ID:
           * @param directionStr "UL" or "DL" according to the direction of the connection
           * @param flagsStr the string containing the active flags of the current feature
@@ -389,7 +389,7 @@ namespace blockmon
             return feat_ID.str();
 
         }
-        
+
         /**
           * helper function, if the current packet has set one of the desired
           * flags combination, generates the feature ID accordingly.
@@ -410,14 +410,14 @@ namespace blockmon
                 featIDStr = featID_to_string(dirStr,"UDP",modeStr,port);
                 return true;
             }
-            
+
             /* No TCP flag set */
             if((L4_prot & TCP) && (flagsByte == 0))
             {
                 featIDStr = featID_to_string(dirStr,"TCP", modeStr, port);
                 return true;
             }
-            
+
             /* With some TCP flag set */
             uint32_t ack; //useless
             if(flagsByte & PSH)
@@ -511,7 +511,7 @@ namespace blockmon
         /**
          * @brief Constructor
          * @param name         The name of the source block
-         * @param invocation   Invocation type of the block (Indirect, Direct, Async) . This block can only be directly invoked, and will ignore any contrary configuration. 
+         * @param invocation   Invocation type of the block (Indirect, Direct, Async) . This block can only be directly invoked, and will ignore any contrary configuration.
          */
         FeaturesExtractor(const std::string &name, invocation_type invocation) :
         Block(name, invocation),
@@ -520,7 +520,7 @@ namespace blockmon
         m_current_minute(0),
         m_direction(0),
         m_num_of_ticket_features(0)
-        
+
         {
             for(int i=0; i< N_MAX_FEATURES_GROUPS; i++)
             {
@@ -563,7 +563,7 @@ namespace blockmon
                 for(pugi::xml_node_iterator it = features.begin(); it != features.end(); it++)
                 {
                     if(pugi::xml_node feat = features.child(it->name()))
-                    {                        
+                    {
                         if(parse_feature_port(feat,m_feat_ports[i]))
                         {
                         }else signal_error("feature_port");
@@ -571,7 +571,7 @@ namespace blockmon
                         if(parse_feature_mode(feat,m_feat_modes[i],m_direction))
                         {
                         }else signal_error("feature_mode");
-                        
+
                         if(parse_feature_layer4_prot(feat,m_feat_L4_prot[i]))
                         {
                             if(m_feat_L4_prot[i] & TCP)//only for tcp packets we have flags
@@ -587,10 +587,10 @@ namespace blockmon
                 }
                 m_num_of_ticket_features = i; //evaluates the number of active groups of features included in the xml configuration file
             }else signal_error("features");
-            
-            //Opening results text files            
+
+            //Opening results text files
             //m_res_file.open (m_res_file_name, fstream::in | fstream::out | fstream::app);
-            
+
             //m_out_file.open ("FE_Tickets_1min_UL_SYN_packets_p65535.txt", fstream::out);
         }
 
@@ -605,20 +605,20 @@ namespace blockmon
             if(m->type() != MSG_ID(Packet))
                 throw std::runtime_error("FeaturesExtractor: wrong message type");
             const Packet* packet = static_cast<const Packet* > (m.get());
-            
+
             /*
              * INSERIRE QUI IL CONTROLLO SUL TIMESTAMP DEL PACCHETTO RICEVUTO
              * GENERARE E INVIARE IN OUTPUT UN MESSAGGIO DI SEGNALAZIONE (SEMPRE DI TIPO TICKETMSG)
-             * QUANDO TERMINA UN MINUTO E COMINCIA UN ALTRO IN MODO CHE I BLOCCHI 
-             * SUCCESSIVI POSSANO "CAPIRE" CHE IL MINUTO CORRENTE É FINITO ED 
+             * QUANDO TERMINA UN MINUTO E COMINCIA UN ALTRO IN MODO CHE I BLOCCHI
+             * SUCCESSIVI POSSANO "CAPIRE" CHE IL MINUTO CORRENTE É FINITO ED
              * ESEGUIRE IMMEDIATAMENTE LE OPERAZIONI SUL MINUTO
-             * 
-             * FAR PROPAGARE QUESTO MESSAGGIO ANCHE TRA I BLOCCHI SUCCESSIVI 
+             *
+             * FAR PROPAGARE QUESTO MESSAGGIO ANCHE TRA I BLOCCHI SUCCESSIVI
              * PER EVITARE L'ACCUMULO DI RITARDI TRA SCALE TEMPORALI
              */
             uint64_t time_now = packet->timestamp_s();
-            uint64_t minute_now = time_now/60; 
-            
+            uint64_t minute_now = time_now/60;
+
             /*If the current minute is over (i.e. the first ticket belonging to the next minute has arrived)*/
             if(minute_now > m_current_minute) // the packets with timestamp from xxxx00 to xxxx59 will belong to the same "current minute"
             {
@@ -626,15 +626,15 @@ namespace blockmon
                 uint32_t dummy_IP = 0;
                 //create a dummy ticket and send it out signaling this event
                 std::shared_ptr<TicketMsg> dummy_ticket = std::make_shared<TicketMsg>(minute_now*60, dummy_IP);
-                
+
                 //PER ORA STAMPARE ANCHE VIDEO IL TICKET CREATO DAL PACCHETTO CORRENTE
                 std::stringstream sss;
-                sss <<  "Signaling Ticket.\n" 
+                sss <<  "Signaling Ticket.\n"
                     << dummy_ticket.get()->to_string() << "\n\n";
                 blocklog(sss.str(), log_info);
                 send_out_through(dummy_ticket, m_out_gate);
             }
-            
+
             uint16_t transport = packet->l4_protocol(); //transport protocol (TCP or UDP or other)
             uint32_t client_IP = 0;    //source IP if uplink, destination IP if downlink
             uint32_t server_IP = 0;    //destination IP if uplink, source IP if downlink
@@ -642,7 +642,7 @@ namespace blockmon
             string directionStr;
             string modeStr;
             string featIDStr;
-            
+
             if(m_direction == UPLINK)
             {
                 client_IP = packet->ip_src();
@@ -672,17 +672,17 @@ namespace blockmon
              *      In questo modo sará possibile popolare le features in uplink
              *      o downlink!
             */
-            
-            std::shared_ptr<TicketMsg> ticket = std::make_shared<TicketMsg>(packet->timestamp_s(), client_IP);            
-            
+
+            std::shared_ptr<TicketMsg> ticket = std::make_shared<TicketMsg>(packet->timestamp_s(), client_IP);
+
             for(int i = 0 ; i<m_num_of_ticket_features; i++)
             {
                 //Extracting only features of the correct transport protocol
                 if(m_feat_L4_prot[i] != transport) continue;
-                
+
                 //Extracting features only on the user specified server port
                 if( (m_feat_ports[i] != 65535) && (m_feat_ports[i] == server_port) )
-                {                    
+                {
                     /************* PACKETS *************/
                     if(m_feat_modes[i] & PACKETS_ACTIVE)
                     {
@@ -756,25 +756,25 @@ namespace blockmon
                     }
 
                 }
-                
+
             }
-                        
-            
+
+
             //If at least one extraction rule matched with the current packet, output it
             if(ticket.get()->get_extracted_features() > 0)
             {
                 send_out_through(ticket, m_out_gate);
-                
+
                 //Writes the results to the output results file
                 //m_out_file << ticket.get()->to_string_file();
-                
+
                 //PER ORA STAMPARE ANCHE VIDEO IL TICKET CREATO DAL PACCHETTO CORRENTE
                 /*
                 std::stringstream ss;
                 ss << ticket.get()->to_string() << "\n\n";
                 blocklog(ss.str(), log_info);
                 */
-                
+
             }
         }
 

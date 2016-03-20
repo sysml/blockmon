@@ -63,8 +63,8 @@ namespace blockmon
          * @param name         The name of the packet counter block
          * @param invocation   Invocation type of the block (Indirect, Direct, Async)
          */
-        WordCounter(const std::string &name, invocation_type invocation) 
-        : Block(name, invocation), 
+        WordCounter(const std::string &name, invocation_type invocation)
+        : Block(name, invocation),
         m_ingate_id(register_input_gate("in_word")),
         receivedMessages(0),
         receivedTuple(0)
@@ -83,16 +83,16 @@ namespace blockmon
 
         /**
          * @brief Configures the block.
-         * @param n The configuration parameters 
+         * @param n The configuration parameters
          */
-        void _configure(const pugi::xml_node&  n ) 
+        void _configure(const pugi::xml_node&  n )
         {}
 
 
         /**
          * @brief Initialize the block
          */
-        void _initialize() 
+        void _initialize()
         {}
 
         /**
@@ -101,14 +101,14 @@ namespace blockmon
          * @param m     The message
          * @param index The index of the gate the message came on
          */
-        void _receive_msg(std::shared_ptr<const Msg>&& m, int /* index */) 
+        void _receive_msg(std::shared_ptr<const Msg>&& m, int /* index */)
         {
            receivedTuple++;
             if(m->type() != m_msg_type) {
                 throw std::runtime_error("WordCounter::wrong message type");
             }
 
-            const WordRecord* msg_ptr = static_cast<const WordRecord *>(m.get()); 
+            const WordRecord* msg_ptr = static_cast<const WordRecord *>(m.get());
             int idx = 0;
             assert(idx>=0 && idx < MAX_SIZE);
             for(int i = 0; i < msg_ptr->get_word_number(); i++) {

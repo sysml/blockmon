@@ -111,14 +111,14 @@ namespace blockmon
             #ifndef _USE_JSMN_LIBRARY
             throw std::runtime_error("Twitter Trending was compiled without JSMN parser");
             #endif
-            
+
             pugi::xml_node gates_node=n.child("gates");
             if(!gates_node)
                 throw std::runtime_error("TweetFinder: missing node gates");
             std::string gates_s=gates_node.attribute("number").value();
             if(!gates_s.length())
                 throw std::runtime_error("TweetFinder: missing attribute number");
-             
+
             num_gates = atoi(gates_s.c_str());
             std::string outgate_basename = "out_hash";
             m_outgate_ids = new int[num_gates];
@@ -148,7 +148,7 @@ namespace blockmon
                 throw std::runtime_error("TweetFinder::wrong message type");
             }
 
-            
+
             if(receivedTweets == 0) {
                 gettimeofday(&firsttime, NULL);
             }
@@ -233,7 +233,7 @@ namespace blockmon
                 }
             }
             #endif
-    
+
             receivedTweets++;
             m_msg_recv++;
         }

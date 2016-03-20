@@ -1,31 +1,31 @@
-/* Copyright (c) 2011, NEC Europe Ltd, Consorzio Nazionale 
- * Interuniversitario per le Telecomunicazioni, Institut 
+/* Copyright (c) 2011, NEC Europe Ltd, Consorzio Nazionale
+ * Interuniversitario per le Telecomunicazioni, Institut
  * Telecom/Telecom Bretagne, ETH Zürich, INVEA-TECH a.s. All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without 
+ * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *    * Redistributions of source code must retain the above copyright
  *      notice, this list of conditions and the following disclaimer.
  *    * Redistributions in binary form must reproduce the above copyright
  *      notice, this list of conditions and the following disclaimer in the
  *      documentation and/or other materials provided with the distribution.
- *    * Neither the names of NEC Europe Ltd, Consorzio Nazionale 
- *      Interuniversitario per le Telecomunicazioni, Institut Telecom/Telecom 
- *      Bretagne, ETH Zürich, INVEA-TECH a.s. nor the names of its contributors 
- *      may be used to endorse or promote products derived from this software 
+ *    * Neither the names of NEC Europe Ltd, Consorzio Nazionale
+ *      Interuniversitario per le Telecomunicazioni, Institut Telecom/Telecom
+ *      Bretagne, ETH Zürich, INVEA-TECH a.s. nor the names of its contributors
+ *      may be used to endorse or promote products derived from this software
  *      without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT 
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR 
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT 
- * HOLDERBE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, 
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, 
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT
+ * HOLDERBE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
  * PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER 
- * IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
- * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER
+ * IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+ * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
  */
 
@@ -95,7 +95,7 @@ vector<uint64_t> binning_function(uint64_t max_data, uint16_t n_class_max, bool 
     it = binsf.insert(binsf.begin(), i);
     for(i=0;i<NNC;i++)
     {
-        power = pow(b,i); 
+        power = pow(b,i);
         it = binsf.insert(it+1,power);
     }
 
@@ -183,30 +183,30 @@ vector<uint64_t> unique_floor(vector<double> array){
     /*Gets the elements of the array (of double elements) passed in input
      *rounded to the lower integer (uint64_t) without repetitions
      */
-    uint64_t f;   
+    uint64_t f;
     vector<uint64_t> floor_array;
-    
+
     //sorts the elements in the double array
     sort(array.begin(), array.end());
-    
+
     //rounds the array elements to the lower integer
     vector<double>::iterator iter;
     vector<uint64_t>::iterator itt = floor_array.begin();
-    
+
     for(iter=array.begin(); iter!=array.end(); iter++)
     {
         f = floor(*iter);
-        
+
         floor_array.push_back(f);
         //floor_array.insert(itt, f);
         //itt++;
     }
-    
+
     // removes the duplicate elements using default comparison:
     itt = unique (floor_array.begin(), floor_array.end()); // 10 20 30 20 10 ?  ?  ?  ?
-    //we need to reset the size of the array 
+    //we need to reset the size of the array
     floor_array.resize( itt - floor_array.begin() );       // 10 20 30 20 10
-    
+
 
 
     return floor_array;
