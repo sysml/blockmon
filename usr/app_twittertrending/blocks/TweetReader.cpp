@@ -31,8 +31,8 @@
  * <blockinfo type="TweetReader" invocation="indirect" thread_exclusive="True">
  *   <humandesc>
  *     Reads tweets from file and send tweets to destination nodes.
- *     If the source type is set to tweetfile, then the name should be the 
- *     full path to a file containing the tweets (e.g., /tmp/tweets.log). 
+ *     If the source type is set to tweetfile, then the name should be the
+ *     full path to a file containing the tweets (e.g., /tmp/tweets.log).
  *   </humandesc>
  *
  *   <shortdesc>Reads tweets from a file and forward them.</shortdesc>
@@ -81,8 +81,8 @@
 #include <netdb.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
-#include <sys/ioctl.h> 
-#include <net/if.h>  
+#include <sys/ioctl.h>
+#include <net/if.h>
 #include <boost/lexical_cast.hpp>
 
 #define BUF_LEN 2000
@@ -92,7 +92,7 @@ using namespace pugi;
 namespace blockmon
 {
 
-     /** 
+     /**
       * Implements a block that reads tweets from file and
       * forward them as Tweet messages.
       */
@@ -193,12 +193,12 @@ namespace blockmon
                     m_outgate_ids[i] = register_output_gate(ogate.c_str());
                 }
             }
-    
+
             /**
              * Retrieves tweets and send them out as WordRecord message
              */
             void _do_async()
-            {               
+            {
                 if(m_msg_sent == 0) {
                     gettimeofday(&firsttime, NULL);
                 }
@@ -206,16 +206,16 @@ namespace blockmon
                 if(file.eof()) {
                     sleep(5);
                 }
- 
+
                 std::string json_tweet;
                 getline(file, json_tweet);
-                    
+
                 std::shared_ptr<Tweet> m(new Tweet(json_tweet));
                 send_out_through(move(m), m_outgate_ids[next_out_port]);
                 next_out_port = (next_out_port + 1) % num_gates;
                 m_msg_sent++;
            }
      };
-     
+
      REGISTER_BLOCK(TweetReader, "TweetReader");
 }

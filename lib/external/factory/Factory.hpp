@@ -30,26 +30,26 @@
  */
 
 #ifndef _MORE_FACTORY_HPP_
-#define _MORE_FACTORY_HPP_ 
+#define _MORE_FACTORY_HPP_
 
 #include <type_traits>
 #include <memory>
 #include <string>
 #include <map>
 
-namespace more { 
+namespace more {
 
-    template <typename B, typename ... Arg>  
+    template <typename B, typename ... Arg>
     struct factory_base_allocator
     {
-        virtual ~factory_base_allocator() 
+        virtual ~factory_base_allocator()
         {}
 
         virtual B * alloc(Arg&& ... ) = 0;
         virtual std::shared_ptr<B> shared_alloc(Arg&& ... ) = 0;
     };
 
-    template <typename B, typename E, typename ... Arg>   // B must be a base class of E 
+    template <typename B, typename E, typename ... Arg>   // B must be a base class of E
     struct factory_allocator : public factory_base_allocator<B,Arg...>
     {
         static_assert(std::is_base_of<B,E>::value, "base_of relationship violated");
@@ -72,7 +72,7 @@ namespace more {
     template <typename ... Tp>
     struct fac_args {};
 
-    template <typename B  /* Base */,  
+    template <typename B  /* Base */,
               typename E  /* element */
               >
     struct factory_register
@@ -88,8 +88,8 @@ namespace more {
         template <typename F, typename K, typename ... Ti>
         void unpack_register(F &f, const K &key, fac_args<Ti...>)
         {
-            f.regist(key, std::unique_ptr<factory_base_allocator<B, Ti...>>(new 
-                                            typename more::factory_allocator<B, E, Ti...>()));    
+            f.regist(key, std::unique_ptr<factory_base_allocator<B, Ti...>>(new
+                                            typename more::factory_allocator<B, E, Ti...>()));
         }
     };
 
@@ -97,13 +97,13 @@ namespace more {
     // factory class: K:key -> B:base_element
 
 
-    template <typename K, typename B, typename ... Arg> 
+    template <typename K, typename B, typename ... Arg>
     class factory
     {
     public:
-        
+
 #if __GNUC__ == 4 && __GNUC_MINOR__ < 6
-        // buggy std::map when used with std::unique_ptr...    
+        // buggy std::map when used with std::unique_ptr...
         //
         typedef std::map<K, std::shared_ptr<factory_base_allocator<B,Arg...>>> map_type;
 #else
@@ -117,19 +117,19 @@ namespace more {
 
         bool
         regist(const K & key, std::unique_ptr<factory_base_allocator<B, Arg...>> value)
-        { 
+        {
 #if __GNUC__ == 4 && __GNUC_MINOR__ < 6
             std::shared_ptr<factory_base_allocator<B, Arg...>> sp(std::move(value));
-            return m_map.insert(make_pair(key, std::move(sp))).second; 
-#else                                                    
-            return m_map.insert(make_pair(key, std::move(value))).second; 
+            return m_map.insert(make_pair(key, std::move(sp))).second;
+#else
+            return m_map.insert(make_pair(key, std::move(value))).second;
 #endif
         }
-        
+
         bool
         unregist(const K &key)
-        { 
-            return m_map.erase(key) == 1; 
+        {
+            return m_map.erase(key) == 1;
         }
 
         bool
@@ -139,7 +139,7 @@ namespace more {
         }
 
         template <typename ...Ti>
-        std::unique_ptr<B> 
+        std::unique_ptr<B>
         operator()(const K &key, Ti&& ... arg) const
         {
             auto it = m_map.find(key);
@@ -150,7 +150,7 @@ namespace more {
         }
 
         template <typename ...Ti>
-        std::shared_ptr<B> 
+        std::shared_ptr<B>
         shared(const K &key, Ti&& ... arg) const
         {
             auto it = m_map.find(key);
