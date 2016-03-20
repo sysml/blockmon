@@ -56,88 +56,88 @@
 namespace blockmon
 {
 
-	/**
-	 * BlockMon Message representing a DNS packet with parsed information.
-	 */
+    /**
+     * BlockMon Message representing a DNS packet with parsed information.
+     */
 
-	class DNSPacket : public Packet
-	{
+    class DNSPacket : public Packet
+    {
 
-		public:
+        public:
 
-			/**
-			 * Create a new DNSPacket from Packet. This is not performance optimal,
-			 * but it is expected that the parsing will be performed on a prefiltered
-			 * packets.
-			 *
-			 * @param p		original Packet
-			 */
-			DNSPacket(const Packet &p)
-				: Packet(const_buffer<uint8_t>(p.base(), p.length()))
-			{
-					parse_dns();
-			}
+            /**
+             * Create a new DNSPacket from Packet. This is not performance optimal,
+             * but it is expected that the parsing will be performed on a prefiltered
+             * packets.
+             *
+             * @param p        original Packet
+             */
+            DNSPacket(const Packet &p)
+                : Packet(const_buffer<uint8_t>(p.base(), p.length()))
+            {
+                    parse_dns();
+            }
 
-			/**
-			 * Print parsed DNSPacket info.
-			 */
-			void print();
+            /**
+             * Print parsed DNSPacket info.
+             */
+            void print();
 
-			/* DNS Packet fields */
+            /* DNS Packet fields */
 
-			uint16_t transaction_id;
-			uint8_t QR_flag;
-			uint8_t op_code;
-			uint8_t AA_flag;
-			uint8_t TC_flag;
-			uint8_t RD_flag;
-			uint8_t RA_flag;
-			uint8_t AD_flag;
-			uint8_t ND_flag;
-			uint8_t re_code;
+            uint16_t transaction_id;
+            uint8_t QR_flag;
+            uint8_t op_code;
+            uint8_t AA_flag;
+            uint8_t TC_flag;
+            uint8_t RD_flag;
+            uint8_t RA_flag;
+            uint8_t AD_flag;
+            uint8_t ND_flag;
+            uint8_t re_code;
 
-			uint16_t n_questions;
-			uint16_t n_answer;
-			uint16_t n_ns;
-			uint16_t n_additional;
+            uint16_t n_questions;
+            uint16_t n_answer;
+            uint16_t n_ns;
+            uint16_t n_additional;
 
-			struct q_record {
-				uint16_t rtype;
-				uint16_t dclass;
-				std::string* qname;
-			};
-
-
-			struct cname_record {
-				uint32_t ttl;
-				uint16_t rtype;
-				uint16_t dclass;
-				std::string* qname;
-				std::string* cname;
-			};
-
-			struct a_record {
-				uint32_t ttl;
-				uint16_t rtype;
-				uint16_t dclass;
-				uint32_t ip_addr;
-				std::string* qname;
-			};
+            struct q_record {
+                uint16_t rtype;
+                uint16_t dclass;
+                std::string* qname;
+            };
 
 
-			std::vector<struct q_record> queries;
-			std::vector<struct a_record> a_recs;
-			std::vector<struct cname_record> c_names;
+            struct cname_record {
+                uint32_t ttl;
+                uint16_t rtype;
+                uint16_t dclass;
+                std::string* qname;
+                std::string* cname;
+            };
 
-		private:
+            struct a_record {
+                uint32_t ttl;
+                uint16_t rtype;
+                uint16_t dclass;
+                uint32_t ip_addr;
+                std::string* qname;
+            };
 
-			std::string* read_dns_name(uint16_t* consumed, const uint8_t * , const uint8_t * );
-			int parse_dns();
 
-			void print_DNS_question(struct q_record);
-			void print_DNS_cname(struct cname_record);
-			void print_DNS_arec(struct a_record);
-	};
+            std::vector<struct q_record> queries;
+            std::vector<struct a_record> a_recs;
+            std::vector<struct cname_record> c_names;
+
+        private:
+
+            std::string* read_dns_name(uint16_t* consumed, const uint8_t * , const uint8_t * );
+            int parse_dns();
+
+            void print_DNS_question(struct q_record);
+            void print_DNS_cname(struct cname_record);
+            void print_DNS_arec(struct a_record);
+    };
 
 }
 

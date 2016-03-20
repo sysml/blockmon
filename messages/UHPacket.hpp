@@ -92,7 +92,7 @@ namespace blockmon
                int                           uh_id)
         : Packet(const_buffer<uint8_t>(), timespec(), 0, 0, MSG_ID(Packet))
         {
-			parse_uh(uh_buf);
+            parse_uh(uh_buf);
         }
 
         /**
@@ -118,16 +118,16 @@ namespace blockmon
                const const_buffer<uint8_t>  &uh_buf,
                int                          uh_id)
         : Packet(memory_not_owned, sizeof(Packet), const_buffer<uint8_t>(), timespec(), 0, 0, MSG_ID(Packet))
-		{
-			parse_uh(uh_buf);
+        {
+            parse_uh(uh_buf);
         }
 
         /** Forbids copy and move constructors.
-	 */
+     */
         UHPacket(const UHPacket &) = delete;
 
         /** Forbids copy and move assignment.
-	 */
+     */
         UHPacket& operator=(const UHPacket &) = delete;
 
 
@@ -154,7 +154,7 @@ namespace blockmon
 
 
     private:
-		void parse_uh(const const_buffer<uint8_t> & uh_buf);
+        void parse_uh(const const_buffer<uint8_t> & uh_buf);
 
     };
 

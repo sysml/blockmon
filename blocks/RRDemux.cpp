@@ -41,11 +41,11 @@ namespace blockmon
     : Block(name, invocation_type::Direct),
      m_outgates_number(2), m_current_outgate(0)
     {
-		register_input_gate("input");
+        register_input_gate("input");
         if (invocation != invocation_type::Direct) {
             blocklog("SynCounter must be direct; ignoring configuration.", log_warning);
         }
-	}
+    }
 
     RRDemux::~RRDemux()
     {}
@@ -53,28 +53,28 @@ namespace blockmon
     void RRDemux::_configure(const pugi::xml_node& n)
     {
         // XML configuration
-		// Gates
+        // Gates
        pugi::xml_node gates_node = n.child("gates");
         if (gates_node)
         {
-		    if (gates_node.attribute("number"))
-		        m_outgates_number = std::atoi(std::string(gates_node.attribute("number").value()).c_str());
-		}
+            if (gates_node.attribute("number"))
+                m_outgates_number = std::atoi(std::string(gates_node.attribute("number").value()).c_str());
+        }
         // Register the gates
-		char output_name[7 + (int) ceil(log10(m_outgates_number))];
-		for (int i = 0; i < m_outgates_number; i++) {
-			sprintf(output_name, "output%d", i + 1);
-			register_output_gate(output_name);
-		}
+        char output_name[7 + (int) ceil(log10(m_outgates_number))];
+        for (int i = 0; i < m_outgates_number; i++) {
+            sprintf(output_name, "output%d", i + 1);
+            register_output_gate(output_name);
+        }
     }
 
     void RRDemux::_receive_msg(std::shared_ptr<const Msg>&& m, int /* index */)
     {
-		// Send the message through the current gate
-		send_out_through(move(m), m_current_outgate);
-		// Update the current gate
+        // Send the message through the current gate
+        send_out_through(move(m), m_current_outgate);
+        // Update the current gate
         m_current_outgate++;
-		if (m_current_outgate >= m_outgates_number)
-			m_current_outgate = 0;
+        if (m_current_outgate >= m_outgates_number)
+            m_current_outgate = 0;
     }
 }

@@ -46,7 +46,7 @@ clock_source_t clock_source = WALL;
    */
 void select_clock(clock_source_t val )
 {
-	clock_source = val;
+    clock_source = val;
 }
 
 

@@ -56,7 +56,7 @@ namespace blockmon
         std::map<std::string,std::shared_ptr<ThreadPool> > m_map;
         std::atomic_bool running;
 
-		/**
+        /**
           * class constructor
           * private,as in Meyer's singleton
           */
@@ -90,7 +90,7 @@ namespace blockmon
 
         /**
           * Adds a new thread pool to the directory.
-	  *
+      *
           * @param n an xml subtree (parsed as a pugixml node)
           * describing the thread pool, as it appears in the
           * composition specification
@@ -125,10 +125,10 @@ namespace blockmon
 
         /**
           * Dispatches a block to a given thread pool.
-	  *
+      *
           * Notice that an active block as to be explicitly removed
           * from its pool, otherwise it will not be destroyed
-	  *
+      *
           * @param name the thread pool identifier
           * @param b a shared pointer to the block
           */
@@ -142,10 +142,10 @@ namespace blockmon
 
         /**
           * Removes a block from a given thread pool.
-	  *
+      *
           * Notice that an active block as to be explicitly removed
           * from its pool, otherwise it will not be destroyed.
-	  *
+      *
           * @param name the thread pool identifier
           * @param b a shared pointer to the block
           */
@@ -159,10 +159,10 @@ namespace blockmon
 
         /**
           * Removes a thread pool from the directory and destroys it.
-	  *
+      *
           * Notice that any active blocks assigned to the pool will
           * not be executed anymore.
-	  *
+      *
           * @param name the thread pool identifier
           */
         void delete_pool(const std::string &name)
@@ -172,7 +172,7 @@ namespace blockmon
 
         /**
           * Creates all of the threads of all of the thread pools.
-	  *
+      *
           * This is when BlockMon actually starts working.
           */
         void start()
@@ -189,7 +189,7 @@ namespace blockmon
 
         /**
           * Stops all of the threads of all of the thread pools.
-	  *
+      *
           * This is needs to be done prior to any reconfiguration.
           */
 
@@ -206,8 +206,8 @@ namespace blockmon
 /*
         void stop()
         {
-        	running.store(false);
-        	std::cout << "Stopping all thread pools..." << std::endl;
+            running.store(false);
+            std::cout << "Stopping all thread pools..." << std::endl;
             auto end=m_map.end();
             for(auto cur=m_map.begin(); cur!=end; ++cur)
             {
@@ -215,13 +215,13 @@ namespace blockmon
             }
             std::cout << "Waiting for all threads to finish..." << std::endl;
             for(auto cur=m_map.begin(); cur!=end; ++cur)
-			{
-				cur->second->join();
-			}
+            {
+                cur->second->join();
+            }
         }
 */
         bool isRunning(){
-        	return running.load();
+            return running.load();
         }
 
     };

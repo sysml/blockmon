@@ -81,26 +81,26 @@ namespace blockmon
         int m_ingate_id;
 
         // Configuration
-		typedef enum {
-			EXP_FILE,
-			EXP_TCP
-		} export_method;
+        typedef enum {
+            EXP_FILE,
+            EXP_TCP
+        } export_method;
 
         export_method m_export_method;
 
-		uint32_t m_host;
+        uint32_t m_host;
 
-		uint16_t m_port;
+        uint16_t m_port;
 
-		std::string m_filename;
+        std::string m_filename;
 
-		bool m_tcp_open;
+        bool m_tcp_open;
 
-		bool m_file_open;
+        bool m_file_open;
 
-		std::ofstream m_file_stream;
+        std::ofstream m_file_stream;
 
-		int m_tcp_socket;
+        int m_tcp_socket;
 
     public:
 
@@ -131,24 +131,24 @@ namespace blockmon
          */
         void _receive_msg(std::shared_ptr<const Msg>&& m, int index) ;
 
-	private:
+    private:
 
-		/**
-		 * Fills an XML element from an Alert Node.
-		 * @param xml_node The XMl element to fill
-		 * @param node The node to use
-		 */
-		void set_xml_from_node(pugi::xml_node& xml_node, const Alert::Node& node);
+        /**
+         * Fills an XML element from an Alert Node.
+         * @param xml_node The XMl element to fill
+         * @param node The node to use
+         */
+        void set_xml_from_node(pugi::xml_node& xml_node, const Alert::Node& node);
 
-		/**
-		 * Opens the configured export method
-		 */
-		void open_export_method();
+        /**
+         * Opens the configured export method
+         */
+        void open_export_method();
 
-		/**
-		 * Closes the opened export method
-		 */
-		void close_export_method();
+        /**
+         * Closes the opened export method
+         */
+        void close_export_method();
 
     };
 

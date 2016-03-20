@@ -79,24 +79,24 @@ namespace blockmon
 
       void _receive_msg(std::shared_ptr<const Msg>&& m, int /* index */)
       {
-	int i;
+    int i;
 #if defined(USE_SIMPLE_PACKET)
 #elif defined(USE_SLICED_PACKET)
 #else
         const Packet* packet_ptr = static_cast<const Packet*>(m.get());
 
-	size_t len = packet_ptr->length();
-	int payload_len = (int)len - 42;
-	const uint8_t *payload = packet_ptr->payload();
-	// const uint8_t *manual_payload = packet_ptr->base() + 42;
+    size_t len = packet_ptr->length();
+    int payload_len = (int)len - 42;
+    const uint8_t *payload = packet_ptr->payload();
+    // const uint8_t *manual_payload = packet_ptr->base() + 42;
 
-	for (i = 0; i < payload_len; i++)
-	{
-	  //	  if (i < 2)
-	  //  printf("payload[%d]=%x\n", i, *payload);
-	  ctr = *payload;
-	  payload++;
-	}
+    for (i = 0; i < payload_len; i++)
+    {
+      //      if (i < 2)
+      //  printf("payload[%d]=%x\n", i, *payload);
+      ctr = *payload;
+      payload++;
+    }
 #endif
 
       }

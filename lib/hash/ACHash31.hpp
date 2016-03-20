@@ -58,7 +58,7 @@
 
 
 #ifndef ACHASH31_HPP
-#define	ACHASH31_HPP
+#define    ACHASH31_HPP
 
 #define dgstlenhsm 4
 #define mod 0x2FFFFFFF
@@ -149,5 +149,5 @@ private:
 
 
 
-#endif	/* HASH_SMOD_HPP */
+#endif    /* HASH_SMOD_HPP */
 

@@ -55,35 +55,35 @@ namespace blockmon
 
      class SerSource: public Block {
 
-	  int port;
-	  int sock;
+      int port;
+      int sock;
           int maxFd;
-	  struct sockaddr_in local;
-	  struct sockaddr_in remote;
-//	  Serializer ser;
-	  Msg *msg_prototype;
+      struct sockaddr_in local;
+      struct sockaddr_in remote;
+//      Serializer ser;
+      Msg *msg_prototype;
           std::vector<int> client_socket;
           std::vector<Serializer *> sers;
      public:
 
-	  /**
-	   * @brief Constructor
-	   * @param name         The name of the source block
-	   * @param invocation   Invocation type of the block (ignored)
-	   */
-	  SerSource(const std::string &name, invocation_type invocation)
-	       :Block(name, invocation_type::Async),
-		//m_collector(),
-		//m_mbuf(),
-		sock(-1),
-		maxFd(-1),
-		msg_prototype (NULL),
-		m_gate_id(register_output_gate("source_out"))
-	       {
-		    if (invocation != invocation_type::Async) {
-			 blocklog("SerSource must be Async, ignoring configuration", log_warning);
-		    }
-	       }
+      /**
+       * @brief Constructor
+       * @param name         The name of the source block
+       * @param invocation   Invocation type of the block (ignored)
+       */
+      SerSource(const std::string &name, invocation_type invocation)
+           :Block(name, invocation_type::Async),
+        //m_collector(),
+        //m_mbuf(),
+        sock(-1),
+        maxFd(-1),
+        msg_prototype (NULL),
+        m_gate_id(register_output_gate("source_out"))
+           {
+            if (invocation != invocation_type::Async) {
+             blocklog("SerSource must be Async, ignoring configuration", log_warning);
+            }
+           }
 
           virtual ~SerSource()
           {
@@ -91,15 +91,15 @@ namespace blockmon
                   close(sock);
           }
 
-	  /**
-	   * Expose ability to send a record (so the Receiver subclass can use it)
-	   *
-	   * Client code should not call this method.
-	   */
+      /**
+       * Expose ability to send a record (so the Receiver subclass can use it)
+       *
+       * Client code should not call this method.
+       */
 
-	  void send_record(std::shared_ptr<const Msg>&& msg) {
-	       send_out_through(std::move(msg), m_gate_id);
-	  }
+      void send_record(std::shared_ptr<const Msg>&& msg) {
+           send_out_through(std::move(msg), m_gate_id);
+      }
 
 /**
  * Configure the block given an XML element containing configuration.
@@ -110,72 +110,72 @@ namespace blockmon
  *
  * @param xmlnode the <params> XML element containing block parameters
  */
-	  virtual void _configure(const xml_node& xmlnode) {
-	       xml_node        domspec, inspec;
+      virtual void _configure(const xml_node& xmlnode) {
+           xml_node        domspec, inspec;
 
-	       if ((inspec = xmlnode.child("collect"))) {
-		    // Parse collection over the network (port and msg type to deserialize)
-		    std::string cfgport = inspec.attribute("port").value();
-		    if (cfgport.empty()) {
-			 throw std::runtime_error("Source specification incomplete");
-		    }
-		    port = atoi(cfgport.c_str());
-		    if(port < 0 || port > 65535) {
-			 throw std::runtime_error("Invalid port");
-		    }
+           if ((inspec = xmlnode.child("collect"))) {
+            // Parse collection over the network (port and msg type to deserialize)
+            std::string cfgport = inspec.attribute("port").value();
+            if (cfgport.empty()) {
+             throw std::runtime_error("Source specification incomplete");
+            }
+            port = atoi(cfgport.c_str());
+            if(port < 0 || port > 65535) {
+             throw std::runtime_error("Invalid port");
+            }
 
-		    std::string msgtype = inspec.attribute("msgtype").value();
-		    if (msgtype.empty()) {
-			 throw std::runtime_error("Message type specification incomplete");
-		    }
+            std::string msgtype = inspec.attribute("msgtype").value();
+            if (msgtype.empty()) {
+             throw std::runtime_error("Message type specification incomplete");
+            }
 
-		    if (!msgtype.compare("WordRecord")) {
-			 msg_prototype = new WordRecord();
-		    } else if (!msgtype.compare("Tweet")) {
+            if (!msgtype.compare("WordRecord")) {
+             msg_prototype = new WordRecord();
+            } else if (!msgtype.compare("Tweet")) {
                          msg_prototype = new Tweet();
                     } else {
-			 throw std::runtime_error("Invalid message type requested for deserialization");
-		    }
-	       } else {
-		    throw std::runtime_error("No collector or file specification");
-	       }
-	  }
+             throw std::runtime_error("Invalid message type requested for deserialization");
+            }
+           } else {
+            throw std::runtime_error("No collector or file specification");
+           }
+      }
 
-	  virtual void _do_async() {
+      virtual void _do_async() {
 
-	       // if this is the first call
-	       if(sock == -1) {
-		    local.sin_family = AF_INET;
-		    local.sin_port = htons(port);
-		    local.sin_addr.s_addr = INADDR_ANY;
-		    sock = socket(AF_INET, SOCK_STREAM, 0);
+           // if this is the first call
+           if(sock == -1) {
+            local.sin_family = AF_INET;
+            local.sin_port = htons(port);
+            local.sin_addr.s_addr = INADDR_ANY;
+            sock = socket(AF_INET, SOCK_STREAM, 0);
 
-		    if(sock == -1) {
-			 std::cerr << "Cannot create socket: " << strerror(errno) << std::endl;
-			 return;
-		    }
+            if(sock == -1) {
+             std::cerr << "Cannot create socket: " << strerror(errno) << std::endl;
+             return;
+            }
 
                     int optval = 1;
                     if(setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof optval) == -1) {
-	                 std::cerr << "Cannot bind socket: " << strerror(errno) << std::endl;
-			 return;
+                     std::cerr << "Cannot bind socket: " << strerror(errno) << std::endl;
+             return;
                     }
-		    if(bind(sock, (struct sockaddr*) &local, sizeof(local)) == -1) {
-			 std::cerr << "Cannot bind socket: " << strerror(errno) << std::endl;
-			 return;
-		    }
+            if(bind(sock, (struct sockaddr*) &local, sizeof(local)) == -1) {
+             std::cerr << "Cannot bind socket: " << strerror(errno) << std::endl;
+             return;
+            }
 
-		    if(listen(sock, 10) == -1) {
-			 std::cerr << "Cannot listen on the sock: " << strerror(errno) << std::endl;
-			 return;
-		    }
-		    maxFd = sock;
-	       }
+            if(listen(sock, 10) == -1) {
+             std::cerr << "Cannot listen on the sock: " << strerror(errno) << std::endl;
+             return;
+            }
+            maxFd = sock;
+           }
 
 
                //ser.empty();
 
- 	       struct sockaddr_in clientaddr;
+            struct sockaddr_in clientaddr;
                fd_set master, read_fds;
                FD_ZERO(&master);
                FD_ZERO(&read_fds);
@@ -187,19 +187,19 @@ namespace blockmon
                     int consumed = 0;
                     for(std::vector<Serializer *>::iterator it = sers.begin(); it < sers.end(); it++) {
                         Serializer *ser = *it;
-		        if(ser->get_len() >= 2) {
-			    int msg_len = ser->read_int16();
-			    if( ser->get_len() >= msg_len) {
-  			        // remove msg length: this should be moved into serializer
-			        ser->consume(2);
-     			        this->send_record(msg_prototype->build_same(ser));
-		                ser->next();
-			        consumed = 1;
-			   }
-		      }
+                if(ser->get_len() >= 2) {
+                int msg_len = ser->read_int16();
+                if( ser->get_len() >= msg_len) {
+                      // remove msg length: this should be moved into serializer
+                    ser->consume(2);
+                         this->send_record(msg_prototype->build_same(ser));
+                        ser->next();
+                    consumed = 1;
+               }
+              }
                    }
                    // If we consumed something then try consuming more, otherwise get data from the network
-		   if( consumed > 0 )
+           if( consumed > 0 )
                        continue;
 
                    FD_ZERO(&read_fds);

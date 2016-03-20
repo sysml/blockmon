@@ -157,8 +157,8 @@ public:
     }
 
     /** reads the next entry from the consumer queue and forward the pointer.
-    	if the last entry was reached already, the queues are swapped and the
-    	first entry from the new consumer queue is returned
+        if the last entry was reached already, the queues are swapped and the
+        first entry from the new consumer queue is returned
     */
     bool pop(T& in)
     {
@@ -168,29 +168,29 @@ public:
         return consume(in);
     }
 
-    /**	same as  bool pop(T& in) with one difference:
+    /**    same as  bool pop(T& in) with one difference:
      *  if (and only if) the queues are swapped, the condition variable's
      *  notify_all() is called.
      */
     bool pop_notify_all(T& in, std::condition_variable& cond){
-    	if(consume(in))
-			return true;
-		swap_queues();
-		cond.notify_all();
-		return consume(in);
+        if(consume(in))
+            return true;
+        swap_queues();
+        cond.notify_all();
+        return consume(in);
     }
 
-    /**	same as  bool pop(T& in) with one difference:
+    /**    same as  bool pop(T& in) with one difference:
          *  if (and only if) the queues are swapped, the condition variable's
          *  notify_one() is called.
          */
-	bool pop_notify_one(T& in, std::condition_variable& cond){
-		if(consume(in))
-			return true;
-		swap_queues();
-		cond.notify_one();
-		return consume(in);
-	}
+    bool pop_notify_one(T& in, std::condition_variable& cond){
+        if(consume(in))
+            return true;
+        swap_queues();
+        cond.notify_one();
+        return consume(in);
+    }
 
 
 

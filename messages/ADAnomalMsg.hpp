@@ -79,7 +79,7 @@ namespace blockmon
     class ADAnomalMsg: public Msg
     {
                 //CCDF timestamp
-		uint64_t  m_timestamp;
+        uint64_t  m_timestamp;
                 //CCDF Timescale
                 uint16_t m_timescale;
                 //CCDF feature ID
@@ -95,13 +95,13 @@ namespace blockmon
 
     public:
                 /**
-		 * Message constructor that creates the Anomalous message starting from:
-		 *
-		 * @param timestamp Timestamp of the current CCDF
+         * Message constructor that creates the Anomalous message starting from:
+         *
+         * @param timestamp Timestamp of the current CCDF
                  * @param timescale Timescale of the current CCDF
-		 * @param featureID The identifier of the current feature
-		 */
-		ADAnomalMsg(uint64_t timestamp, uint16_t timescale, string featID)
+         * @param featureID The identifier of the current feature
+         */
+        ADAnomalMsg(uint64_t timestamp, uint16_t timescale, string featID)
                 : Msg(MSG_ID(ADAnomalMsg)), m_timestamp(timestamp),
                         m_timescale(timescale), m_featureID(featID),
                         m_CCDF_size(0), m_CCDF(vector<double>()),
@@ -110,116 +110,116 @@ namespace blockmon
                 }
 
                 /**
-		 * Set the CCDF timestamp
-		 * @param timestamp The CCDF timestamp to set
-		 */
-		void set_timestamp(uint64_t timestamp);
+         * Set the CCDF timestamp
+         * @param timestamp The CCDF timestamp to set
+         */
+        void set_timestamp(uint64_t timestamp);
 
                 /**
-		 * Set the CCDF timescale
-		 * @param timescale The CCDF timescale to set
-		 */
-		void set_timescale(uint16_t timescale);
+         * Set the CCDF timescale
+         * @param timescale The CCDF timescale to set
+         */
+        void set_timescale(uint16_t timescale);
 
                 /**
-		 * Set the featureID
-		 * @param featureID
-		 */
-		void set_featureID(string featureID);
+         * Set the featureID
+         * @param featureID
+         */
+        void set_featureID(string featureID);
 
                 /**
-		 * Set the size of the CCDF (number of bins)
-		 * @param CCDF size
-		 */
-		void set_CCDF_size(uint16_t CCDF_size);
+         * Set the size of the CCDF (number of bins)
+         * @param CCDF size
+         */
+        void set_CCDF_size(uint16_t CCDF_size);
 
                 /**
-		 * Set the CCDF
-		 * @param CCDF The CCDF vector
-		 */
-		void set_CCDF(const vector<double> CCDF);
+         * Set the CCDF
+         * @param CCDF The CCDF vector
+         */
+        void set_CCDF(const vector<double> CCDF);
 
                 /**
-		 * Set the size of the Reference set (number of CCDFs)
-		 * @param RefSet size
-		 */
-		void set_RefSet_size(uint16_t RefSet_size);
+         * Set the size of the Reference set (number of CCDFs)
+         * @param RefSet size
+         */
+        void set_RefSet_size(uint16_t RefSet_size);
 
                 /**
-		 * Set the Reference Set
-		 * @param RefSet The Reference Set vector of CCDFs vectors
-		 */
-		void set_RefSet(const window_array RefSet);
+         * Set the Reference Set
+         * @param RefSet The Reference Set vector of CCDFs vectors
+         */
+        void set_RefSet(const window_array RefSet);
 
 
    /**************************************************************************/
 
-		/**
-		 * Get the timestamp associated to the CCDF
-		 * @return the timestamp
-		 */
-		uint64_t get_timestamp() const;
+        /**
+         * Get the timestamp associated to the CCDF
+         * @return the timestamp
+         */
+        uint64_t get_timestamp() const;
 
                 /**
-		 * Get the timescale associated to the CCDF
-		 * @return the timescale
-		 */
-		uint16_t get_timescale() const;
+         * Get the timescale associated to the CCDF
+         * @return the timescale
+         */
+        uint16_t get_timescale() const;
 
                 /**
-		 * Get the user ID of the CCDF
-		 * @return the user ID
-		 */
-		string get_featureID() const;
+         * Get the user ID of the CCDF
+         * @return the user ID
+         */
+        string get_featureID() const;
 
                 /**
-		 * Get the CCDF size (number of bins)
-		 * @return the CCDF size
-		 */
-		uint16_t get_CCDF_size() const;
+         * Get the CCDF size (number of bins)
+         * @return the CCDF size
+         */
+        uint16_t get_CCDF_size() const;
 
                 /**
-		 * Get the CCDF
-		 * @return the CCDF vector
-		 */
-		const vector<double>* get_CCDF() const;
+         * Get the CCDF
+         * @return the CCDF vector
+         */
+        const vector<double>* get_CCDF() const;
 
                 /**
-		 * Get the Reference Set size (number of CCDFs)
-		 * @return the Reference Set size
-		 */
-		uint16_t get_RefSet_size() const;
+         * Get the Reference Set size (number of CCDFs)
+         * @return the Reference Set size
+         */
+        uint16_t get_RefSet_size() const;
 
                 /**
-		 * Get the Reference Set
-		 * @return the RefSet vector of CCDFs vectors
-		 */
-		const window_array* get_RefSet() const;
+         * Get the Reference Set
+         * @return the RefSet vector of CCDFs vectors
+         */
+        const window_array* get_RefSet() const;
 
 
                 /**
-		 * Clear the CCDF
-		 */
-		void clear_CCDF();
+         * Clear the CCDF
+         */
+        void clear_CCDF();
 
                 /**
-		 * Clear the REfSet
-		 */
-		void clear_RefSet();
+         * Clear the REfSet
+         */
+        void clear_RefSet();
 
                 /**
-		 * Convert the ADAnomalMsg into a human-readable string
-		 */
-		string to_string() const;
+         * Convert the ADAnomalMsg into a human-readable string
+         */
+        string to_string() const;
 
                 /**
-		 * Convert the ADAnomalMsg into a string to send to a txt file
-		 */
-		string to_string_file() const;
+         * Convert the ADAnomalMsg into a string to send to a txt file
+         */
+        string to_string_file() const;
 
                 /**
-		 * Convert the PDF into CCDF
-		 */
+         * Convert the PDF into CCDF
+         */
                 vector<double> PDF_to_CCDF(vector<double> PDF) const;
 
 

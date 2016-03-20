@@ -84,8 +84,8 @@ namespace blockmon
         m_pkt_rate = (double)(tmp_pkt_cnt - m_pkt_cnt_prev) / ((double)d.count() / 1000000.0);
         m_byte_rate = (double)(tmp_byte_cnt - m_byte_cnt_prev) / ((double)d.count() / 1000000.0);
         m_flow_rate = (double)(tmp_flow_cnt - m_flow_cnt_prev) / ((double)d.count() / 1000000.0);
-	m_pkt_cnt_prev = m_pkt_cnt;
-	m_byte_cnt_prev = m_byte_cnt;
+    m_pkt_cnt_prev = m_pkt_cnt;
+    m_byte_cnt_prev = m_byte_cnt;
         m_flow_cnt_prev = m_flow_cnt;
         m_last_t = n;
     }

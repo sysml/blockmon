@@ -90,7 +90,7 @@ namespace blockmon {
 
         ~TimerThread()
         {
-        	pthread_spin_destroy(&m_queue_spinlock);
+            pthread_spin_destroy(&m_queue_spinlock);
         }
 
         static void cleanup() {
@@ -200,11 +200,11 @@ namespace blockmon {
     private:
 
         inline void lock(){
-        	pthread_spin_lock(&m_queue_spinlock);
+            pthread_spin_lock(&m_queue_spinlock);
         }
 
         inline void unlock(){
-        	pthread_spin_unlock(&m_queue_spinlock);
+            pthread_spin_unlock(&m_queue_spinlock);
         }
 
         bool m_stop;

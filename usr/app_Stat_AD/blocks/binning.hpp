@@ -37,7 +37,7 @@
  */
 
 #ifndef BINNING_HPP
-#define	BINNING_HPP
+#define    BINNING_HPP
 
 #include <vector>
 #include <iostream>
@@ -48,5 +48,5 @@ vector<uint64_t> binning_function(uint64_t max_data, uint16_t n_class_max, bool 
 vector<uint64_t> unique_floor(std::vector<double> array);
 
 
-#endif	/* BINNING_HPP */
+#endif    /* BINNING_HPP */
 

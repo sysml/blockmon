@@ -125,20 +125,20 @@ namespace blockmon
          */
         void _configure(const pugi::xml_node& n)
         {
-			ComboSource::_configure(n);
-			std::string command;
+            ComboSource::_configure(n);
+            std::string command;
 
-			command = "tsuctl > /dev/null 2>&1; hfexctl -A -c ./bram32 -r ./registers32; hfexctl -A -R";
-			system(command.c_str());
+            command = "tsuctl > /dev/null 2>&1; hfexctl -A -c ./bram32 -r ./registers32; hfexctl -A -R";
+            system(command.c_str());
         }
 
         /**
          * Handle packet received from parent class and send it to output gate as a UHPacket message.
          */
-		void handle_packet(unsigned char * packet, unsigned char * data, unsigned char* hw_data, int data_len, int hw_data_len)
-		{
+        void handle_packet(unsigned char * packet, unsigned char * data, unsigned char* hw_data, int data_len, int hw_data_len)
+        {
             send_out_through(alloc_msg_from_buffer<UHPacket>(m_mem_block, data_len, const_buffer<unsigned char>(reinterpret_cast<const unsigned char *>(data), data_len), 0), m_gate_id);
-		}
+        }
     };
 
     REGISTER_BLOCK(ComboUHSource,"ComboUHSource");

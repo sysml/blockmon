@@ -63,7 +63,7 @@ namespace blockmon
     class HistoMsg: public Msg
     {
                 //Histogram timestamp
-		uint64_t  m_timestamp;
+        uint64_t  m_timestamp;
                 //Histogram feature ID
                 string m_featureID;
                 //Number of different users composing the histogram
@@ -76,99 +76,99 @@ namespace blockmon
 
     public:
                 /**
-		 * Message constructor that creates the histogram starting from:
-		 *
-		 * @param timestamp Timestamp of the current packet
-		 * @param featureID The identifier of the current feature
-		 */
+         * Message constructor that creates the histogram starting from:
+         *
+         * @param timestamp Timestamp of the current packet
+         * @param featureID The identifier of the current feature
+         */
 
-		HistoMsg(uint64_t timestamp, string featID)
+        HistoMsg(uint64_t timestamp, string featID)
                 : Msg(MSG_ID(HistoMsg)), m_timestamp(timestamp), m_featureID(featID),
                     m_nr_unique_users(0),m_histogram(vector<uint32_t>())
                 {
                 }
 
                 /**
-		 * Set the histogram timestamp
-		 * @param timestamp The ticket timestamp to set
-		 */
-		void set_timestamp(uint64_t timestamp);
+         * Set the histogram timestamp
+         * @param timestamp The ticket timestamp to set
+         */
+        void set_timestamp(uint64_t timestamp);
 
                 /**
-		 * Set the featureID
-		 * @param featureID
-		 */
-		void set_featureID(string featureID);
+         * Set the featureID
+         * @param featureID
+         */
+        void set_featureID(string featureID);
 
                 /**
-		 * Set the number of unique users
-		 * @param unique users
-		 */
-		void set_nr_unique_users(uint64_t uniqueUsers);
+         * Set the number of unique users
+         * @param unique users
+         */
+        void set_nr_unique_users(uint64_t uniqueUsers);
 
                 /**
-		 * Set the features
-		 * @param histogram The histogram vector
-		 */
-		void set_histogram(const vector<uint32_t> histogram);
+         * Set the features
+         * @param histogram The histogram vector
+         */
+        void set_histogram(const vector<uint32_t> histogram);
 
                 /**
-		 * Set the total feature value
-		 * @param total value
-		 */
-		void set_total_value(uint64_t totValue);
+         * Set the total feature value
+         * @param total value
+         */
+        void set_total_value(uint64_t totValue);
 
                 /**
-		 * Adds one element to the histogram. Increases the value of
+         * Adds one element to the histogram. Increases the value of
                  * the histogram element's value in the specified index position.
-		 * @param index The position of the histogram where to add the element
-		 */
-		void add_element(uint index);
+         * @param index The position of the histogram where to add the element
+         */
+        void add_element(uint index);
 
-		/**
-		 * Get the timestamp associated to the ticket
-		 * @return the timestamp
-		 */
-		uint64_t get_timestamp() const;
-
-                /**
-		 * Get the user ID of the ticket
-		 * @return the user ID
-		 */
-		string get_featureID() const;
+        /**
+         * Get the timestamp associated to the ticket
+         * @return the timestamp
+         */
+        uint64_t get_timestamp() const;
 
                 /**
-		 * Get the number of different users composing the histogram
-		 * @return the number of unique users
-		 */
-		uint64_t get_unique_users() const;
+         * Get the user ID of the ticket
+         * @return the user ID
+         */
+        string get_featureID() const;
 
                 /**
-		 * Get the histogram
-		 * @return the histogram vector
-		 */
-		const vector<uint32_t>* get_histogram() const;
+         * Get the number of different users composing the histogram
+         * @return the number of unique users
+         */
+        uint64_t get_unique_users() const;
 
                 /**
-		 * Get the total feature value
-		 * @return the total feature value
-		 */
-		uint64_t get_total_value() const;
+         * Get the histogram
+         * @return the histogram vector
+         */
+        const vector<uint32_t>* get_histogram() const;
 
                 /**
-		 * Clear the histogram
-		 */
-		void clear_histogram();
+         * Get the total feature value
+         * @return the total feature value
+         */
+        uint64_t get_total_value() const;
 
                 /**
-		 * Convert the HistoMsg into a human-readable string file
-		 */
-		string to_string_file() const;
+         * Clear the histogram
+         */
+        void clear_histogram();
 
                 /**
-		 * Convert the HistoMsg into a human-readable string
-		 */
-		string to_string() const;
+         * Convert the HistoMsg into a human-readable string file
+         */
+        string to_string_file() const;
+
+                /**
+         * Convert the HistoMsg into a human-readable string
+         */
+        string to_string() const;
 
 
 
@@ -211,7 +211,7 @@ namespace blockmon
             copy.get()->set_nr_unique_users(m_nr_unique_users);
             copy.get()->set_histogram(m_histogram);
             copy.get()->set_total_value(m_total_value);
-	    return copy;
+        return copy;
         }
 
     };

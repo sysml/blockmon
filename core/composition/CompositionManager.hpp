@@ -118,13 +118,13 @@ namespace blockmon
          * blocks in a composition
          * @param composition_id the name of the composition
          */
-		void init_composition(const std::string &composition_id)
-		{
+        void init_composition(const std::string &composition_id)
+        {
             auto it = m_config_map.find(composition_id);
             if(it == m_config_map.end())
                 throw std::runtime_error("CompositionManager:: composition not found");
             it->second->initialize();
-		}
+        }
 
         /**
           * Exposed by the python bindings.
@@ -163,27 +163,27 @@ namespace blockmon
             std::string composition_id = config.attribute("id").value();
             std::string app_id = config.attribute("app_id").value();
 
-			pugi::xml_node general = config.child("general");
-			if(general==NULL){
-				throw std::runtime_error(std::string("init: ").append("No <general> tag found in composition XML"));
-			}
-			pugi::xml_node clock = general.child("clock");
-			if(clock==NULL){
-				throw std::runtime_error(std::string("init: ").append("No <clock> tag found within <general> tag in composition XML"));
-			}
-			auto clocktypeAttr = clock.attribute("type");
-			if(clocktypeAttr==NULL){
-				throw std::runtime_error(std::string("init: ").append("No 'type' attribute within <clock> tag found"));
-			}
-			auto clocktype=std::string(clocktypeAttr.value());
-			if(clocktype.compare("wall")==0 || clocktype.compare("WALL")==0){
-				select_clock(WALL);
-			}
-			else if(clocktype.compare("packet")==0 || clocktype.compare("PACKET")==0){
-				select_clock(PACKET);
-			}
-			else
-				throw std::runtime_error(std::string("init: ").append("Clock type '").append(clocktype).append("' is invalid"));
+            pugi::xml_node general = config.child("general");
+            if(general==NULL){
+                throw std::runtime_error(std::string("init: ").append("No <general> tag found in composition XML"));
+            }
+            pugi::xml_node clock = general.child("clock");
+            if(clock==NULL){
+                throw std::runtime_error(std::string("init: ").append("No <clock> tag found within <general> tag in composition XML"));
+            }
+            auto clocktypeAttr = clock.attribute("type");
+            if(clocktypeAttr==NULL){
+                throw std::runtime_error(std::string("init: ").append("No 'type' attribute within <clock> tag found"));
+            }
+            auto clocktype=std::string(clocktypeAttr.value());
+            if(clocktype.compare("wall")==0 || clocktype.compare("WALL")==0){
+                select_clock(WALL);
+            }
+            else if(clocktype.compare("packet")==0 || clocktype.compare("PACKET")==0){
+                select_clock(PACKET);
+            }
+            else
+                throw std::runtime_error(std::string("init: ").append("Clock type '").append(clocktype).append("' is invalid"));
 
            pugi::xml_node install = config.child("install");
             if(install)

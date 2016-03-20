@@ -32,8 +32,8 @@
 /**
  * CUSUM change detection algorithm library.
  * This library contains in other files:
- *	- the non-parameteric CUSUM (CusumNP)
- *	- the multi-channel CUSUM (MultiCusum), which may be used with any other CUSUM class, and applies it on
+ *    - the non-parameteric CUSUM (CusumNP)
+ *    - the multi-channel CUSUM (MultiCusum), which may be used with any other CUSUM class, and applies it on
  * multiple values.
  * The library may easily be extended to add other score functions (use CusumNP as example).
  */

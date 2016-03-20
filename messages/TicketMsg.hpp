@@ -63,7 +63,7 @@ namespace blockmon
     class TicketMsg: public Msg
     {
                 //Ticket timestamp
-		uint64_t  m_timestamp;
+        uint64_t  m_timestamp;
                 //client IP address of the packet
                 uint32_t m_userID;
                 //Map containing the feature pairs <key,value> = <string FeatureID, int FeatureValue>
@@ -71,85 +71,85 @@ namespace blockmon
 
     public:
                 /**
-		 * Message constructor that creates the ticket starting from:
-		 *
-		 * @param timestamp Timestamp of the current packet
-		 * @param userID The client IP address of the current packet
-		 */
-		TicketMsg(uint64_t timestamp, uint32_t userID)
+         * Message constructor that creates the ticket starting from:
+         *
+         * @param timestamp Timestamp of the current packet
+         * @param userID The client IP address of the current packet
+         */
+        TicketMsg(uint64_t timestamp, uint32_t userID)
                 : Msg(MSG_ID(TicketMsg)), m_timestamp(timestamp), m_userID(userID),
                     m_featurePairs(map<string,uint64_t>())
                 {
                 }
 
                 /**
-		 * Adds one feature to the map included in the ticket
-		 * @param featureID String containing the unique identifier of the feature
+         * Adds one feature to the map included in the ticket
+         * @param featureID String containing the unique identifier of the feature
                  * @param featreVal The value of the current feature
-		 */
-		void add_feature(string featureID, uint64_t featureVal);
+         */
+        void add_feature(string featureID, uint64_t featureVal);
 
-		/**
-		 * Set the features
-		 * @param featurePairs The features map
-		 */
-		void set_features(const map<string,uint64_t> featurePairs);
+        /**
+         * Set the features
+         * @param featurePairs The features map
+         */
+        void set_features(const map<string,uint64_t> featurePairs);
 
-		/**
-		 * Get the timestamp associated to the ticket
-		 * @return the timestamp
-		 */
-		uint64_t get_timestamp() const;
-
-                /**
-		 * Get the user ID of the ticket
-		 * @return the user ID
-		 */
-		uint32_t get_userID() const;
+        /**
+         * Get the timestamp associated to the ticket
+         * @return the timestamp
+         */
+        uint64_t get_timestamp() const;
 
                 /**
-		 * Get the feature pairs map
-		 * @return the features map
-		 */
-		const map<string,uint64_t>* get_features() const;
+         * Get the user ID of the ticket
+         * @return the user ID
+         */
+        uint32_t get_userID() const;
 
                 /**
-		 * Get the number of feature pairs extracted from the packet
+         * Get the feature pairs map
+         * @return the features map
+         */
+        const map<string,uint64_t>* get_features() const;
+
+                /**
+         * Get the number of feature pairs extracted from the packet
                  * and included in the features map
-		 * @return the map size
-		 */
-		uint get_extracted_features() const;
+         * @return the map size
+         */
+        uint get_extracted_features() const;
 
                 /**
-		 * Clear the features map
-		 */
-		void clear_features();
+         * Clear the features map
+         */
+        void clear_features();
 
                 /**
-		 * Set the ticket timestamp
-		 * @param timestamp The ticket timestamp to set
-		 */
-		void set_timestamp(uint64_t timestamp);
+         * Set the ticket timestamp
+         * @param timestamp The ticket timestamp to set
+         */
+        void set_timestamp(uint64_t timestamp);
 
                 /**
-		 * Set the userID
-		 * @param userID The client IP address
-		 */
-		void set_userID(uint32_t userID);
+         * Set the userID
+         * @param userID The client IP address
+         */
+        void set_userID(uint32_t userID);
 
-		/**
-		 * Convert the TicketMsg into a human-readable string
-		 */
-		string to_string() const;
+        /**
+         * Convert the TicketMsg into a human-readable string
+         */
+        string to_string() const;
 
                 /**
-		 * Convert the TicketMsg into a message string
-		 */
+         * Convert the TicketMsg into a message string
+         */
                 string to_string_file() const;
 
                 /**
-		 * Convert the TicketMsg into a qoe_fw message string
-		 */
+         * Convert the TicketMsg into a qoe_fw message string
+         */
                 string to_string_qoe_ticket_file() const;
 
 
@@ -188,18 +188,18 @@ namespace blockmon
         std::shared_ptr<Msg> clone() const
         {
             std::shared_ptr<TicketMsg> copy = std::make_shared<TicketMsg>(m_timestamp, m_userID);
-			copy.get()->set_features(m_featurePairs);
-			return copy;
+            copy.get()->set_features(m_featurePairs);
+            return copy;
         }
 
-	private:
+    private:
 
-		/**
-		 * Convert an IP into a string
-		 * @param ip The IP as an unsigned int
+        /**
+         * Convert an IP into a string
+         * @param ip The IP as an unsigned int
                  * @return the IP as a formatted string
-		 */
-		std::string ip_to_string(unsigned int ip) const;
+         */
+        std::string ip_to_string(unsigned int ip) const;
     };
 
 

@@ -101,13 +101,13 @@ namespace blockmon
       static std::string ip_to_string(uint32_t ip)
       {
 
-	char addr_buffer[INET_ADDRSTRLEN];
-	//inet_ntop expects network byte order
-	uint32_t flipped_ip=htonl(ip);
+    char addr_buffer[INET_ADDRSTRLEN];
+    //inet_ntop expects network byte order
+    uint32_t flipped_ip=htonl(ip);
 
-	if(!inet_ntop(AF_INET, &flipped_ip, addr_buffer, INET_ADDRSTRLEN))
-	  throw std::runtime_error("cannot convert ip address");
-	return std::string (addr_buffer);
+    if(!inet_ntop(AF_INET, &flipped_ip, addr_buffer, INET_ADDRSTRLEN))
+      throw std::runtime_error("cannot convert ip address");
+    return std::string (addr_buffer);
       }
         /**
           * callable object used to compute the hash of a FlowKey
@@ -226,7 +226,7 @@ namespace blockmon
 
         /**
          * Constructs a FlowMeter.
-	 *
+     *
          * @param name         The name of the  block
          * @param invocation   Invocation type of the block (Indirect, Direct, Async) . This block can only be indirectly invoked, and will ignore any contrary configuration.
          */
@@ -239,8 +239,8 @@ namespace blockmon
         m_in_gate_id(register_input_gate("in_pkt")),
         m_out_gate_id(register_output_gate("out_flow")),
         m_idle_timeout_ms(500),
-	m_active_timeout_ms(100),
-	m_store_packets(false)
+    m_active_timeout_ms(100),
+    m_store_packets(false)
         {
             if (invocation != invocation_type::Indirect)
             {
@@ -283,8 +283,8 @@ namespace blockmon
             pugi::xml_attribute store_packets = n.attribute("store_packets");
             if(store_packets)
             {
-	        m_store_packets = store_packets.as_bool();
-	    }
+            m_store_packets = store_packets.as_bool();
+        }
         }
         /**
           * Upon expiration of the idle timeout timer, it goes through the flows in the list and checks whether the timeout for them expired
@@ -308,7 +308,7 @@ namespace blockmon
                 if(cur_flow->end_time() < us_limit) //timeout expired for this flow+
                 {
                     m_flow_table.erase(cur_flow->key());
-		    //printf("sending info out from handle_timer!\n");
+            //printf("sending info out from handle_timer!\n");
                     send_out_through(std::move(cur_slot.flow_ptr),m_out_gate_id);
                 }
                 else
@@ -334,7 +334,7 @@ namespace blockmon
         {
             if(m->type()!=MSG_ID(Packet))
                 throw std::runtime_error("FlowMeter: wrong message type"
-					 " (only Packet is accepted)");
+                     " (only Packet is accepted)");
             const Packet* packet = static_cast<const Packet*> (m.get());
             auto flow_it = m_flow_table.find( packet->key());
             ustime_t us_now = get_BM_time();
@@ -342,18 +342,18 @@ namespace blockmon
             {
                 Flow* new_flow = new Flow (packet->key());
 
-		/*printf("insert flow: <%s:%d -> %s:%d proto=%d>\n",
-		       ip_to_string(new_flow->key().src_ip4).c_str(),
-		       new_flow->key().src_port,
-		       ip_to_string(new_flow->key().dst_ip4).c_str(),
-		       new_flow->key().dst_port,
-		       new_flow->key().proto);*/
+        /*printf("insert flow: <%s:%d -> %s:%d proto=%d>\n",
+               ip_to_string(new_flow->key().src_ip4).c_str(),
+               new_flow->key().src_port,
+               ip_to_string(new_flow->key().dst_ip4).c_str(),
+               new_flow->key().dst_port,
+               new_flow->key().proto);*/
 
                 new_flow->expand_interval (us_now);
                 new_flow->increment_bytes (packet->length());
                 new_flow->increment_packets (1);
-		if (m_store_packets)
-		  new_flow->add_packet(std::dynamic_pointer_cast<const Packet>(m));
+        if (m_store_packets)
+          new_flow->add_packet(std::dynamic_pointer_cast<const Packet>(m));
                 std::shared_ptr<const Msg> flow_sp (new_flow);
                 m_flow_table[packet->key()] = flow_sp;
                 queue_slot new_slot;
@@ -382,8 +382,8 @@ namespace blockmon
                 flow->expand_interval (us_now);
                 flow->increment_bytes (packet->length());
                 flow->increment_packets (1);
-		if (m_store_packets)
-		  flow->add_packet(std::dynamic_pointer_cast<const Packet>(m));
+        if (m_store_packets)
+          flow->add_packet(std::dynamic_pointer_cast<const Packet>(m));
 
             }
         }

@@ -43,13 +43,13 @@ KHASH::KHASH(HASH* _hash, unsigned int _nhash, unsigned int _shash, bool _norep)
     hash(_hash),hashdiglen(hash->getDigestLength()),nhash(_nhash), shash(_shash), norep(_norep),res (new unsigned[_nhash])
 {
 
-	// for simplicity, using unsigned as maximum digest size
-	// consequence: no more than sizeof(unsigned int)
+    // for simplicity, using unsigned as maximum digest size
+    // consequence: no more than sizeof(unsigned int)
         //maximum digest size < hash function digest size
     assert(_shash<=sizeof(unsigned int)*8 && _shash<=_hash->getDigestLength()*8 && shash);
 
-	// assert that infinite cycle because of insufficient number
-	// of hash will not occur
+    // assert that infinite cycle because of insufficient number
+    // of hash will not occur
     assert((_norep==1)?(_nhash <= (unsigned(1) << _shash)):1);
 
     unsigned int bitneeded=((shash*nhash));
@@ -117,10 +117,10 @@ void KHASH::compute(unsigned char *in, int len)
     //unsigned char in2[len];
 
 
-	// compute first SHA hash; should be all needed most of the time;
-	// more SHA are always needed when shash*nhash>160; more SHA MAY be
-	// needed when no repetition is required... in this case this
-	// depends on the input
+    // compute first SHA hash; should be all needed most of the time;
+    // more SHA are always needed when shash*nhash>160; more SHA MAY be
+    // needed when no repetition is required... in this case this
+    // depends on the input
     //memset((void*)msgdig,0,hashtodo*hashdiglen+4);
     hash->compute(in,len,msgdig);
     for(unsigned int i = 1; i<hashtodo;i++)

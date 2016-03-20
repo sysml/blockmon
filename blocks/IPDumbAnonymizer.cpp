@@ -77,24 +77,24 @@ using namespace std;
 
 namespace blockmon
 {
-	static void anonBuf(const char* payload, char* anon_payload, int offset,unsigned char* anon_key)
-	{
+    static void anonBuf(const char* payload, char* anon_payload, int offset,unsigned char* anon_key)
+    {
         unsigned int raw_addr, anonymized_addr;
 
         PAnonymizer my_anonymizer(anon_key);
-		for (int i = 3; i >= 0; i--) {
-			raw_addr = payload[offset+i] << 8*i;
-		//	cout << "octet no. " << i << ":" << payload[offset+i] << endl;
-		}
-		anonymized_addr = my_anonymizer.anonymize(raw_addr);
-		for (int i = 3; i >= 0; i--) {
-			anon_payload[offset+i] = (anonymized_addr << 8*i) >> 24;
-		}
-		//cout << "anonymizing " << raw_addr << "to" << anonymized_addr << endl;
+        for (int i = 3; i >= 0; i--) {
+            raw_addr = payload[offset+i] << 8*i;
+        //    cout << "octet no. " << i << ":" << payload[offset+i] << endl;
+        }
+        anonymized_addr = my_anonymizer.anonymize(raw_addr);
+        for (int i = 3; i >= 0; i--) {
+            anon_payload[offset+i] = (anonymized_addr << 8*i) >> 24;
+        }
+        //cout << "anonymizing " << raw_addr << "to" << anonymized_addr << endl;
 
-	}
+    }
 
-	IPDumbAnonymizer::IPDumbAnonymizer(const std::string &name, invocation_type invocation)
+    IPDumbAnonymizer::IPDumbAnonymizer(const std::string &name, invocation_type invocation)
     : Block(name, invocation),
       m_in_gate_id(register_input_gate("in_pkt")),
       m_out_gate_id(register_output_gate("out_pkt")),
@@ -104,19 +104,19 @@ namespace blockmon
 
 
     void IPDumbAnonymizer::_configure(const pugi::xml_node& n)
-	        {
-	           pugi::xml_node source=n.child("anon");
-	            if(!source)
-	                throw std::runtime_error("Anonymizer: missing parameter anon");
-	            std::string src=source.attribute("src").value();
-	            std::string dst=source.attribute("dst").value();
-	            if((src.length()==0)||(dst.length()==0))
-	                throw std::runtime_error("IPDumbAnonymizer: missing attribute");
-	            if(src.compare("True")==0)
-	                anon_src=true;
-	            if(dst.compare("True")==0)
-	            	anon_dst=true;
-	       }
+            {
+               pugi::xml_node source=n.child("anon");
+                if(!source)
+                    throw std::runtime_error("Anonymizer: missing parameter anon");
+                std::string src=source.attribute("src").value();
+                std::string dst=source.attribute("dst").value();
+                if((src.length()==0)||(dst.length()==0))
+                    throw std::runtime_error("IPDumbAnonymizer: missing attribute");
+                if(src.compare("True")==0)
+                    anon_src=true;
+                if(dst.compare("True")==0)
+                    anon_dst=true;
+           }
 
     // FIXME handle error returns
     void IPDumbAnonymizer::_receive_msg(std::shared_ptr<const Msg>&& m, int /* index */)
@@ -137,11 +137,11 @@ namespace blockmon
          216,152,143,131,121,121,101,39,98,87,76,45,42,132,34,2};
 
         if (anon_src == true) {
-        	anonBuf(reinterpret_cast<const char*>(&iphdr->sip4), const_cast<char*> (reinterpret_cast<const char*>( &iphdr->sip4)), 0 , anon_key);
+            anonBuf(reinterpret_cast<const char*>(&iphdr->sip4), const_cast<char*> (reinterpret_cast<const char*>( &iphdr->sip4)), 0 , anon_key);
         }
 
         if (anon_dst == true) {
-        	anonBuf(reinterpret_cast<const char*>(&iphdr->dip4), const_cast<char*> (reinterpret_cast<const char*>(&iphdr->dip4)) , 0 , anon_key);
+            anonBuf(reinterpret_cast<const char*>(&iphdr->dip4), const_cast<char*> (reinterpret_cast<const char*>(&iphdr->dip4)) , 0 , anon_key);
         }
 
         send_out_through(std::move(cloned_packet), m_out_gate_id);

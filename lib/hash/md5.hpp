@@ -55,7 +55,7 @@
 
 
 #ifndef MD5_HPP
-#define	MD5_HPP
+#define    MD5_HPP
 #define dgstlenmd5 16
 
 #include"hash.hpp"
@@ -106,5 +106,5 @@ public:
 }
 
 
-#endif	/* MD5_HPP */
+#endif    /* MD5_HPP */
 

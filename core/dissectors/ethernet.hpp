@@ -61,14 +61,14 @@ namespace net {
     };
 
     /*
-     *	This is an Ethernet frame header.
+     *    This is an Ethernet frame header.
      */
 
     struct ethernet : public ether_header {  // struct ether_header
 
-        // u_int8_t  ether_dhost[ETH_ALEN];	/* destination eth addr	*/
-        // u_int8_t  ether_shost[ETH_ALEN];	/* source ether addr	*/
-        // u_int16_t ether_type;		    /* packet type ID field	*/
+        // u_int8_t  ether_dhost[ETH_ALEN];    /* destination eth addr    */
+        // u_int8_t  ether_shost[ETH_ALEN];    /* source ether addr    */
+        // u_int16_t ether_type;            /* packet type ID field    */
 
         std::string
         ether_dhost_() const

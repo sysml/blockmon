@@ -45,7 +45,7 @@
 
 
 #ifndef BOB_HPP
-#define	BOB_HPP
+#define    BOB_HPP
 #define dgstlenbob 4
 #define INITNUMB 0xf1ea5eed //ratio init number
 
@@ -98,5 +98,5 @@ public:
 }
 
 
-#endif	/* BOB_HPP */
+#endif    /* BOB_HPP */
 

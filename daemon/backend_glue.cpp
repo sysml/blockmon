@@ -268,9 +268,9 @@ namespace
   // Needed to convert from within Python to invocation_type enum
   blockmon::invocation_type to_invoc_type(const std::string &s)
   {
-	  if (s == "async") return invocation_type::Async;
-	  if (s == "indirect") return invocation_type::Indirect;
-	  return invocation_type::Direct;
+      if (s == "async") return invocation_type::Async;
+      if (s == "indirect") return invocation_type::Indirect;
+      return invocation_type::Direct;
   }
 
 }

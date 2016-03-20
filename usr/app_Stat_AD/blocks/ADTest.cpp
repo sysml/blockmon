@@ -195,14 +195,14 @@ namespace blockmon
         uint m_n_histograms_in_window;  // num of histograms in the window
         uint m_guard_period;            // in hours
         uint m_guard_period_duration;   // duration in seconds of the guard period
-        uint32_t m_min_active_users;	// minimun number of active users required
+        uint32_t m_min_active_users;    // minimun number of active users required
         uint64_t m_detection_start_timestamp;
         uint64_t m_stop_time;
         string m_res_file_name;
         string m_anom_file_name;
         uint64_t m_learning_start_time;
-        uint16_t m_not_null_bins;		// number of not null bins of the current PDF
-        bool m_Learning_phase;			// true if the current feature is in the Learning phase
+        uint16_t m_not_null_bins;        // number of not null bins of the current PDF
+        bool m_Learning_phase;            // true if the current feature is in the Learning phase
         uint16_t m_anomaly_code;                    // anomaly code for the current PDF
         windows_hash_table m_windows_ht;
 
@@ -462,33 +462,33 @@ namespace blockmon
             uint16_t n_empty_bins = 0;
             uint i;
             /* Counting the total number of users, including duplicates */
-	    for(i = 0; i<histog.size(); i++)
+        for(i = 0; i<histog.size(); i++)
                 Tot_num_users += histog[i];
 
-	    /* First Normalization */
+        /* First Normalization */
             for(i=0; i<histog.size(); i++)
-	    {
+        {
                 m_curr_PDF.push_back((double)histog[i]/(double)Tot_num_users);
 
                 if(m_curr_PDF[i] == 0)
-		{
+        {
                     /* Approximation */
-		    m_curr_PDF[i] = EPSILON;
-		    /* Significance meter: number of null bins in the histogram*/
-		    n_empty_bins ++;
-		}
-		n_dummy_users += m_curr_PDF[i];
+            m_curr_PDF[i] = EPSILON;
+            /* Significance meter: number of null bins in the histogram*/
+            n_empty_bins ++;
+        }
+        n_dummy_users += m_curr_PDF[i];
             }
 
-	    /* Second Normalization: PDF(curr_real_histog)-> CDF-> CCDF */
-	    vector<double> CDF;
+        /* Second Normalization: PDF(curr_real_histog)-> CDF-> CCDF */
+        vector<double> CDF;
             for(i=0; i<histog.size(); i++)
-	    {
+        {
                 m_curr_PDF[i] = m_curr_PDF[i]/n_dummy_users;
 
-		if(i == 0) /*first bin*/
+        if(i == 0) /*first bin*/
                     CDF.push_back(m_curr_PDF[i]);
-		else
+        else
                     CDF.push_back(CDF[i-1] + m_curr_PDF[i]);
 
                 m_curr_CCDF.push_back(1 - CDF[i]);
@@ -518,12 +518,12 @@ namespace blockmon
             window_element w_el;
 
             w_el.timestamp = histo_msg->get_timestamp();
-	    w_el.nr_unique_users = histo_msg->get_unique_users();
-	    w_el.PDF = m_curr_PDF;
-	    w_el.PDF_size = w_el.PDF.size();
-	    if(l_phase == true)
+        w_el.nr_unique_users = histo_msg->get_unique_users();
+        w_el.PDF = m_curr_PDF;
+        w_el.PDF_size = w_el.PDF.size();
+        if(l_phase == true)
                 w_el.L_phase = true;
-	    else
+        else
             {
                 w_el.L_phase = false;
                 //removes the first (oldest) window element from the window array
@@ -548,7 +548,7 @@ namespace blockmon
             m_windows_ht.insert(pair<string,window_array>(feature_id, new_array));
             windows_hash_table::iterator w_it = m_windows_ht.find(feature_id);
             return w_it;
-	}
+    }
 
         /************************************************/
         /*********** UTILITY FUNCTIONS ******************/
@@ -1132,7 +1132,7 @@ namespace blockmon
 
             /* Check start time bound*/
             if(m_current_agg_time < m_learning_start_time)
-		return; // Algorithm not yet started!
+        return; // Algorithm not yet started!
 
             /* Current CCDF Generation: Normalization 1, approximation, normalization 2 */
             const vector<uint32_t>* histo_int = histogram_msg->get_histogram();
@@ -1156,7 +1156,7 @@ namespace blockmon
             if(m_Learning_phase == true)
             {
                 std::stringstream sss;
-            	/* Significance checks*/
+                /* Significance checks*/
                 if(histogram_msg->get_unique_users() <= m_min_active_users)
                 {
                     sss << "Learning phase: Not enough active users. Histogram discarded! \n";
@@ -1177,8 +1177,8 @@ namespace blockmon
 
             }else
             /* ******************************************************* */
-	    /* ***************** DETECTION PHASE ********************* */
-	    /* ******************************************************* */
+        /* ***************** DETECTION PHASE ********************* */
+        /* ******************************************************* */
             {
                 double l_ENKLD_base = 0.0;//Lower Bound of Acceptance Region
                 double u_ENKLD_base = 0.0;//Upper Bound of Acceptance Region (5th & 95th percentile of Internal Dispersions)
@@ -1188,7 +1188,7 @@ namespace blockmon
                 window_array RefSetI, RefSetII, RefSetIII;
 
                 std::stringstream sss;
-            	/* Significance checks*/
+                /* Significance checks*/
                 if(histogram_msg->get_unique_users() <= m_min_active_users)
                 {
                     sss << "Detection phase: Not enough active users. Histogram discarded! \n";

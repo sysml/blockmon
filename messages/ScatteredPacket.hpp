@@ -53,11 +53,11 @@ namespace bm {
         {}
 
         /** Forbids copy and move constructors.
-	 */
+     */
         ScatteredPacket(ScatteredPacket const &) = delete;
 
         /** Forbids copy and move assignment.
-	 */
+     */
         ScatteredPacket& operator=(ScatteredPacket const &) = delete;
 
         std::shared_ptr<Msg> clone() const

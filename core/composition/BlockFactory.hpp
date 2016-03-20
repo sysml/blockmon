@@ -72,7 +72,7 @@ namespace blockmon
         ~BlockFactory()
         {}
 
- 		/**
+         /**
           * the factory object is not copiable nor movable
           */
         BlockFactory(const BlockFactory &) = delete;

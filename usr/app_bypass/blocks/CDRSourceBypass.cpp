@@ -115,7 +115,7 @@ namespace blockmon
         boost::array<char,SIZE_CID> line;
         boost::array<char,SIZE_CID> timestamp;
 
-	tag_handle<PairMsg<std::string,std::string>> m_handle;
+    tag_handle<PairMsg<std::string,std::string>> m_handle;
                 std::vector<std::string> m_fields;
                 std::vector<tag_data> m_tag_vector;
 
@@ -204,8 +204,8 @@ namespace blockmon
                                blocklog("CDRSourceBypass: tags registered", log_info);
                     }
             m_handle = TagRegistry<PairMsg<std::string,std::string>>::register_tag<boost::array<char,SIZE_CID>>("line");
-	    if(m_handle == TAG_INVALID)
-		throw std::runtime_error("invalid tag handler");
+        if(m_handle == TAG_INVALID)
+        throw std::runtime_error("invalid tag handler");
         }
 
                 /**
@@ -347,15 +347,15 @@ namespace blockmon
                             throw std::runtime_error("CDRSourceBypass: error while composing message");
 
                     }send_out_through( move(m) , m_gate_id);
-			endTime = time(NULL);
-			msg_sent++;
+            endTime = time(NULL);
+            msg_sent++;
 
-			if (msg_sent % 1000000 == 0)
-			{
-	    	    	  char report[256];
-		    	  sprintf(report,"CDRSource: Processed %d calls in %ld seconds.", msg_sent, (endTime-startTime));
-			  blocklog(report, log_info);
-			}
+            if (msg_sent % 1000000 == 0)
+            {
+                      char report[256];
+                  sprintf(report,"CDRSource: Processed %d calls in %ld seconds.", msg_sent, (endTime-startTime));
+              blocklog(report, log_info);
+            }
                        }
                 else {  blocklog("skipping first line (it contains only headers)", log_info);
                               startTime = time(NULL);

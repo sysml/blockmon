@@ -91,11 +91,11 @@ namespace blockmon {
 
 
         /** Forbids copy and move constructors.
-	 */
+     */
         MemoryBatch(const MemoryBatch &) = delete;
 
         /** Forbids copy and move assignment.
-	 */
+     */
         MemoryBatch & operator=(const MemoryBatch &) = delete;
 
 

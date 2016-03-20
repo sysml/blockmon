@@ -119,7 +119,7 @@ namespace blockmon
             m_running=true;
         }
 
-		/**
+        /**
           * stops all of the threads in the pool
           */
         void stop()
@@ -134,13 +134,13 @@ namespace blockmon
         }
 /*
         void join(){
-        	if(m_running){
-        		stop();
-        	}
-        	for (int i = 0; i < m_threadnum; ++i)
-			{
-				m_threads[i]->join();
-			}
+            if(m_running){
+                stop();
+            }
+            for (int i = 0; i < m_threadnum; ++i)
+            {
+                m_threads[i]->join();
+            }
         }
 */
     };
