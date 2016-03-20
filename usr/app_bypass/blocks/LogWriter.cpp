@@ -32,7 +32,7 @@
 /**
  * <blockinfo type="LogWriter" invocation="indirect" thread_exclusive="True">
  *   <humandesc>
- *	Prints the received message.
+ *    Prints the received message.
  *   </humandesc>
  *
  *   <shortdesc>Prints the received message.</shortdesc>
@@ -43,13 +43,13 @@
  *
  *   <paramsschema>
  *    element output {
- *	 attribute name {"text"}
+ *     attribute name {"text"}
  *    }
  *   </paramsschema>
  *
  *   <paramsexample>
  *     <params>
- *	  <output name="output.log">
+ *      <output name="output.log">
  *     </params>
  *   </paramsexample>
  *
@@ -83,13 +83,13 @@ namespace blockmon
     class LogWriter: public Block
     {
         int m_ingate_id;
-	uint32_t m_msg_type;
-	int lineno;
+    uint32_t m_msg_type;
+    int lineno;
 
         tag_handle<PairMsg<std::string,std::string>> h_res_gng;
-	tag_handle<PairMsg<std::string,std::string>> h_line;
-	std::ofstream fout;
-	time_t endTime;
+    tag_handle<PairMsg<std::string,std::string>> h_line;
+    std::ofstream fout;
+    time_t endTime;
 
         LogWriter(const LogWriter &) = delete;
         LogWriter& operator=(const LogWriter &) = delete;
@@ -105,7 +105,7 @@ namespace blockmon
         :Block(name, invocation),
         m_ingate_id(register_input_gate("in_LogWriter"))
         {
-	    lineno=0;
+        lineno=0;
         }
 
 
@@ -114,11 +114,11 @@ namespace blockmon
          */
         virtual ~LogWriter()
         {
-	    fout.close();
-	    char report[256];
-	    sprintf(report,"LogWriter: messagges received [%d] at %ld.", lineno, endTime);
-	    blocklog(report, log_info);
-	}
+        fout.close();
+        char report[256];
+        sprintf(report,"LogWriter: messagges received [%d] at %ld.", lineno, endTime);
+        blocklog(report, log_info);
+    }
 
 
         /**
@@ -127,41 +127,41 @@ namespace blockmon
          */
         virtual void _configure(const xml_node& n)
         {
-	    xml_node output=n.child("output");
-	    if(!output)
-		throw std::runtime_error("LogWriter: missing parameter source");
-	    std::string name=output.attribute("name").value();
-	    if(!name.length())
-		throw std::runtime_error("LogWriter: missing attribute");
-	    fout.open(name);
-	    if(fout.fail())
-	    {
-		blocklog(std::string("could not open file"), log_error);
-		throw(std::invalid_argument("LogWriter: error within ifstream"));
+        xml_node output=n.child("output");
+        if(!output)
+        throw std::runtime_error("LogWriter: missing parameter source");
+        std::string name=output.attribute("name").value();
+        if(!name.length())
+        throw std::runtime_error("LogWriter: missing attribute");
+        fout.open(name);
+        if(fout.fail())
+        {
+        blocklog(std::string("could not open file"), log_error);
+        throw(std::invalid_argument("LogWriter: error within ifstream"));
             }
-	}
+    }
 
-	virtual void _initialize()
-	{
-	    h_res_gng = ret_tag_handle("res_gng");
+    virtual void _initialize()
+    {
+        h_res_gng = ret_tag_handle("res_gng");
          //   h_line = ret_tag_handle("line");
-	}
+    }
 
         tag_handle<PairMsg<std::string, std::string>> ret_tag_handle(std::string key)
-	{
-	    auto h = TagRegistry<PairMsg<std::string, std::string>>::get_handle_by_name(key);
-	    if(h == TAG_INVALID)
-	      throw std::runtime_error("TBloomFilter: invalid tag handle");
-	    return h;
-	}
+    {
+        auto h = TagRegistry<PairMsg<std::string, std::string>>::get_handle_by_name(key);
+        if(h == TAG_INVALID)
+          throw std::runtime_error("TBloomFilter: invalid tag handle");
+        return h;
+    }
 
-	virtual void _receive_msg(std::shared_ptr<const Msg>&& m, int /* index */){
-	    if (m->type() != m_msg_type)
-	        throw std::runtime_error("LogWriter:: wrong message type");
-	    lineno++;
-	    endTime = time(NULL);
-		if(h_res_gng == TAG_INVALID)
-		  throw std::runtime_error("LogWriter: invalid tag handle");
+    virtual void _receive_msg(std::shared_ptr<const Msg>&& m, int /* index */){
+        if (m->type() != m_msg_type)
+            throw std::runtime_error("LogWriter:: wrong message type");
+        lineno++;
+        endTime = time(NULL);
+        if(h_res_gng == TAG_INVALID)
+          throw std::runtime_error("LogWriter: invalid tag handle");
 
                 const char* value;
                 int counter = 0;
@@ -172,7 +172,7 @@ namespace blockmon
                     throw std::runtime_error("LogWriter: max UTIME_WAIT");
                   counter++;
                  }
-		  fout   << "," << *value << ")\t";
+          fout   << "," << *value << ")\t";
 
                  counter = 0;
                  while ( (value = (const char* ) m->get_tag<boost::array<char,SIZE_MSG> >(h_line)) == NULL)

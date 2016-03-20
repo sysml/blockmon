@@ -55,7 +55,7 @@
 
 
 #ifndef HASH_HPP
-#define	HASH_HPP
+#define    HASH_HPP
 
 namespace blockmon {
 
@@ -111,5 +111,5 @@ private:
 };
 
 }
-#endif	/* HASH_HPP */
+#endif    /* HASH_HPP */
 

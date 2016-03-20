@@ -81,65 +81,65 @@ namespace blockmon {
       enum { packets_tcp, packets_udp, packets_unknown } packet_type = packets_unknown;
       auto syn = m_flow_packets.end();
       if (!m_list_sorted) {
-	bool first = true;
+    bool first = true;
 
-	for (auto i = m_flow_packets.begin();
-	     i != m_flow_packets.end();
-	     ++i) {
-	  const Packet* packet = i->get();
+    for (auto i = m_flow_packets.begin();
+         i != m_flow_packets.end();
+         ++i) {
+      const Packet* packet = i->get();
 
-	  if (!packet->is_tcp() && !packet->is_udp())
-	    throw std::runtime_error("FlowMeter: can get flow payload "
-				   "only for TCP or UDP flows at "
-				   "the moment");;
-	  if (packet_type == packets_unknown)
-	    packet_type = (packet->is_tcp() ? packets_tcp : packets_udp);
-	  else if ((packet_type == packets_udp && packet->is_tcp() )
-		   || (packet_type == packets_tcp && packet->is_udp()))
-	    throw std::runtime_error("FlowMeter: flow contains both TCP"
-				     " and UDP packets");
-	  else if (packet_type == packets_udp && !first)
-	    throw std::runtime_error("FlowMeter: flow contains more than"
-				     " one UDP packet");
-	  else if (packet_type == packets_tcp && packet->tcp_has_syn())
-	    syn = i;
-	  first = false;
-	}
-	if (packet_type == packets_tcp) {
-	  m_flow_packets.sort([](const std::shared_ptr<const Packet> a,
-				 const std::shared_ptr<const Packet> b) {
-				return a->tcp_seq() < b->tcp_seq();
-			      });
+      if (!packet->is_tcp() && !packet->is_udp())
+        throw std::runtime_error("FlowMeter: can get flow payload "
+                   "only for TCP or UDP flows at "
+                   "the moment");;
+      if (packet_type == packets_unknown)
+        packet_type = (packet->is_tcp() ? packets_tcp : packets_udp);
+      else if ((packet_type == packets_udp && packet->is_tcp() )
+           || (packet_type == packets_tcp && packet->is_udp()))
+        throw std::runtime_error("FlowMeter: flow contains both TCP"
+                     " and UDP packets");
+      else if (packet_type == packets_udp && !first)
+        throw std::runtime_error("FlowMeter: flow contains more than"
+                     " one UDP packet");
+      else if (packet_type == packets_tcp && packet->tcp_has_syn())
+        syn = i;
+      first = false;
+    }
+    if (packet_type == packets_tcp) {
+      m_flow_packets.sort([](const std::shared_ptr<const Packet> a,
+                 const std::shared_ptr<const Packet> b) {
+                return a->tcp_seq() < b->tcp_seq();
+                  });
 
-	  /* You may ask yourself, is the SYN variable, containing an
-	   * iterator to the packet with a SYN, still valid after the
-	   * call to sort()?  Well, here's what the C++ standard says
-	   * in N3242 in Section 23.2.1, clause 10:
-	   *
-	   * "Unless otherwise specified (either explicitly or by
-	   * defining a function in terms of other functions),
-	   * invoking a container member function or passing a
-	   * container as an argument to a library function shall not
-	   * invalidate iterators to, or change the values of, objects
-	   * within that container."
-	   *
-	   * And the documentation for std::list::sort() (Section
-	   * 23.3.5.5, clause 25) contains no such explicit
-	   * specification or definition in terms of another
-	   * function.
-	   */
-	  if (syn != m_flow_packets.begin()) {
-	    /* Not already sorted.  This would also work if the list
-	     * is in fact already sorted, but it would do it with a
-	     * fairly expensive no-op. */
-	    std::list<std::shared_ptr<const Packet>> last_part;
-	    last_part.splice(last_part.begin(), // before this point,
-			     m_flow_packets,    // move items from this list
-			     m_flow_packets.begin(), // starting here
-			     syn);              // and ending just before here
-	    // Now append LAST_PART to M_FLOW_PACKETS
-	    m_flow_packets.splice(m_flow_packets.end(), last_part);
-	  }
+      /* You may ask yourself, is the SYN variable, containing an
+       * iterator to the packet with a SYN, still valid after the
+       * call to sort()?  Well, here's what the C++ standard says
+       * in N3242 in Section 23.2.1, clause 10:
+       *
+       * "Unless otherwise specified (either explicitly or by
+       * defining a function in terms of other functions),
+       * invoking a container member function or passing a
+       * container as an argument to a library function shall not
+       * invalidate iterators to, or change the values of, objects
+       * within that container."
+       *
+       * And the documentation for std::list::sort() (Section
+       * 23.3.5.5, clause 25) contains no such explicit
+       * specification or definition in terms of another
+       * function.
+       */
+      if (syn != m_flow_packets.begin()) {
+        /* Not already sorted.  This would also work if the list
+         * is in fact already sorted, but it would do it with a
+         * fairly expensive no-op. */
+        std::list<std::shared_ptr<const Packet>> last_part;
+        last_part.splice(last_part.begin(), // before this point,
+                 m_flow_packets,    // move items from this list
+                 m_flow_packets.begin(), // starting here
+                 syn);              // and ending just before here
+        // Now append LAST_PART to M_FLOW_PACKETS
+        m_flow_packets.splice(m_flow_packets.end(), last_part);
+      }
       }
       m_list_sorted = true;
     }
@@ -149,69 +149,69 @@ namespace blockmon {
     size_t bytes_skipped = 0;
     size_t bytes_copied = 0;
     uint8_t *p = buffer; /* The invariant is bytes_skipped +
-			    bytes_copied = p - buffer */
+                bytes_copied = p - buffer */
     size_t bytes_remaining = nbytes;
     uint32_t expected_sequence_number = 0;
     bool first = true;
     bool more = true;
 
     for (auto i = m_flow_packets.begin();
-	 i != m_flow_packets.end() && more && bytes_remaining > 0;
-	 ++i) {
+     i != m_flow_packets.end() && more && bytes_remaining > 0;
+     ++i) {
       const Packet* packet = i->get();
       size_t payload_length = 0;
       if (first) {
-	if (packet->is_udp()) {
-	  effective_offset = 0;
-	} else if (packet->is_tcp()) {
-	  if (packet->tcp_has_syn()) {
-	    expected_sequence_number = packet->tcp_seq();
-	  } else // Flow starts with a hole: abort, abort!
-	    more = false;
-	} else
-	  throw std::runtime_error("FlowMeter: can get flow payload "
-				   "only for TCP or UDP flows at "
-				   "the moment");;
-	first = false;
+    if (packet->is_udp()) {
+      effective_offset = 0;
+    } else if (packet->is_tcp()) {
+      if (packet->tcp_has_syn()) {
+        expected_sequence_number = packet->tcp_seq();
+      } else // Flow starts with a hole: abort, abort!
+        more = false;
+    } else
+      throw std::runtime_error("FlowMeter: can get flow payload "
+                   "only for TCP or UDP flows at "
+                   "the moment");;
+    first = false;
       }
 
       if (packet->is_tcp())
-	payload_length = packet->ip_length() - packet->ip_header_length()
-	  - packet->tcp_header_length();
+    payload_length = packet->ip_length() - packet->ip_header_length()
+      - packet->tcp_header_length();
       else if (packet->is_udp())
-	payload_length = packet->udp_length() - sizeof(udphdr);
+    payload_length = packet->udp_length() - sizeof(udphdr);
       else
-	throw std::runtime_error("FlowMeter: subsequent packet in flow "
-				 "neither TCP nor UDP");;
+    throw std::runtime_error("FlowMeter: subsequent packet in flow "
+                 "neither TCP nor UDP");;
 
       if (more) {
-	if (bytes_skipped + bytes_copied + payload_length > effective_offset) {
-	  size_t bytes_to_copy = std::min<size_t>(bytes_remaining,
-						  payload_length);
-	  size_t payload_offset =
-	    bytes_skipped + bytes_copied == 0 ? effective_offset : 0;
-	  std::memcpy(p, packet->payload() + payload_offset, bytes_to_copy);
-	  bytes_copied += bytes_to_copy;
-	  bytes_remaining -= bytes_to_copy;
-	  p += bytes_to_copy;
-	  bytes_skipped = offset;
-	} else
-	  bytes_skipped += payload_length;
+    if (bytes_skipped + bytes_copied + payload_length > effective_offset) {
+      size_t bytes_to_copy = std::min<size_t>(bytes_remaining,
+                          payload_length);
+      size_t payload_offset =
+        bytes_skipped + bytes_copied == 0 ? effective_offset : 0;
+      std::memcpy(p, packet->payload() + payload_offset, bytes_to_copy);
+      bytes_copied += bytes_to_copy;
+      bytes_remaining -= bytes_to_copy;
+      p += bytes_to_copy;
+      bytes_skipped = offset;
+    } else
+      bytes_skipped += payload_length;
 
-	if (packet->is_tcp()) {
-	  if (packet->tcp_seq() == expected_sequence_number)
-	    /* Unsigned arithmetic is modulo arithmetic, so this
-	     * addition will produce the correct wraparound effect. */
-	    expected_sequence_number += payload_length + 1;
-	  else // Hole
-	    more = false;
-	} else if (packet->is_udp())
-	  /* Can only be one packet. */
-	  more = false;
-	else
-	  throw std::runtime_error("FlowMeter: subsequent packet in flow "
-				   "neither TCP nor UDP (can't happen, "
-				   "but apparently did)");
+    if (packet->is_tcp()) {
+      if (packet->tcp_seq() == expected_sequence_number)
+        /* Unsigned arithmetic is modulo arithmetic, so this
+         * addition will produce the correct wraparound effect. */
+        expected_sequence_number += payload_length + 1;
+      else // Hole
+        more = false;
+    } else if (packet->is_udp())
+      /* Can only be one packet. */
+      more = false;
+    else
+      throw std::runtime_error("FlowMeter: subsequent packet in flow "
+                   "neither TCP nor UDP (can't happen, "
+                   "but apparently did)");
       }
     }
     return bytes_copied;

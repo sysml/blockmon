@@ -188,11 +188,11 @@ namespace blockmon
         }
 
         /** Forbids copy and move constructors.
-	 */
+     */
         Packet(const Packet &) = delete;
 
         /** Forbids copy and move assignment.
-	 */
+     */
         Packet& operator=(const Packet &) = delete;
 
         /**
@@ -294,9 +294,9 @@ public:
         }
 
         /** Backwards compatibility */
-		size_t length() const {
-			return caplen();
-		}
+        size_t length() const {
+            return caplen();
+        }
 
         /** Get a pointer to the start of the packet */
         const uint8_t *base() const {
@@ -330,8 +330,8 @@ public:
 
         /** return the l4 (TCP/UDP) playload length or 0 if there is no such payload */
         const size_t payload_len() const{
-        	payload();// make sure payload is parsed
-        	return m_payload_len;
+            payload();// make sure payload is parsed
+            return m_payload_len;
         }
 
         /** Get the MAC type of the packet;
@@ -339,12 +339,12 @@ public:
         int mac_type() const {
            return m_mactype;
         }
-	//FIXME provisional by Andrea
-	uint16_t  l3_protocol() const
-	{
-	    parse_mac();
-	    return m_pkttype;
-	}
+    //FIXME provisional by Andrea
+    uint16_t  l3_protocol() const
+    {
+        parse_mac();
+        return m_pkttype;
+    }
 
 
         uint32_t ip_src() const {
@@ -396,13 +396,13 @@ public:
         }
 
         uint16_t ip_length() const {
-	    parse_iphdr();
-	    return m_iplen;
+        parse_iphdr();
+        return m_iplen;
         }
 
         uint8_t ip_header_length() const {
-	    parse_iphdr();
-	    return m_iphlen;
+        parse_iphdr();
+        return m_iphlen;
         }
 
         uint8_t tcp_flags() const {
@@ -459,13 +459,13 @@ public:
         }
 
         uint8_t tcp_header_length() const {
-	  parse_tcphdr();
-	  return m_tcphlen;
+      parse_tcphdr();
+      return m_tcphlen;
         }
 
        uint16_t udp_length() const {
-	  parse_ports();
-	  return m_udplen;
+      parse_ports();
+      return m_udplen;
         }
 
 
@@ -538,7 +538,7 @@ public:
         mutable uint8_t       m_tcphlen;
 
         mutable uint16_t      m_udplen;
-        mutable size_t 	      m_payload_len;
+        mutable size_t           m_payload_len;
     };
 
 }

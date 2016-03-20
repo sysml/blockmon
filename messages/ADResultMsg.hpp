@@ -77,7 +77,7 @@ namespace blockmon
     class ADResultMsg: public Msg
     {
                 //CCDF timestamp
-		uint64_t  m_timestamp;
+        uint64_t  m_timestamp;
                 //CCDF Timescale
                 uint16_t m_timescale;
                 //CCDF feature ID
@@ -105,13 +105,13 @@ namespace blockmon
 
     public:
                 /**
-		 * Message constructor that creates the Result starting from:
-		 *
-		 * @param timestamp Timestamp of the current CCDF
-		 * @param timescale Timescale of the current CCDF
+         * Message constructor that creates the Result starting from:
+         *
+         * @param timestamp Timestamp of the current CCDF
+         * @param timescale Timescale of the current CCDF
                  * @param featureID The identifier of the current feature
-		 */
-		ADResultMsg(uint64_t timestamp, uint16_t timescale, string featID)
+         */
+        ADResultMsg(uint64_t timestamp, uint16_t timescale, string featID)
                 : Msg(MSG_ID(ADResultMsg)), m_timestamp(timestamp),
                         m_timescale(timescale), m_featureID(featID),
                         m_nr_unique_users(0), m_total_value(0), m_CCDF_size(0),
@@ -122,46 +122,46 @@ namespace blockmon
                 }
 
                 /**
-		 * Set the CCDF timestamp
-		 * @param timestamp The CCDF timestamp to set
-		 */
-		void set_timestamp(uint64_t timestamp);
+         * Set the CCDF timestamp
+         * @param timestamp The CCDF timestamp to set
+         */
+        void set_timestamp(uint64_t timestamp);
 
                 /**
-		 * Set the CCDF timescale
-		 * @param timescale The CCDF timescale to set
-		 */
-		void set_timescale(uint16_t timescale);
+         * Set the CCDF timescale
+         * @param timescale The CCDF timescale to set
+         */
+        void set_timescale(uint16_t timescale);
 
                 /**
-		 * Set the featureID
-		 * @param featureID
-		 */
-		void set_featureID(string featureID);
+         * Set the featureID
+         * @param featureID
+         */
+        void set_featureID(string featureID);
 
                 /**
-		 * Set the number of unique users
-		 * @param unique users
-		 */
-		void set_nr_unique_users(uint64_t uniqueUsers);
+         * Set the number of unique users
+         * @param unique users
+         */
+        void set_nr_unique_users(uint64_t uniqueUsers);
 
                 /**
-		 * Set the total feature value
-		 * @param total value
-		 */
-		void set_total_value(uint64_t totValue);
+         * Set the total feature value
+         * @param total value
+         */
+        void set_total_value(uint64_t totValue);
 
                 /**
-		 * Set the size of the CCDF (number of bins)
-		 * @param CCDF size
-		 */
-		void set_CCDF_size(uint16_t CCDF_size);
+         * Set the size of the CCDF (number of bins)
+         * @param CCDF size
+         */
+        void set_CCDF_size(uint16_t CCDF_size);
 
                 /**
-		 * Set the CCDF
-		 * @param CCDF The CCDF vector
-		 */
-		void set_CCDF(const vector<double> CCDF);
+         * Set the CCDF
+         * @param CCDF The CCDF vector
+         */
+        void set_CCDF(const vector<double> CCDF);
 
                 /**
                  * Set the algorithm phase
@@ -194,60 +194,60 @@ namespace blockmon
                 void set_External_Dispersion(float edm);
 
                 /**
-		 * Set the anomaly type code
-		 * @param code the anomaly type code
-		 */
-		void set_Anomaly_code(uint16_t code);
+         * Set the anomaly type code
+         * @param code the anomaly type code
+         */
+        void set_Anomaly_code(uint16_t code);
 
    /**************************************************************************/
 
-		/**
-		 * Get the timestamp associated to the CCDF
-		 * @return the timestamp
-		 */
-		uint64_t get_timestamp() const;
+        /**
+         * Get the timestamp associated to the CCDF
+         * @return the timestamp
+         */
+        uint64_t get_timestamp() const;
 
                 /**
-		 * Get the timescale associated to the CCDF
-		 * @return the timescale
-		 */
-		uint16_t get_timescale() const;
+         * Get the timescale associated to the CCDF
+         * @return the timescale
+         */
+        uint16_t get_timescale() const;
 
                 /**
-		 * Get the user ID of the CCDF
-		 * @return the user ID
-		 */
-		string get_featureID() const;
+         * Get the user ID of the CCDF
+         * @return the user ID
+         */
+        string get_featureID() const;
 
                 /**
-		 * Get the number of different users composing the CCDF
-		 * @return the number of unique users
-		 */
-		uint64_t get_unique_users() const;
+         * Get the number of different users composing the CCDF
+         * @return the number of unique users
+         */
+        uint64_t get_unique_users() const;
 
                 /**
-		 * Get the total feature value
-		 * @return the total feature value
-		 */
-		uint64_t get_total_value() const;
+         * Get the total feature value
+         * @return the total feature value
+         */
+        uint64_t get_total_value() const;
 
                 /**
-		 * Get the CCDF size (number of bins)
-		 * @return the CCDF size
-		 */
-		uint16_t get_CCDF_size() const;
+         * Get the CCDF size (number of bins)
+         * @return the CCDF size
+         */
+        uint16_t get_CCDF_size() const;
 
                 /**
-		 * Get the CCDF
-		 * @return the CCDF vector
-		 */
-		const vector<double>* get_CCDF() const;
+         * Get the CCDF
+         * @return the CCDF vector
+         */
+        const vector<double>* get_CCDF() const;
 
                 /**
-		 * Get the algorithm phase
-		 * @return the algorithm phase
-		 */
-		bool get_phase() const;
+         * Get the algorithm phase
+         * @return the algorithm phase
+         */
+        bool get_phase() const;
 
                 /**
                  * Get the acceptance region lower bound
@@ -274,25 +274,25 @@ namespace blockmon
                 float get_External_Dispersion() const;
 
                 /**
-		 * Get the anomaly type code
-		 * @return the anomaly type code
-		 */
-		uint16_t get_Anomaly_code() const;
+         * Get the anomaly type code
+         * @return the anomaly type code
+         */
+        uint16_t get_Anomaly_code() const;
 
                 /**
-		 * Clear the histogram
-		 */
-		void clear_CCDF();
+         * Clear the histogram
+         */
+        void clear_CCDF();
 
                 /**
-		 * Convert the ADResultMsg into a human-readable string
-		 */
-		string to_string() const;
+         * Convert the ADResultMsg into a human-readable string
+         */
+        string to_string() const;
 
                 /**
-		 * Convert the ADResultMsg into a string to send to a file
-		 */
-		string to_string_file() const;
+         * Convert the ADResultMsg into a string to send to a file
+         */
+        string to_string_file() const;
 
 
         /**
@@ -341,7 +341,7 @@ namespace blockmon
             copy.get()->set_Internal_Dispersion(m_ID_mean);
             copy.get()->set_External_Dispersion(m_ED_mean);
             copy.get()->set_Anomaly_code(m_Anomaly_code);
-	    return copy;
+        return copy;
         }
     };
 

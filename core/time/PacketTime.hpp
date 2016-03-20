@@ -57,7 +57,7 @@
 
 namespace blockmon
 {
-//	class TimerThread;// forward declaration
+//    class TimerThread;// forward declaration
 
     class PacketTime
     {
@@ -71,11 +71,11 @@ namespace blockmon
         {}
 
         /** Forbids copy and move constructors.
-	 */
+     */
         PacketTime(const PacketTime&) = delete;
 
         /** Forbids copy and move assignments.
-	 */
+     */
         PacketTime& operator = (const PacketTime&) = delete;
 
 
@@ -93,11 +93,11 @@ namespace blockmon
           *
           * @return the unique instance of this class
           */
-	   static PacketTime& instance()
-	   {
-		   static PacketTime the_time;
-		   return the_time;
-	   }
+       static PacketTime& instance()
+       {
+           static PacketTime the_time;
+           return the_time;
+       }
 
         /**
           * Notifies the class that a time source has been registered.

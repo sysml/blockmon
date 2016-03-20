@@ -60,47 +60,47 @@ namespace blockmon{
          */
        void PacketTime::time_past(ustime_t target_time)
        {
-    	   ustime_t next_time=get_BM_time();
-    	   if(next_time==0)	// first time call
-    		   next_time=target_time;
+           ustime_t next_time=get_BM_time();
+           if(next_time==0)    // first time call
+               next_time=target_time;
 
-    	   ustime_t last_time;
+           ustime_t last_time;
 
-    	   /* we increase the packet time in 1ms order (same resolution as wall timer)*/
-    	   do {
-    		   next_time = std::min(next_time+1000, target_time);
+           /* we increase the packet time in 1ms order (same resolution as wall timer)*/
+           do {
+               next_time = std::min(next_time+1000, target_time);
 
-			   if(m_writers > 1)
-			   {
-				   last_time = m_packet_time.exchange(next_time, std::memory_order_relaxed);
-			   }
-			   else if(m_writers == 1)
-			   {
-				   last_time = m_packet_time.load( std::memory_order_relaxed);
-				   m_packet_time.store(next_time, std::memory_order_relaxed);
-			   }
-			   else
-			   {
-				   throw std::runtime_error("inconsistent number of packet time writers");
-			   }
+               if(m_writers > 1)
+               {
+                   last_time = m_packet_time.exchange(next_time, std::memory_order_relaxed);
+               }
+               else if(m_writers == 1)
+               {
+                   last_time = m_packet_time.load( std::memory_order_relaxed);
+                   m_packet_time.store(next_time, std::memory_order_relaxed);
+               }
+               else
+               {
+                   throw std::runtime_error("inconsistent number of packet time writers");
+               }
 
-			   if( last_time > next_time){
-				   throw std::runtime_error("packet time value out of order");
-			   }
+               if( last_time > next_time){
+                   throw std::runtime_error("packet time value out of order");
+               }
 
-			   /* we must check for timer events now. Otherwise it might be that this packet
-				* (which might be quite a bit in the future) is processed before long past
-				* timer events are processed.
-				*/
+               /* we must check for timer events now. Otherwise it might be that this packet
+                * (which might be quite a bit in the future) is processed before long past
+                * timer events are processed.
+                */
 
-			   TimerThread::instance().process_timer_events();
-    	   }while(next_time<target_time);
+               TimerThread::instance().process_timer_events();
+           }while(next_time<target_time);
 
        }
 
        void PacketTimeWriter::advance_packet_time(ustime_t next_time)
-	   {
-		   PacketTime::instance().time_past(next_time);
-	   }
+       {
+           PacketTime::instance().time_past(next_time);
+       }
 
 }

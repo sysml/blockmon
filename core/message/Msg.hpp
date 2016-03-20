@@ -105,29 +105,29 @@ namespace blockmon {
                 delete [] m_tagbuf.addr();
         }
 
-	/**
-	 * For debugging purpose it could be useful to get the name of the message
-	 */
-	virtual std::string get_message_name() const {
-		return "Msg";
-	}
+    /**
+     * For debugging purpose it could be useful to get the name of the message
+     */
+    virtual std::string get_message_name() const {
+        return "Msg";
+    }
 
-	/**
-	 * Create a new message of the same type using the data in the serializer
-	 * (deserialization)
-	 */
-	virtual const std::shared_ptr<Msg> build_same(Serializer *ser) const {
-		assert(0);
-	}
+    /**
+     * Create a new message of the same type using the data in the serializer
+     * (deserialization)
+     */
+    virtual const std::shared_ptr<Msg> build_same(Serializer *ser) const {
+        assert(0);
+    }
 
-	/**
-	 * Modify the serializer to reflect the content of the message
-	 * The serializer will then be used to send this message across
-	 * the network
-	 */
-	virtual void serialize(Serializer *ser) const {
-		assert(0);
-	}
+    /**
+     * Modify the serializer to reflect the content of the message
+     * The serializer will then be used to send this message across
+     * the network
+     */
+    virtual void serialize(Serializer *ser) const {
+        assert(0);
+    }
 
 
         /**
@@ -152,13 +152,13 @@ namespace blockmon {
 
         /**
          * Builds an tag object into the message
-	 *
+     *
          * In order to use that, the block must register a tag
          * beforehand with the proper method in TagRegistry.hpp The
          * function is template over the tag object type T and its
          * constructor arguments.  A perfect forwarding idiom is used
          * to pass whatever constructor arguments to the constructor.
-	 *
+     *
          * @param tag_h the tag handler obtained upon registration
          */
         template <typename Tag, typename MsgType, typename ...Ts>
@@ -172,12 +172,12 @@ namespace blockmon {
 
         /**
          * Retrieves a pointer to a tag object associated with this message.
-	 *
+     *
          * If the valid bit has not been set yet (meaning that the tag
          * has not been written) a NULL pointer is retrieved.  The
          * function is template over the tag object type.
-	 *
-	 * @return a pointer to the tag object if its valid bit has
+     *
+     * @return a pointer to the tag object if its valid bit has
          * been set, NULL otherwise @param tag_h the tag handler
          * obtained upon registration
          */
@@ -191,9 +191,9 @@ namespace blockmon {
 
         /**
          * Checks whether a given tag has been written on this message (i.e. its valid bit is set).
-	 *
+     *
          * @param tag_h the tag handler obtained upon registration
-	 *
+     *
          * @return true whether the tag has been written, false otherwise
          */
         template <typename MsgType>
@@ -242,7 +242,7 @@ namespace blockmon {
          *
          * std::shared_ptr<Msg> clone() const
          * {
-	 *     // This invokes copy-ctor of DerivedType
+     *     // This invokes copy-ctor of DerivedType
          *     return std::make_shared<DerivedType>(*this);
          * }
          *
@@ -279,7 +279,7 @@ namespace blockmon {
             }
         }
 
-		/*
+        /*
          * Copy constructor
          */
         Msg(Msg const &other)

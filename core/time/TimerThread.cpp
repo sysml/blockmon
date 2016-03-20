@@ -36,88 +36,88 @@ namespace blockmon {
     TimerThread* TimerThread::inst = NULL;
     std::atomic<bool> TimerThread::m_instance(false);
 
-	void TimerThread::insert_in_heap(std::shared_ptr<Timer>&& in){
-		m_heap.push(std::move(in));
-	}
+    void TimerThread::insert_in_heap(std::shared_ptr<Timer>&& in){
+        m_heap.push(std::move(in));
+    }
 
-	std::shared_ptr<Timer> TimerThread::remove_from_heap(){
-		std::shared_ptr<Timer> tmp=m_heap.top();
-		m_heap.pop();
+    std::shared_ptr<Timer> TimerThread::remove_from_heap(){
+        std::shared_ptr<Timer> tmp=m_heap.top();
+        m_heap.pop();
         return tmp;
-	}
+    }
 
-	void TimerThread::schedule_timer(std::shared_ptr<Timer>&& in){
-			/*std::cout << __LINE__ <<" ";*/ lock();
-			m_queue.push_back(std::move(in));
-			unlock();
-	}
+    void TimerThread::schedule_timer(std::shared_ptr<Timer>&& in){
+            /*std::cout << __LINE__ <<" ";*/ lock();
+            m_queue.push_back(std::move(in));
+            unlock();
+    }
 
-	void TimerThread::stop(){
-		m_stop=true;
-	}
+    void TimerThread::stop(){
+        m_stop=true;
+    }
 
-	void TimerThread::operator()(){
-		if(!m_running)
-		{
-			m_running=true;
-		}
-		else
-		{
-			throw std::runtime_error("trying to start timer thread while it is already running");
-		}
+    void TimerThread::operator()(){
+        if(!m_running)
+        {
+            m_running=true;
+        }
+        else
+        {
+            throw std::runtime_error("trying to start timer thread while it is already running");
+        }
 
-		while(!m_stop)
-		{
-			{
-				/*std::cout << __LINE__ <<" ";*/ lock();
-				while (!m_queue.empty())
-				{
-					insert_in_heap(std::move(m_queue.back()));
-					m_queue.pop_back();
-				}
-				unlock();
-			}
+        while(!m_stop)
+        {
+            {
+                /*std::cout << __LINE__ <<" ";*/ lock();
+                while (!m_queue.empty())
+                {
+                    insert_in_heap(std::move(m_queue.back()));
+                    m_queue.pop_back();
+                }
+                unlock();
+            }
 
-			process_timer_events();
+            process_timer_events();
 
-			/**
-			  * this time interval can be changed in order to tune the precision/performance trade off
-			  */
-			std::this_thread::sleep_for(std::chrono::milliseconds(1));//timers queue is sampled every 1 msec
-		}
+            /**
+              * this time interval can be changed in order to tune the precision/performance trade off
+              */
+            std::this_thread::sleep_for(std::chrono::milliseconds(1));//timers queue is sampled every 1 msec
+        }
 
-		m_running=false;
-		m_stop=true;
-		std::cout << "Stopped TimerThread..."<<std::endl;
-	}
+        m_running=false;
+        m_stop=true;
+        std::cout << "Stopped TimerThread..."<<std::endl;
+    }
 
-	void TimerThread::process_timer_events(){
-		 //std::chrono::system_clock::time_point tnow(std::chrono::system_clock::now());
-		ustime_t tnow = get_BM_time();
-		/*std::cout << __LINE__ <<" ";*/
-		/* WARNING:
-		 * In here we have to be very careful with locks/mutexes as the timer-heap's spinlock
-		 * might conflict with a block m_mutex leading to a deadlock. Thats why we use very fine-granular
-		 * locking in here
-		*/
-		lock();
-		while((!m_heap.empty())&&(m_heap.top()->time_point() <= tnow))
-		{
-			std::shared_ptr<Timer> t(remove_from_heap());
-			assert(t->time_point() <= m_heap.top()->time_point());
-			unlock();	// important to unlock here!
-			t->owner().handle_timer(t);
-			ustime_t ttmp = t->time_point();
-			t->next_time();
-			lock();	// and to lock again here
-			if(t->time_point()!= ttmp )
-			{
-				insert_in_heap(std::move(t));
-			}
+    void TimerThread::process_timer_events(){
+         //std::chrono::system_clock::time_point tnow(std::chrono::system_clock::now());
+        ustime_t tnow = get_BM_time();
+        /*std::cout << __LINE__ <<" ";*/
+        /* WARNING:
+         * In here we have to be very careful with locks/mutexes as the timer-heap's spinlock
+         * might conflict with a block m_mutex leading to a deadlock. Thats why we use very fine-granular
+         * locking in here
+        */
+        lock();
+        while((!m_heap.empty())&&(m_heap.top()->time_point() <= tnow))
+        {
+            std::shared_ptr<Timer> t(remove_from_heap());
+            assert(t->time_point() <= m_heap.top()->time_point());
+            unlock();    // important to unlock here!
+            t->owner().handle_timer(t);
+            ustime_t ttmp = t->time_point();
+            t->next_time();
+            lock();    // and to lock again here
+            if(t->time_point()!= ttmp )
+            {
+                insert_in_heap(std::move(t));
+            }
 
-		}
-		unlock();
-	}
+        }
+        unlock();
+    }
 
      void TimerThread::remove_references(const Block& b){
 

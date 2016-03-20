@@ -56,19 +56,19 @@ int main (int argc, char** argv)
 
     CompositionManager::instance().add_config_from_file(argv[1]);
 
-	PoolManager::instance().start();
+    PoolManager::instance().start();
 
-	std::thread tt(std::ref(TimerThread::instance()));
+    std::thread tt(std::ref(TimerThread::instance()));
 
-	while (!did_quit()) sleep(5);
+    while (!did_quit()) sleep(5);
 
-	std::cout<<"Stopping timer thread"<<std::endl;
-	TimerThread::instance().stop();
+    std::cout<<"Stopping timer thread"<<std::endl;
+    TimerThread::instance().stop();
 
-	std::cout<<"Stopping pool manager"<<std::endl;
-	PoolManager::instance().stop();
+    std::cout<<"Stopping pool manager"<<std::endl;
+    PoolManager::instance().stop();
 
-	tt.join();
-	return (0);
+    tt.join();
+    return (0);
 }
 

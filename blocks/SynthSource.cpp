@@ -130,10 +130,10 @@ namespace blockmon
 
         void _do_async()
         {
-		    for (int i=0; i<1000; ++i) {
+            for (int i=0; i<1000; ++i) {
                 send_out_through(alloc_msg_from_buffer<Packet>(m_mem_block, 64, const_buffer<unsigned char>((unsigned char*)m_packet, 64) ), m_gate_id);
-			    std::this_thread::sleep_for(m_period);
-		    }
+                std::this_thread::sleep_for(m_period);
+            }
         }
 
     };

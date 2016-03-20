@@ -37,17 +37,17 @@
 
 namespace blockmon {
 
-	void ADResultMsg::set_timestamp(uint64_t timestamp) {
-		m_timestamp = timestamp;
-	}
+    void ADResultMsg::set_timestamp(uint64_t timestamp) {
+        m_timestamp = timestamp;
+    }
 
         void ADResultMsg::set_timescale(uint16_t timescale) {
-		m_timescale = timescale;
-	}
+        m_timescale = timescale;
+    }
 
         void ADResultMsg::set_featureID(string featureID) {
-		m_featureID = featureID;
-	}
+        m_featureID = featureID;
+    }
 
         void ADResultMsg::set_nr_unique_users(uint64_t uniqueUsers){
                 m_nr_unique_users = uniqueUsers;
@@ -115,9 +115,9 @@ namespace blockmon {
             return m_CCDF_size;
         }
 
-	const vector<double>* ADResultMsg::get_CCDF() const {
-		return &m_CCDF;
-	}
+    const vector<double>* ADResultMsg::get_CCDF() const {
+        return &m_CCDF;
+    }
 
         bool ADResultMsg::get_phase() const{
             return m_phase;
@@ -144,24 +144,24 @@ namespace blockmon {
         }
 
         void ADResultMsg::clear_CCDF() {
-		m_CCDF.clear();
-	}
+        m_CCDF.clear();
+    }
 
 
     std::string ADResultMsg::to_string() const
     {
         stringstream ss;
-		ss << "CCDF timestamp: " << m_timestamp
+        ss << "CCDF timestamp: " << m_timestamp
                    << " ; Timescale: " << m_timescale
                    << " ; Feature ID: " << m_featureID
                    << " ; Number of unique users: " << m_nr_unique_users
                    << " ; Total value: " << m_total_value
                    << " ; CCDF_size: " << m_CCDF_size
                    << "\nCCDF:\n";
-		vector<double>::const_iterator it;
+        vector<double>::const_iterator it;
                 for (it = m_CCDF.begin(); it != m_CCDF.end(); it++) {
-			ss << (*it) << " " ;
-		}
+            ss << (*it) << " " ;
+        }
                 ss << "\n";
 
                 string phase;
@@ -180,17 +180,17 @@ namespace blockmon {
     std::string ADResultMsg::to_string_file() const
     {
         stringstream sss;
-		sss << m_timestamp
+        sss << m_timestamp
                    << "\t" << m_timescale
                    << "\t" << m_featureID
                    << "\t" << m_nr_unique_users
                    << "\t" << m_total_value
                    << "\t" << m_CCDF_size
                    << "\t";
-		vector<double>::const_iterator it;
+        vector<double>::const_iterator it;
                 for (it = m_CCDF.begin(); it != m_CCDF.end(); it++) {
-			sss << (*it) << ";" ;
-		}
+            sss << (*it) << ";" ;
+        }
 
                 string phase;
                 if(m_phase) phase = "Learning";

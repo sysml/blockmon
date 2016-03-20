@@ -80,8 +80,8 @@ namespace blockmon
      */
     class RRDemux: public Block
     {
-		int m_outgates_number;
-		int m_current_outgate;
+        int m_outgates_number;
+        int m_current_outgate;
 
     public:
 

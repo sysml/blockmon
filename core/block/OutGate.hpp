@@ -107,12 +107,12 @@ namespace blockmon {
         int deliver(std::shared_ptr<const Msg>&& m)
         {
             if(m_peers.size()>0){
-				unsigned int e=m_peers.size();
-				for(unsigned int i=0;i<e-1;++i)//first e-1
-				{
-					m_peers[i]->receive(std::shared_ptr<const Msg> (m));
-				}
-				m_peers[e-1]->receive(std::move(m));
+                unsigned int e=m_peers.size();
+                for(unsigned int i=0;i<e-1;++i)//first e-1
+                {
+                    m_peers[i]->receive(std::shared_ptr<const Msg> (m));
+                }
+                m_peers[e-1]->receive(std::move(m));
             }
             return 0;
         }

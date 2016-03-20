@@ -39,7 +39,7 @@
 
 namespace blockmon {
   Nofrag::Nofrag(const std::string &name,
-		 invocation_type invocation)
+         invocation_type invocation)
     : Block(name, invocation),
       in_gate(register_input_gate("in_packet")),
       out_gate(register_output_gate("out_unfragged_packet")) {
@@ -52,7 +52,7 @@ namespace blockmon {
 
   void
   Nofrag::_receive_msg(std::shared_ptr<const Msg>&& m,
-		       int /* index */) {
+               int /* index */) {
     if (unlikely(m->type() != MSG_ID(Packet)))
       std::runtime_error("Nofrag: wrong message type, "
                          "I only accept Packets");
@@ -61,7 +61,7 @@ namespace blockmon {
     const uint16_t fragoff = ntohs(iphdr->fragoff);
 
     if (likely(((fragoff & IPHDR_MF) == 0)
-	       && (IPHDR_FRAGOFF(fragoff) == 0)))
+           && (IPHDR_FRAGOFF(fragoff) == 0)))
       send_out_through(std::move(m), out_gate);
   }
 

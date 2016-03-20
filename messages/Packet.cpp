@@ -123,7 +123,7 @@ void Packet::parse_iphdr() const {
             m_key.proto = iph->proto;
             m_iptos = iph->tos;
             m_ipttl = iph->ttl;
-	    m_iplen = ntohs(iph->len);
+        m_iplen = ntohs(iph->len);
 
             // get header length
             uint8_t version;
@@ -163,8 +163,8 @@ void Packet::parse_ports() const {
 
             //  go ahead and skip the rest of the UDP header
             if ((m_key.proto == kUDP) && ((m_caplen - l4hoff) >= sizeof(udphdr))) {
-	        const udphdr* uh = reinterpret_cast<const udphdr*>(m_l4hdr_ptr);
-		m_udplen = ntohs(uh->len);
+            const udphdr* uh = reinterpret_cast<const udphdr*>(m_l4hdr_ptr);
+        m_udplen = ntohs(uh->len);
                 m_l4payload_ptr = m_l4hdr_ptr + sizeof(udphdr);
                 m_payload_len = m_iplen - m_iphlen - sizeof(udphdr);
             }

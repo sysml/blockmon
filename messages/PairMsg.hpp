@@ -49,11 +49,11 @@ namespace blockmon
     public:
 
         /** Forbids move constructor (copying allowed).
-	 */
+     */
         PairMsg(const PairMsg&&)=delete;
 
         /** Forbids copy and move assignment.
-	 */
+     */
         PairMsg& operator=(const PairMsg&)=delete;
 
         /**

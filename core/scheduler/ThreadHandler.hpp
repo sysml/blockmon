@@ -78,7 +78,7 @@ namespace blockmon
         std::atomic_bool m_stop;
         std::unique_ptr<std::thread> m_thread;
         int m_id;
-		std::shared_ptr<Block>torun;
+        std::shared_ptr<Block>torun;
 
     public:
       /** Creates a ThreadHandler.
@@ -95,11 +95,11 @@ namespace blockmon
 
         /**
         * Starts up the actual thread and gives it...
-	    *
-	    * This as a callable object to execute.  This will cause the
+        *
+        * This as a callable object to execute.  This will cause the
         * new thread to execute the operator()() method of this
         * class.
-	    *
+        *
         * @param aff the CPUs the thread is allowed to run on (an
         * empty vector means no affinity specification)
         */
@@ -118,13 +118,13 @@ namespace blockmon
         }
 
         /**
-	 * This is the actual function that the thread executes.
-	 *
-	 * It receives a block from the scheduler, class its run()
-	 * method and returns it to the scheduler.  The thread runs
-	 * until the it is told to stop by setting the m_stop boolean
-	 * flag.
-	 */
+     * This is the actual function that the thread executes.
+     *
+     * It receives a block from the scheduler, class its run()
+     * method and returns it to the scheduler.  The thread runs
+     * until the it is told to stop by setting the m_stop boolean
+     * flag.
+     */
         void operator()()
         {
             if(CPU_COUNT(&m_mask)>0)
@@ -137,26 +137,26 @@ namespace blockmon
                     throw(std::runtime_error("set affinity failed"));
                 }
             }
-			m_stop.store(false);
+            m_stop.store(false);
             while(!m_stop.load())
             {
-				try
-				{
-					torun=m_scheduler.next_task(m_id);
-					if(torun)
-					{
-						torun->set_running(true);
-						torun->run();
-						m_scheduler.task_done(m_id, std::move(torun));
-					}
-					else
-					{
-						std::this_thread::sleep_for(std::chrono::milliseconds(10));
-					}
-				}
-				catch (...)
-				{
-				}
+                try
+                {
+                    torun=m_scheduler.next_task(m_id);
+                    if(torun)
+                    {
+                        torun->set_running(true);
+                        torun->run();
+                        m_scheduler.task_done(m_id, std::move(torun));
+                    }
+                    else
+                    {
+                        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+                    }
+                }
+                catch (...)
+                {
+                }
             }
             m_stop.store(true);
         }
@@ -176,27 +176,27 @@ namespace blockmon
         /*
         void stop()
         {
-			if (!m_stop.load())
-			{
-				m_stop.store(true);
-				if(torun)
-				{
-					torun->set_running(false);
-				}
-				if (m_thread->joinable())
-				{
-					m_thread->join();
-				}
-				m_thread.reset();
-			}
+            if (!m_stop.load())
+            {
+                m_stop.store(true);
+                if(torun)
+                {
+                    torun->set_running(false);
+                }
+                if (m_thread->joinable())
+                {
+                    m_thread->join();
+                }
+                m_thread.reset();
+            }
 
         }
 
-		void join(){
-        	if(!m_stop.load())
-        		stop();
-        	m_thread->join();
-			m_thread.reset();
+        void join(){
+            if(!m_stop.load())
+                stop();
+            m_thread->join();
+            m_thread.reset();
         }
         */
 

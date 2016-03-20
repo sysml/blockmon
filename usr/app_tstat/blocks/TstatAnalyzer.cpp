@@ -34,8 +34,8 @@
  *   <humandesc>
  *   Computes statistics on flows by means of the Tstat library.
  *   Inputs are:
- * 	- attribute name of element config: path to tstat config file
- * 	- attribute name of element logdir: path to tstat log folder
+ *     - attribute name of element config: path to tstat config file
+ *     - attribute name of element logdir: path to tstat log folder
  * </humandesc>
  * <shortdesc>Computes statistics on flows by means of the Tstat library.</shortdesc>
  *
@@ -86,78 +86,78 @@ using namespace pugi;
 namespace blockmon
 {
 
-	 class TstatAnalyzer: public Block
-	 {
-	 private:
+     class TstatAnalyzer: public Block
+     {
+     private:
 
-		 int m_in_gate;
-		 int m_out_gate;
+         int m_in_gate;
+         int m_out_gate;
          int m_msg_recv;
          int m_msg_sent;
          tstat_report report;
 
-	 public:
+     public:
 
-		 /*
-		  * constructor
-		  */
-		 TstatAnalyzer(const std::string &name, invocation_type invocation) :
-			 Block(name, invocation),
-			 m_in_gate(register_input_gate("in_pkt")),
-			 m_out_gate(register_output_gate("out_pkt")),
+         /*
+          * constructor
+          */
+         TstatAnalyzer(const std::string &name, invocation_type invocation) :
+             Block(name, invocation),
+             m_in_gate(register_input_gate("in_pkt")),
+             m_out_gate(register_output_gate("out_pkt")),
              m_msg_recv(0),
              m_msg_sent(0)
-		 {
-		 }
+         {
+         }
 
-		 TstatAnalyzer(const TstatAnalyzer &)=delete;
-		 TstatAnalyzer& operator=(const TstatAnalyzer &) = delete;
-		 TstatAnalyzer(TstatAnalyzer &&)=delete;
-		 TstatAnalyzer& operator=(TstatAnalyzer &&) = delete;
+         TstatAnalyzer(const TstatAnalyzer &)=delete;
+         TstatAnalyzer& operator=(const TstatAnalyzer &) = delete;
+         TstatAnalyzer(TstatAnalyzer &&)=delete;
+         TstatAnalyzer& operator=(TstatAnalyzer &&) = delete;
 
-		 /*
-		  * destructor
-		  */
-		 virtual ~TstatAnalyzer()
-		 {
+         /*
+          * destructor
+          */
+         virtual ~TstatAnalyzer()
+         {
             tstat_close(&report);
             std::cout << "Removing TstatAnalyzer" << std::endl;
          }
 
-		 /**
-		   * configures the filter
-		   * @param n the xml subtree
-		   */
-		 virtual void _configure(const xml_node&  n )
-		 {
-		     xml_node config = n.child("config");
-		     xml_node log = n.child("logdir");
-		     if(!config or !log)
-	                 throw std::runtime_error("TstatAnalyzer: missing parameter");
+         /**
+           * configures the filter
+           * @param n the xml subtree
+           */
+         virtual void _configure(const xml_node&  n )
+         {
+             xml_node config = n.child("config");
+             xml_node log = n.child("logdir");
+             if(!config or !log)
+                     throw std::runtime_error("TstatAnalyzer: missing parameter");
              std::string cname=config.attribute("name").value();
-		     tstat_init((char*)cname.c_str());
+             tstat_init((char*)cname.c_str());
              std::string lname=config.attribute("name").value();
-		     struct timeval cur_time;
-		     gettimeofday(&cur_time,NULL);
-		     tstat_new_logdir((char*)lname.c_str(), &cur_time);
-		 }
+             struct timeval cur_time;
+             gettimeofday(&cur_time,NULL);
+             tstat_new_logdir((char*)lname.c_str(), &cur_time);
+         }
 
-		 /**
-		   * the actual filtering function
-		   * Expects Packet messages, otherwise it throws
-		   * @param m the message to be checked
-		  */
-		 virtual void _receive_msg(std::shared_ptr<const Msg>&& m, int /* index */)
-		 {
-			 if(m->type() != MSG_ID(Packet))
-			 {
-				 throw std::runtime_error("PacketFiler: wrong message type");
-			 }
+         /**
+           * the actual filtering function
+           * Expects Packet messages, otherwise it throws
+           * @param m the message to be checked
+          */
+         virtual void _receive_msg(std::shared_ptr<const Msg>&& m, int /* index */)
+         {
+             if(m->type() != MSG_ID(Packet))
+             {
+                 throw std::runtime_error("PacketFiler: wrong message type");
+             }
 
              m_msg_recv++;
 /*
              if(m_msg_recv % 100000 == 0)
-             	std::cout << "Received pkt no." << m_msg_recv << std::endl;
+                 std::cout << "Received pkt no." << m_msg_recv << std::endl;
 */
              const Packet* packet = static_cast<const Packet* > (m.get());
              struct timeval tval;
@@ -170,7 +170,7 @@ namespace blockmon
                  auto now = std::chrono::system_clock::now();
                  auto duration = now.time_since_epoch();
                  auto millis = std::chrono::duration_cast<std::chrono::milliseconds>(duration).count();
-             	std::cout << "Received pkt no." << m_msg_recv
+                 std::cout << "Received pkt no." << m_msg_recv
                     << " at time [ms] " << millis << std::endl;
              }
 
@@ -197,8 +197,8 @@ namespace blockmon
              //if(m_msg_recv == 36850357) //00
              //   tstat_close(&report);
 
-		 }
-	 };
+         }
+     };
 
 
 #ifndef _BLOCKMON_DOXYGEN_SKIP_

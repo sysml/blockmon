@@ -65,7 +65,7 @@
  */
 namespace blockmon {
 
-    class Timer;	// forward definition
+    class Timer;    // forward definition
 
     /** Maximum number of messages to dequeue at once in active mode. */
     static const int MAX_MSG_DEQUEUE = 10;
@@ -349,30 +349,30 @@ namespace blockmon {
               }
               else
               {
-				  std::string s(block_attrib.value());
-				  std::transform(s.begin(), s.end(), s.begin(), (int (*)(int))std::tolower);
-				  if (s.compare("drop")==0){
-					  m_queue_type=QUEUETYPE_DROPPING;
-					  blocklog("Queues are dropping", log_info);
-				  }
-				  else if (s.compare("yield")==0){
-					  m_queue_type=QUEUETYPE_YIELDING;
-					  blocklog("Queues are blocking (threads yield)", log_info);
-				  }else if(s.compare("sleep")==0){
-					  m_queue_type=block_node.attribute("sleep_usec").as_int();	// returns 0 if sleep_usec is not set
-					  if(m_queue_type<=0){
-						  throw std::runtime_error(std::string("For block '").append(m_name).append("': 'blocking_mode=sleep' but 'sleep_usec' attribute not set or not > 0"));
-					  }
-					  blocklog(std::string("Queues are blocking (threads sleep for ").append(std::to_string(m_queue_type)).append(" usec)"), log_info);
+                  std::string s(block_attrib.value());
+                  std::transform(s.begin(), s.end(), s.begin(), (int (*)(int))std::tolower);
+                  if (s.compare("drop")==0){
+                      m_queue_type=QUEUETYPE_DROPPING;
+                      blocklog("Queues are dropping", log_info);
+                  }
+                  else if (s.compare("yield")==0){
+                      m_queue_type=QUEUETYPE_YIELDING;
+                      blocklog("Queues are blocking (threads yield)", log_info);
+                  }else if(s.compare("sleep")==0){
+                      m_queue_type=block_node.attribute("sleep_usec").as_int();    // returns 0 if sleep_usec is not set
+                      if(m_queue_type<=0){
+                          throw std::runtime_error(std::string("For block '").append(m_name).append("': 'blocking_mode=sleep' but 'sleep_usec' attribute not set or not > 0"));
+                      }
+                      blocklog(std::string("Queues are blocking (threads sleep for ").append(std::to_string(m_queue_type)).append(" usec)"), log_info);
 
-				  }else if(s.compare("mutex")==0){
-					  m_queue_type=QUEUETYPE_MUTEX;
-					  blocklog(std::string("Queues are blocking (using signals and a mutex)"), log_info);
-				  }else{
-					  throw std::runtime_error(std::string("'blocking_mode' attribute value '").append(s)
-											  .append("' for block '").append(m_name).append("' is invalid.\n")
-											  .append("Valid parameters are: drop (default), yield, sleep, mutex.")  );
-				  }
+                  }else if(s.compare("mutex")==0){
+                      m_queue_type=QUEUETYPE_MUTEX;
+                      blocklog(std::string("Queues are blocking (using signals and a mutex)"), log_info);
+                  }else{
+                      throw std::runtime_error(std::string("'blocking_mode' attribute value '").append(s)
+                                              .append("' for block '").append(m_name).append("' is invalid.\n")
+                                              .append("Valid parameters are: drop (default), yield, sleep, mutex.")  );
+                  }
               }
           }
           else if (m_invocation != invocation_type::Indirect){
@@ -380,7 +380,7 @@ namespace blockmon {
                   m_queue_type=QUEUETYPE_DROPPING;
           }
 
-#endif	//BLOCKING_QUEUE
+#endif    //BLOCKING_QUEUE
             pugi::xml_node params_node = block_node.child("params");
 
             _configure(params_node);

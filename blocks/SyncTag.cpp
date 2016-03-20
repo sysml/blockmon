@@ -126,9 +126,9 @@ namespace blockmon
 
         void _configure(const pugi::xml_node&  n )
         {
-	    if(pugi::xml_node message = n.child("message"))
+        if(pugi::xml_node message = n.child("message"))
             {
-	        if(pugi::xml_attribute id = message.attribute("id") )
+            if(pugi::xml_attribute id = message.attribute("id") )
                 {
                     m_msg_type = id.as_int();
                 }

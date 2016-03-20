@@ -38,58 +38,58 @@ namespace blockmon {
 
     void InGate::receive(std::shared_ptr<const Msg>&& inm)
     {
-    	if(m_owner->is_direct()) {
+        if(m_owner->is_direct()) {
             // directly invoked blocks: call receive_msg directly
             m_owner->receive_msg(std::move(inm),m_index);
         } else {
             // indirectly invoked blocks: enqueue
-			bool queued=m_queue->push(std::move(inm));	// queued=false if the queue was full
+            bool queued=m_queue->push(std::move(inm));    // queued=false if the queue was full
 #ifdef BLOCKING_QUEUE
-			while( !queued &&
-					m_owner->queue_type() != QUEUETYPE_DROPPING
-					&& PoolManager::instance().isRunning()){
-				if(m_owner->queue_type()==QUEUETYPE_MUTEX){
-					std::unique_lock<std::mutex> lk(queue_mutex);
-					is_waiting=true;
-					queue_cond.wait_for(lk, WAIT_DURATION,
-										[&]{
-										return !m_queue->is_full();
-										});
-					is_waiting=false;
-					lk.unlock();
+            while( !queued &&
+                    m_owner->queue_type() != QUEUETYPE_DROPPING
+                    && PoolManager::instance().isRunning()){
+                if(m_owner->queue_type()==QUEUETYPE_MUTEX){
+                    std::unique_lock<std::mutex> lk(queue_mutex);
+                    is_waiting=true;
+                    queue_cond.wait_for(lk, WAIT_DURATION,
+                                        [&]{
+                                        return !m_queue->is_full();
+                                        });
+                    is_waiting=false;
+                    lk.unlock();
 
-				}
-				else if(m_owner->queue_type()==QUEUETYPE_YIELDING){
-					sched_yield();
-				}
-				else{	//sleeping
-					usleep(m_owner->queue_type());
-				}
+                }
+                else if(m_owner->queue_type()==QUEUETYPE_YIELDING){
+                    sched_yield();
+                }
+                else{    //sleeping
+                    usleep(m_owner->queue_type());
+                }
 
-				queued=m_queue->push(std::move(inm));
-			}
+                queued=m_queue->push(std::move(inm));
+            }
 #endif //BLOCKING_QUEUE
         }
 
     }
 
     std::shared_ptr<const Msg> InGate::dequeue()
-	{
+    {
 #ifdef BLOCKING_QUEUE
-    	std::shared_ptr<const Msg> tmp;
-    	if(m_owner->queue_type()==QUEUETYPE_MUTEX && is_waiting){
-    		std::lock_guard<std::mutex> lk(queue_mutex);
-    		m_queue->pop_notify_all(tmp, queue_cond);
-    	}else{
-    		m_queue->pop(tmp);
-    	}
+        std::shared_ptr<const Msg> tmp;
+        if(m_owner->queue_type()==QUEUETYPE_MUTEX && is_waiting){
+            std::lock_guard<std::mutex> lk(queue_mutex);
+            m_queue->pop_notify_all(tmp, queue_cond);
+        }else{
+            m_queue->pop(tmp);
+        }
 #else
-    	std::shared_ptr<const Msg> tmp;
-    	m_queue->pop(tmp);
+        std::shared_ptr<const Msg> tmp;
+        m_queue->pop(tmp);
 #endif
 
-		return tmp;
-	}
+        return tmp;
+    }
 
     void InGate::connect(OutGate& out)
     {
@@ -118,7 +118,7 @@ namespace blockmon {
     }
 
     bool InGate::is_connected(){
-    	return m_peers.size()>0;
+        return m_peers.size()>0;
     }
 
 

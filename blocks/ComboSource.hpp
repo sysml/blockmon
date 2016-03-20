@@ -49,11 +49,11 @@ namespace blockmon
     class ComboSource: public Block
     {
 
-	protected:
+    protected:
         struct szedata *sze;
         int m_gate_id;
-		int m_pktcnt;
-		int m_pktagg;
+        int m_pktcnt;
+        int m_pktagg;
         std::shared_ptr<MemoryBatch> m_mem_block;
 
     public:
@@ -69,8 +69,8 @@ namespace blockmon
         {
             sze = NULL;
 
-			m_pktcnt = 0;
-			m_pktagg = 1;
+            m_pktcnt = 0;
+            m_pktagg = 1;
             register_variable("pktcnt",make_rd_var(no_mutex_t(), m_pktcnt));
             register_variable("pktagg",make_wr_var(no_mutex_t(), m_pktagg));
         }
@@ -79,9 +79,9 @@ namespace blockmon
          * @brief Destructor
          */
         ~ComboSource()
-		{
+        {
             szedata_close(sze);
-		}
+        }
 
         /**
          * @brief Configures the block, opens all necessary contexts
@@ -89,43 +89,43 @@ namespace blockmon
          */
         void _configure(const pugi::xml_node& n)
         {
-			std::string command;
+            std::string command;
            pugi::xml_node source;
-			int val;
-			unsigned int tx_mask = 0;
-			unsigned int rx_mask = 0;
+            int val;
+            unsigned int tx_mask = 0;
+            unsigned int rx_mask = 0;
 
-			source = n.child("design");
+            source = n.child("design");
             if(!source)
                 blocklog("missing parameter design, firwmare of acceleration card was untouched!", log_info);
             else
-			{
-				command = std::string("csboot -f0 ") + source.attribute("filename").value() + "; sleep 1;";
-				val = system(command.c_str());
+            {
+                command = std::string("csboot -f0 ") + source.attribute("filename").value() + "; sleep 1;";
+                val = system(command.c_str());
 
-				command = std::string("Booting card with firwmare file ") + source.attribute("filename").value() + (val == 0 ? ": OK" : ": ERROR");
+                command = std::string("Booting card with firwmare file ") + source.attribute("filename").value() + (val == 0 ? ": OK" : ": ERROR");
                 blocklog(command , log_info);
-			}
+            }
 
-			source = n.child("interfaces");
+            source = n.child("interfaces");
             if(!source)
-			{
+            {
                 blocklog("missing parameter 'interfaces', assuming enable='1'", log_info);
-				val = 1;
+                val = 1;
             }
             else
-				val = source.attribute("enable").as_uint();
-			if(val)
-			{
-				blocklog("Enabling input interfaces", log_info);
-				command = "ibufctl -Ae1";
-				val = system(command.c_str());
-			}
+                val = source.attribute("enable").as_uint();
+            if(val)
+            {
+                blocklog("Enabling input interfaces", log_info);
+                command = "ibufctl -Ae1";
+                val = system(command.c_str());
+            }
 
-			rx_mask = 0xFF;
+            rx_mask = 0xFF;
             source = n.child("channels");
             if(!source) {
-				blocklog("missing parameter channels, usign default value!", log_info);
+                blocklog("missing parameter channels, usign default value!", log_info);
             }
             else
                 rx_mask = source.attribute("rx_mask").as_uint();
@@ -174,16 +174,16 @@ namespace blockmon
             while(cnt-- > 0)
             {
                 if((packet = szedata_read_next(sze, &packet_len)) != NULL) {
-					m_pktcnt++;
+                    m_pktcnt++;
 
                     /*segsize = */
-					szedata_decode_packet(packet, &data, &hw_data, &data_len, &hw_data_len);
-					handle_packet(packet, data, hw_data, data_len, hw_data_len);
+                    szedata_decode_packet(packet, &data, &hw_data, &data_len, &hw_data_len);
+                    handle_packet(packet, data, hw_data, data_len, hw_data_len);
                 }
             }
         }
 
-		void handle_packet(unsigned char * packet, unsigned char * data, unsigned char* hw_data, int data_len, int hw_data_len) ;
+        void handle_packet(unsigned char * packet, unsigned char * data, unsigned char* hw_data, int data_len, int hw_data_len) ;
 
     };
 }

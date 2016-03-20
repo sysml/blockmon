@@ -40,41 +40,41 @@
 
 namespace blockmon
 {
-	void UHPacket::parse_uh(const const_buffer<uint8_t> & uh_buf)
-	{
+    void UHPacket::parse_uh(const const_buffer<uint8_t> & uh_buf)
+    {
 
-		const uint8_t  * buf = uh_buf.addr();
+        const uint8_t  * buf = uh_buf.addr();
 
-		m_key.proto = *(buf + 0x0A);
-		m_key.src_port = ntohs(*((uint16_t*)(buf + 0x1C)));
-		m_key.dst_port = ntohs(*((uint16_t*)(buf + 0x1E)));
-		m_key.src_ip4  = ntohl(*((uint32_t*)(buf + 0x2C)));
-		m_key.dst_ip4  = ntohl(*((uint32_t*)(buf + 0x3C)));
+        m_key.proto = *(buf + 0x0A);
+        m_key.src_port = ntohs(*((uint16_t*)(buf + 0x1C)));
+        m_key.dst_port = ntohs(*((uint16_t*)(buf + 0x1E)));
+        m_key.src_ip4  = ntohl(*((uint32_t*)(buf + 0x2C)));
+        m_key.dst_ip4  = ntohl(*((uint32_t*)(buf + 0x3C)));
 
-		//m_tstamp = ntohl(*((uint32_t*)(buf + 0x10)));	// FIXME: retype
-		m_length = ntohs(*((uint16_t*)(buf + 0x0B)));
-		m_caplen = 0;
+        //m_tstamp = ntohl(*((uint32_t*)(buf + 0x10)));    // FIXME: retype
+        m_length = ntohs(*((uint16_t*)(buf + 0x0B)));
+        m_caplen = 0;
 
-		switch(*(buf + 0x08))
-		{
-		case 0x40:
-			m_pkttype = Packet::kPktTypeIP4;
-			break;
-		case 0x60:
-			m_pkttype = Packet::kPktTypeIP6;
-			break;
-		default:
-			m_pkttype = 0;
-			break;
-		}
-		m_iptos = *(buf + 0x1A);
-		m_ipttl = *(buf + 0x1B);
+        switch(*(buf + 0x08))
+        {
+        case 0x40:
+            m_pkttype = Packet::kPktTypeIP4;
+            break;
+        case 0x60:
+            m_pkttype = Packet::kPktTypeIP6;
+            break;
+        default:
+            m_pkttype = 0;
+            break;
+        }
+        m_iptos = *(buf + 0x1A);
+        m_ipttl = *(buf + 0x1B);
 
-		m_machdr_parsed = true;
-		m_iphdr_parsed = true;
-		m_ports_parsed = true;
-		m_l4hdr_parsed = true;
-	}
+        m_machdr_parsed = true;
+        m_iphdr_parsed = true;
+        m_ports_parsed = true;
+        m_l4hdr_parsed = true;
+    }
 }
 
 #endif

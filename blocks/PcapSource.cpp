@@ -61,7 +61,7 @@
  *      }
  *      element bpf_filter {text}?
  *      element advance_time_at_eof {
- *     	  attribute us {in}
+ *           attribute us {in}
  *      }
  *    }
  *   </paramsschema>
@@ -71,7 +71,7 @@
  *        <source type="live" name="eth0" snaplen="1514" />
  *        or
  *        <source type="trace" name="trace.pcap" />
- *		  <advance_time_at_eof us="360000000"/>
+ *          <advance_time_at_eof us="360000000"/>
  *      <bpf_filter expression=" " />
  *     </params>
  *   </paramsexample>
@@ -140,9 +140,9 @@ namespace blockmon
         std::shared_ptr<MemoryBatch> m_mem_block;
 #endif
         PacketTimeWriter m_writer;
-        long	m_pkt_cnt;
+        long    m_pkt_cnt;
         ustime_t m_advance_time_eof;
-        bool 	m_from_file;
+        bool     m_from_file;
 
         PcapSource(const PcapSource &) = delete;
         PcapSource& operator=(const PcapSource &) = delete;
@@ -168,8 +168,8 @@ namespace blockmon
 #endif
         , m_writer()
         , m_pkt_cnt(0)
-    	, m_advance_time_eof(0)
-    	, m_from_file(false)
+        , m_advance_time_eof(0)
+        , m_from_file(false)
         {
             if (invocation != invocation_type::Async) {
                 blocklog("PcapSource must be Async, ignoring configuration", log_warning);
@@ -203,7 +203,7 @@ namespace blockmon
             std::string name=source.attribute("name").value();
             int snaplen=source.attribute("snaplen").as_int();
             if(snaplen==0)
-            	snaplen=BUFSIZ;
+                snaplen=BUFSIZ;
 
             if((type.length()==0)||(name.length()==0))
                 throw std::runtime_error("pcapsource: missing attribute");
@@ -231,9 +231,9 @@ namespace blockmon
                 }
                 pugi::xml_node advance_time=n.child("advance_time_at_eof");
                 if(advance_time!=NULL){
-                	auto usAttr=advance_time.attribute("us");
-                	if(usAttr!=NULL)
-                		m_advance_time_eof=usAttr.as_uint();
+                    auto usAttr=advance_time.attribute("us");
+                    if(usAttr!=NULL)
+                        m_advance_time_eof=usAttr.as_uint();
             }
 
                 m_from_file=true;
@@ -322,13 +322,13 @@ namespace blockmon
                 //timeout expired
             } else if(ret_code == -2) {
                 if (!end_displayed)
-				{
-					//blocklog(std::string("trace at EOF"), log_warning);
-					if(m_from_file && blockmon_clock_source() == PACKET && m_advance_time_eof>0 ){
-						blocklog(std::string("advancing PACKET time ..."), log_warning);
-						m_writer.advance_packet_time(get_BM_time() + m_advance_time_eof);
-						m_advance_time_eof=0;
-					}
+                {
+                    //blocklog(std::string("trace at EOF"), log_warning);
+                    if(m_from_file && blockmon_clock_source() == PACKET && m_advance_time_eof>0 ){
+                        blocklog(std::string("advancing PACKET time ..."), log_warning);
+                        m_writer.advance_packet_time(get_BM_time() + m_advance_time_eof);
+                        m_advance_time_eof=0;
+                    }
                 }
             }
         }

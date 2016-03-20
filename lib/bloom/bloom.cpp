@@ -46,11 +46,11 @@ khash(_nhash, _shash, _norep) {
 
     assert((shash>=1)&&(shash<=31));
 
-	// parameters settings
+    // parameters settings
     mmax     = 0x00000001 << shash;
     mmax_arr = (shash<3) ? 1 : 0x00000001 << (shash-3);
 
-	// bit array allocation
+    // bit array allocation
     m = new unsigned char[mmax_arr];
     clear();
     }
@@ -75,23 +75,23 @@ void bloomfilter::clear() {
 
 //
 // MAIN FUNCTIONS:
-//	- INSERT
-//	- CHECK
+//    - INSERT
+//    - CHECK
 //
 bool bloomfilter::insert(unsigned char *in, int len) {
     compute(in,len);
     int extra_ones = 0;
     for(int i=1; i<=nhash; i++) {
-	unsigned b = H(i) >> 3;
-	assert(b<mmax_arr);
-	unsigned char t = (unsigned char)(H(i) & bitmask(3));
-	assert(t<8);
-	unsigned char bit = 0x01 << t;
-	if ((m[b] & bit) == 0) {
-	    extra_ones++;
-	    m[b] = m[b] | bit;
-	    }
-	}
+    unsigned b = H(i) >> 3;
+    assert(b<mmax_arr);
+    unsigned char t = (unsigned char)(H(i) & bitmask(3));
+    assert(t<8);
+    unsigned char bit = 0x01 << t;
+    if ((m[b] & bit) == 0) {
+        extra_ones++;
+        m[b] = m[b] | bit;
+        }
+    }
     if (extra_ones==0) return 0;
     num_zeros-=extra_ones;
     return 1;
@@ -100,13 +100,13 @@ bool bloomfilter::insert(unsigned char *in, int len) {
 bool bloomfilter::check(unsigned char *in, int len) {
     compute(in,len);
     for(int i=1; i<=nhash; i++) {
-	unsigned b = H(i) >> 3;
-	assert(b<mmax_arr);
-	unsigned char t = (unsigned char)(H(i) & bitmask(3));
-	assert(t<8);
-	unsigned char bit = 0x01 << t;
-	if ((m[b] & bit) == 0) return 0;
-	}
+    unsigned b = H(i) >> 3;
+    assert(b<mmax_arr);
+    unsigned char t = (unsigned char)(H(i) & bitmask(3));
+    assert(t<8);
+    unsigned char bit = 0x01 << t;
+    if ((m[b] & bit) == 0) return 0;
+    }
     return 1;
     }
 
@@ -114,15 +114,15 @@ bool bloomfilter::check(unsigned char *in, int len) {
 void bloomfilter::print(FILE* fp) {
     fprintf(fp,"BF status: %d zeros;",num_zeros);
     for(unsigned i=0; i<mmax_arr; i++) {
-	if (i%8 == 0) fprintf(fp,"\n");
-	bitprint(m[i], fp);
-	}
+    if (i%8 == 0) fprintf(fp,"\n");
+    bitprint(m[i], fp);
+    }
     fprintf(fp,"\n");
     }
 
 
 /***************************************************************************
-		TESTING FUNCTION - FEEL FREE TO DELETE ALL THIS
+        TESTING FUNCTION - FEEL FREE TO DELETE ALL THIS
  ***************************************************************************/
 
 void test_bloomfilter2() {

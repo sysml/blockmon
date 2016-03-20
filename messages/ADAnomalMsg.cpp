@@ -39,16 +39,16 @@
 namespace blockmon {
 
         void ADAnomalMsg::set_timestamp(uint64_t timestamp) {
-		m_timestamp = timestamp;
-	}
+        m_timestamp = timestamp;
+    }
 
         void ADAnomalMsg::set_timescale(uint16_t timescale) {
-		m_timescale = timescale;
-	}
+        m_timescale = timescale;
+    }
 
         void ADAnomalMsg::set_featureID(string featureID) {
-		m_featureID = featureID;
-	}
+        m_featureID = featureID;
+    }
 
         void ADAnomalMsg::set_CCDF_size(uint16_t CCDF_size){
                 m_CCDF_size = CCDF_size;
@@ -85,25 +85,25 @@ namespace blockmon {
             return m_CCDF_size;
         }
 
-	const vector<double>* ADAnomalMsg::get_CCDF() const {
-		return &m_CCDF;
-	}
+    const vector<double>* ADAnomalMsg::get_CCDF() const {
+        return &m_CCDF;
+    }
 
         uint16_t ADAnomalMsg::get_RefSet_size() const{
             return m_RefSet_size;
         }
 
-	const window_array* ADAnomalMsg::get_RefSet() const {
-		return &m_RefSet;
-	}
+    const window_array* ADAnomalMsg::get_RefSet() const {
+        return &m_RefSet;
+    }
 
         void ADAnomalMsg::clear_CCDF() {
-		m_CCDF.clear();
-	}
+        m_CCDF.clear();
+    }
 
         void ADAnomalMsg::clear_RefSet() {
-		m_RefSet.clear();
-	}
+        m_RefSet.clear();
+    }
 
 
         vector<double> PDF_to_CCDF(vector<double> PDF)
@@ -125,15 +125,15 @@ namespace blockmon {
         std::string ADAnomalMsg::to_string() const
         {
                 stringstream ss;
-		ss << "CCDF timestamp: " << m_timestamp
+        ss << "CCDF timestamp: " << m_timestamp
                    << " ; Timescale: " << m_timescale
                    << " ; Feature ID: " << m_featureID
                    << " ; CCDF_size: " << m_CCDF_size
                    << "\nCCDF: ";
-		vector<double>::const_iterator it;
+        vector<double>::const_iterator it;
                 for (it = m_CCDF.begin(); it != m_CCDF.end(); it++) {
-			ss << (*it) << " " ;
-		}
+            ss << (*it) << " " ;
+        }
                 ss << "\nReference Set size: " << m_RefSet_size
                    << "\nReferenceSet CCDFs:\n";
                 window_element w_el;
@@ -148,7 +148,7 @@ namespace blockmon {
                         ss << RS_CCDF[i] << " ";
                     }
                     ss << "\n" ;
-		}
+        }
                 ss << "\n" ;
                 return ss.str();
         }
@@ -156,15 +156,15 @@ namespace blockmon {
         std::string ADAnomalMsg::to_string_file() const
         {
                 stringstream sss;
-		sss << m_timestamp
+        sss << m_timestamp
                    << "\t" << m_timescale
                    << "\t" << m_featureID
                    << "\t" << m_CCDF_size
                    << "\t";
-		vector<double>::const_iterator it;
+        vector<double>::const_iterator it;
                 for (it = m_CCDF.begin(); it != m_CCDF.end(); it++) {
-			sss << (*it) << ";" ;
-		}
+            sss << (*it) << ";" ;
+        }
                 sss << "\t" << m_RefSet_size
                    << "\t";
                 window_element w_el;
@@ -179,7 +179,7 @@ namespace blockmon {
                         sss << RS_CCDF[i] << ";";
                     }
                     sss << "[+]" ;
-		}
+        }
                 sss << "\n" ;
                 return sss.str();
         }

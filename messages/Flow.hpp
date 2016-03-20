@@ -80,20 +80,20 @@ namespace blockmon
         {}
 
       Flow(const FlowKey& key,
-	   ustime_t stime,
-	   ustime_t etime,
-	   uint64_t bytes,
-	   uint64_t packets,
-	   std::list<std::shared_ptr<const Packet> >  packet_list,
-	   bool list_sorted):
+       ustime_t stime,
+       ustime_t etime,
+       uint64_t bytes,
+       uint64_t packets,
+       std::list<std::shared_ptr<const Packet> >  packet_list,
+       bool list_sorted):
         Msg(MSG_ID(Flow)),
         m_stime(stime),
         m_etime(etime),
         m_key(key),
         m_bytes(bytes),
         m_packets(packets),
-	m_flow_packets(packet_list),
-	m_list_sorted(list_sorted)
+    m_flow_packets(packet_list),
+    m_list_sorted(list_sorted)
         {}
 
         const FlowKey& key() const {
@@ -159,8 +159,8 @@ namespace blockmon
             new_flow->m_stime = m_stime;
             new_flow->m_bytes = m_bytes;
             new_flow->m_packets = m_packets;
-	        new_flow->m_flow_packets = m_flow_packets;
-	        new_flow->m_list_sorted = m_list_sorted;
+            new_flow->m_flow_packets = m_flow_packets;
+            new_flow->m_list_sorted = m_list_sorted;
             return std::shared_ptr<Msg>(new_flow);
         }
 
@@ -170,8 +170,8 @@ namespace blockmon
             m_stime = 0;
             m_bytes = 0;
             m_packets = 0;
-	    m_flow_packets.clear();
-	    m_list_sorted = false;
+        m_flow_packets.clear();
+        m_list_sorted = false;
         }
 
       /** Gets the payload from this flow.

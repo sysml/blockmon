@@ -40,16 +40,16 @@ using namespace std;
 
 
 /************************************************************************
-	CONSTRUCTOR, DESTRUCTOR, ELEMENTARY FUNCTIONS
+    CONSTRUCTOR, DESTRUCTOR, ELEMENTARY FUNCTIONS
  ************************************************************************/
 TEWMA::TEWMA(int _nhash, int _shash, double _beta, double _w)
 : khash(_nhash, _shash, 1) {
-		c = new double[maxdigest()];
-		t = new time_t[maxdigest()];
-		assert(_w>0);
-		W=_w;
-		set_beta(_beta);
-		clear(0);
+        c = new double[maxdigest()];
+        t = new time_t[maxdigest()];
+        assert(_w>0);
+        W=_w;
+        set_beta(_beta);
+        clear(0);
     }
 
 TEWMA::~TEWMA() {
@@ -58,10 +58,10 @@ TEWMA::~TEWMA() {
     }
 
 void TEWMA::clear(time_t timestamp_start) {
-	memset(c, 0, maxdigest()*sizeof(double));
-	for(uint i=0; i<maxdigest(); i++) {
-    	t[i]=timestamp_start;
-	}
+    memset(c, 0, maxdigest()*sizeof(double));
+    for(uint i=0; i<maxdigest(); i++) {
+        t[i]=timestamp_start;
+    }
 }
 
 void TEWMA::set_beta(double b) {
@@ -72,54 +72,54 @@ void TEWMA::set_beta(double b) {
 
 
 /************************************************************************
-	CORE FUNCTIONS
+    CORE FUNCTIONS
  ************************************************************************/
 
 double TEWMA::add(unsigned char *in, int len, double quantity, time_t timestamp) {
 
-	// first compute the hash functions via khash
+    // first compute the hash functions via khash
     compute(in,len);
 
-	// computes the new counter decayed value
+    // computes the new counter decayed value
     double minctr=c[H(1)];
     double deltat;
     for(int i=1; i<=nhash; i++) {
-	deltat = difftime(timestamp, t[H(i)])/W;
-	t[H(i)] = timestamp;
-	assert(deltat>=0);
-	c[H(i)] *= pow(beta, deltat);
-	if (c[H(i)]<minctr) minctr=c[H(i)];
-	}
+    deltat = difftime(timestamp, t[H(i)])/W;
+    t[H(i)] = timestamp;
+    assert(deltat>=0);
+    c[H(i)] *= pow(beta, deltat);
+    if (c[H(i)]<minctr) minctr=c[H(i)];
+    }
 
-	// now compute the new value including the insertion and update
-	// the filter by waterfilling the new counter array bins
+    // now compute the new value including the insertion and update
+    // the filter by waterfilling the new counter array bins
     double newctr=minctr+quantity*logbeta;
     assert(newctr<=1.0e99);
     for(int i=1; i<=nhash; i++) if (c[H(i)]<newctr) c[H(i)]=newctr;
 
-	// finally return value.
+    // finally return value.
     return newctr;
     }
 
 
 double TEWMA::check(unsigned char *in, int len, time_t timestamp) {
 
-	// Same steps as in add, but without insertion
-	// first compute the hash functions via khash
+    // Same steps as in add, but without insertion
+    // first compute the hash functions via khash
     compute(in,len);
 
-	// now computes the old accumulated value and the new one before this insertion
+    // now computes the old accumulated value and the new one before this insertion
     double minctr=c[H(1)];
     double deltat;
     for(int i=1; i<=nhash; i++) {
-	deltat = difftime(timestamp, t[H(i)])/W;
-	t[H(i)] = timestamp;
-	assert(deltat>=0);
-	c[H(i)] *= pow(beta, deltat);
-	if (c[H(i)]<minctr) minctr=c[H(i)];
-	}
+    deltat = difftime(timestamp, t[H(i)])/W;
+    t[H(i)] = timestamp;
+    assert(deltat>=0);
+    c[H(i)] *= pow(beta, deltat);
+    if (c[H(i)]<minctr) minctr=c[H(i)];
+    }
 
-	// finally return value.
+    // finally return value.
     return minctr;
     }
 

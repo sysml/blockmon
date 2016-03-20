@@ -56,7 +56,7 @@
 
 
 #ifndef KHASH_HPP
-#define	KHASH_HPP
+#define    KHASH_HPP
 
 #include "hash.hpp"
 #include <cassert>
@@ -83,7 +83,7 @@ class KHASH {
          * if the length of the message digest of _hash is greater than _nhash*_shash
          * the message digest itself is rehashed
          */
-	KHASH(HASH* _hash, unsigned int _nhash, unsigned int _shash, bool _norep=false);
+    KHASH(HASH* _hash, unsigned int _nhash, unsigned int _shash, bool _norep=false);
 
         /*
          *copy constructor
@@ -98,7 +98,7 @@ class KHASH {
         /*
          * destructor
          */
-	~KHASH();
+    ~KHASH();
 
         /*
          *this is the main function: it computes the hash function and divide
@@ -106,18 +106,18 @@ class KHASH {
          * @param in pointer to the key to be hashed
          * @param len key length
          */
-	void compute(unsigned char *in, int len);
+    void compute(unsigned char *in, int len);
 
         /*
          *this method provide access to the k [0-_nhash) sub-digest
          * @param k is the sub-digest index
          * @return  the k-th sub-digest
          */
-	unsigned int H(unsigned int k) const
-	{
-	    assert((k<nhash));
-	    return res[k];
-	}
+    unsigned int H(unsigned int k) const
+    {
+        assert((k<nhash));
+        return res[k];
+    }
 
         /*
          * this method increase by 1 the number of hash computed
@@ -152,19 +152,19 @@ class KHASH {
 
     private:
 
-	HASH *hash;			//used hash function
+    HASH *hash;            //used hash function
 
         unsigned int hashdiglen;
 
-	unsigned int nhash;		// number of hash functions
+    unsigned int nhash;        // number of hash functions
 
-	unsigned int shash;		// size (bit) of each hash digest
+    unsigned int shash;        // size (bit) of each hash digest
 
-	bool norep;			// flag: if true, repeat digest NOT possible
+    bool norep;            // flag: if true, repeat digest NOT possible
 
-        unsigned int* res;		// output vector of digests [nhash]
+        unsigned int* res;        // output vector of digests [nhash]
 
-	unsigned int hashtodo;
+    unsigned int hashtodo;
 
         unsigned char *msgdig;          //hash message digest
 
@@ -176,5 +176,5 @@ class KHASH {
 
 }
 
-#endif	/* KHASH_HPP */
+#endif    /* KHASH_HPP */
 

@@ -42,11 +42,11 @@ using namespace std;
 //
 BloomPair::BloomPair(int _nhash, int _shash) {
 
-	// contruct the two bloom filters
+    // contruct the two bloom filters
     B_learning = new bloomfilter(_nhash, _shash, 1);
     B_detecting = new bloomfilter(_nhash, _shash, 1);
 
-	// and set the basic parameters and initial threshold
+    // and set the basic parameters and initial threshold
     m = B_learning->maxdigest();
     assert(m==B_learning->get_nzero());
     threshold = double(m)/sqrt(2.0);
@@ -66,24 +66,24 @@ void BloomPair::clear() {
 
 
 bool BloomPair::add(unsigned char *in, int len) {
-	// update filters
+    // update filters
     bool res_l = B_learning->insert(in, len);
     bool res_d = B_detecting->insert(in, len);
     assert((res_d==false)||((res_d==true)&&(res_l==true)));
     double dd = double(B_detecting->get_nzero());
     double dl = double(B_learning->get_nzero());
 
-	// eventually swap
+    // eventually swap
     if (dl<threshold) {
-	bloomfilter *b;
+    bloomfilter *b;
         b = B_detecting;
         B_detecting = B_learning;
         B_learning = b;
-	B_learning->clear();
-	threshold = threshold * sqrt(double(m)/2/dd);
-	}
+    B_learning->clear();
+    threshold = threshold * sqrt(double(m)/2/dd);
+    }
 
-	// debug / plot print
+    // debug / plot print
 /*
     fprintf(fp,"%.0f ", dl);
     fprintf(fp,"%.0f ", dd);

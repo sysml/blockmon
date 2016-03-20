@@ -144,13 +144,13 @@ namespace blockmon
         }
 
         virtual ~PFQSource(){
-        	auto stats=m_pfq.stats();
-        	std::cout << "PFQSource '"<<this->m_name <<"' statistics: " <<std::endl;
-        	std::cout << "\tReceived: "<<stats.recv << std::endl;
-        	std::cout << "\tDropped: "<<stats.drop << std::endl;
-        	std::cout << "\tLost: "<<stats.lost << std::endl;
+            auto stats=m_pfq.stats();
+            std::cout << "PFQSource '"<<this->m_name <<"' statistics: " <<std::endl;
+            std::cout << "\tReceived: "<<stats.recv << std::endl;
+            std::cout << "\tDropped: "<<stats.drop << std::endl;
+            std::cout << "\tLost: "<<stats.lost << std::endl;
 
-        	m_pfq.close();
+            m_pfq.close();
         }
 
         /**

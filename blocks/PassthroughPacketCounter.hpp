@@ -69,15 +69,15 @@ namespace blockmon
         : Block(name, invocation),
         m_pkt_cnt(0),
         m_byte_cnt(0),
-	    m_pkt_rate(0),
-	    m_byte_rate(0),
-	    m_reset(0),
+        m_pkt_rate(0),
+        m_byte_rate(0),
+        m_reset(0),
         m_pkt_cnt_prev(0),
         m_byte_cnt_prev(0),
         m_last_t(std::chrono::system_clock::now()),
         m_timer(true),
-	  m_ingate_id(register_input_gate("in_pkt")),
-	  m_outgate_id(register_output_gate("out_pkt"))
+      m_ingate_id(register_input_gate("in_pkt")),
+      m_outgate_id(register_output_gate("out_pkt"))
         {
             register_variable("byterate",make_rd_var(no_mutex_t(), m_byte_rate));
             register_variable("pktrate",make_rd_var(no_mutex_t(), m_pkt_rate));
@@ -128,8 +128,8 @@ namespace blockmon
             {
                 m_pkt_cnt = 0;
                 m_byte_cnt = 0;
-		        m_byte_rate = 0;
-		        m_pkt_rate = 0;
+                m_byte_rate = 0;
+                m_pkt_rate = 0;
                 m_reset = 0;
             }
             const Packet* packet_ptr = static_cast<const Packet*>(m.get());
@@ -138,7 +138,7 @@ namespace blockmon
 
             m_byte_cnt += packet_ptr->length();
 
-	    send_out_through(std::move(m), m_outgate_id);
+        send_out_through(std::move(m), m_outgate_id);
         }
 
         void _handle_timer(std::shared_ptr<Timer> &&t) ;

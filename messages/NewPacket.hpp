@@ -93,11 +93,11 @@ namespace blockmon {
         {}
 
         /** Forbids copy and move constructors.
-	    */
+        */
         NewPacket(NewPacket const &other) = delete;
 
         /** Forbids copy and move assignment.
-	    */
+        */
         NewPacket& operator=(NewPacket const &other) = delete;
 
     public:
@@ -254,10 +254,10 @@ namespace blockmon {
                     memcpy(get<net::ipv4>(slice), net::get_header<const net::ipv4>(parser), this_len);
                 }
                 else
-                	len = 0;
+                    len = 0;
             }
             else {
-            	get<net::ipv4>(slice) = NULL;
+                get<net::ipv4>(slice) = NULL;
             }
 
             if (len && net::get_header<const net::tcp>(parser))
@@ -268,10 +268,10 @@ namespace blockmon {
                     memcpy(get<net::tcp>(slice), net::get_header<const net::tcp>(parser), this_len);
                 }
                 else
-                	len = 0;
+                    len = 0;
             }
             else {
-            	get<net::tcp>(slice) = NULL;
+                get<net::tcp>(slice) = NULL;
 
                 if (len && net::get_header<const net::udp>(parser))
                 {
@@ -283,7 +283,7 @@ namespace blockmon {
                     else len = 0;
                 }
                 else  {
-                	get<net::udp>(slice) = NULL;
+                    get<net::udp>(slice) = NULL;
 
                     if (len && net::get_header<const net::icmp>(parser))
                     {
@@ -380,14 +380,14 @@ namespace blockmon {
             auto tcp = net::get_header<net::tcp>(slice_);
             auto icmp = net::get_header<net::icmp>(slice_);
             if(eth->proto()==kPktTypeIP4){
-            	if(is_tcp())
-            		return ip->tot_len_() - ip->size_of() - tcp->size_of();
+                if(is_tcp())
+                    return ip->tot_len_() - ip->size_of() - tcp->size_of();
 
-            	if(is_udp())
-            		return ip->tot_len_() - ip->size_of() - udp->size_of();
+                if(is_udp())
+                    return ip->tot_len_() - ip->size_of() - udp->size_of();
 
-            	if(is_icmp())
-            		return ip->tot_len_() - ip->size_of() - icmp->size_of();
+                if(is_icmp())
+                    return ip->tot_len_() - ip->size_of() - icmp->size_of();
 
             }
 
@@ -617,14 +617,14 @@ namespace blockmon {
         bool is_tcp() const
         {
             if(l3_protocol()!=kPktTypeIP4)
-            	return false;
+                return false;
             return net::get_header<net::ipv4>(slice_)->protocol_() == IPPROTO_TCP;
         }
 
         bool is_udp() const
         {
-        	if(l3_protocol()!=kPktTypeIP4)
-        		return false;
+            if(l3_protocol()!=kPktTypeIP4)
+                return false;
             return net::get_header<net::ipv4>(slice_)->protocol_() == IPPROTO_UDP;
         }
 
@@ -642,16 +642,16 @@ namespace blockmon {
             if (is_udp())
                 return net::get_header<net::udp>(slice_)->source_();
             if (is_tcp())
-            	return net::get_header<net::tcp>(slice_)->source_();
+                return net::get_header<net::tcp>(slice_)->source_();
                     throw std::runtime_error("NewPacket::src_port");
         }
 
         uint16_t dst_port() const
         {
-        	if (is_udp())
-				return net::get_header<net::udp>(slice_)->dest_();
-			if (is_tcp())
-				return net::get_header<net::tcp>(slice_)->dest_();
+            if (is_udp())
+                return net::get_header<net::udp>(slice_)->dest_();
+            if (is_tcp())
+                return net::get_header<net::tcp>(slice_)->dest_();
                     throw std::runtime_error("NewPacket::dst_port");
         }
 

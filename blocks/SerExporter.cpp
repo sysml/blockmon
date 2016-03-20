@@ -83,23 +83,23 @@ namespace blockmon {
 
     class SerExporter : public Block {
 
-	int m_in_gate_id;
-	Serializer ser;
-	std::string host;
-	int port;
-	int sock;
-	struct sockaddr_in remote;
+    int m_in_gate_id;
+    Serializer ser;
+    std::string host;
+    int port;
+    int sock;
+    struct sockaddr_in remote;
 
     public:
 
-	SerExporter(const std::string& name, invocation_type invocation):
-	    Block(name, invocation),
-	    m_in_gate_id( register_input_gate("in_msg") ),
-	    sock(-1)
+    SerExporter(const std::string& name, invocation_type invocation):
+        Block(name, invocation),
+        m_in_gate_id( register_input_gate("in_msg") ),
+        sock(-1)
         {}
 
-	//FIXME destructor , should it be something specific?
-	~SerExporter() {}
+    //FIXME destructor , should it be something specific?
+    ~SerExporter() {}
 
 /**
  * Configure the block given an XML element containing configuration.
@@ -110,32 +110,32 @@ namespace blockmon {
  *
  * @param xmlnode the <params> XML element containing block parameters
  */
-	virtual void _configure(const xml_node& xmlnode) {
-	    xml_node outspec;
+    virtual void _configure(const xml_node& xmlnode) {
+        xml_node outspec;
 
-	    // Don't support reconfiguration yet
-	    /*
-	    if (m_exporter) {
-		throw new std::logic_error("SerExporter block not reconfigurable");
-	    }
-	    */
+        // Don't support reconfiguration yet
+        /*
+        if (m_exporter) {
+        throw new std::logic_error("SerExporter block not reconfigurable");
+        }
+        */
 
-	    if ((outspec = xmlnode.child("export"))) {
-		// Parse export (transport, host, port)
-		std::string cfghost = outspec.attribute("host").value();
-		std::string cfgport = outspec.attribute("port").value();
-		if (cfghost.empty() || cfgport.empty()) {
-		    throw std::runtime_error("Export specification incomplete");
-		}
-		host = cfghost;
-		port = atoi(cfgport.c_str());
-		if(port < 0 || port > 65535) {
-		    throw std::runtime_error("Invalid port");
-		}
-	    } else {
-		throw std::runtime_error("No export or file specification");
-	    }
-	    //register_msg_templates();
+        if ((outspec = xmlnode.child("export"))) {
+        // Parse export (transport, host, port)
+        std::string cfghost = outspec.attribute("host").value();
+        std::string cfgport = outspec.attribute("port").value();
+        if (cfghost.empty() || cfgport.empty()) {
+            throw std::runtime_error("Export specification incomplete");
+        }
+        host = cfghost;
+        port = atoi(cfgport.c_str());
+        if(port < 0 || port > 65535) {
+            throw std::runtime_error("Invalid port");
+        }
+        } else {
+        throw std::runtime_error("No export or file specification");
+        }
+        //register_msg_templates();
 
             // if not already connected try to
             if(sock == -1) {
@@ -161,7 +161,7 @@ namespace blockmon {
                 }
             }
 
-	}
+    }
 
 /**
  * Receive a BlockMon message
@@ -171,10 +171,10 @@ namespace blockmon {
  *                received, as returned by register_input_gate()
  *
  */
-	virtual void _receive_msg(std::shared_ptr<const Msg>&& m, int gate_id) {
+    virtual void _receive_msg(std::shared_ptr<const Msg>&& m, int gate_id) {
 
-	    // if not already connected try to
-	    if(sock == -1) {
+        // if not already connected try to
+        if(sock == -1) {
                 struct hostent* tmpconversion = gethostbyname(host.c_str());
                 if( !tmpconversion ) {
                     std::cerr << "Cannot resolve destination: " << host << std::endl;
@@ -193,13 +193,13 @@ namespace blockmon {
                     close(sock);
                     throw new std::runtime_error("Error connecting to remote site: " + std::string(strerror(errno)));
                 }
-	    }
+        }
 
-	    m->serialize(&ser);
-	    char* buffer;
-	    int len = ser.finalize(&buffer);
-	    send(sock, buffer, len, 0);
-	}
+        m->serialize(&ser);
+        char* buffer;
+        int len = ser.finalize(&buffer);
+        send(sock, buffer, len, 0);
+    }
     };
     REGISTER_BLOCK(SerExporter,"SerExporter")
 }

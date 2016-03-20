@@ -37,29 +37,29 @@
 
 namespace blockmon {
 
-	void HistoMsg::set_timestamp(uint64_t timestamp) {
-		m_timestamp = timestamp;
-	}
+    void HistoMsg::set_timestamp(uint64_t timestamp) {
+        m_timestamp = timestamp;
+    }
 
         void HistoMsg::set_featureID(string featureID) {
-		m_featureID = featureID;
-	}
+        m_featureID = featureID;
+    }
 
         void HistoMsg::set_nr_unique_users(uint64_t uniqueUsers){
                 m_nr_unique_users = uniqueUsers;
         }
 
         void HistoMsg::set_histogram(const vector<uint32_t> histogram) {
-		m_histogram = vector<uint32_t>(histogram);
-	}
+        m_histogram = vector<uint32_t>(histogram);
+    }
 
         void HistoMsg::set_total_value(uint64_t totValue){
                 m_total_value = totValue;
         }
 
         void HistoMsg::add_element(uint index) {
-		m_histogram.insert(m_histogram.begin()+index, 1);
-	}
+        m_histogram.insert(m_histogram.begin()+index, 1);
+    }
 
 
 
@@ -75,29 +75,29 @@ namespace blockmon {
             return m_nr_unique_users;
         }
 
-	const vector<uint32_t>* HistoMsg::get_histogram() const {
-		return &m_histogram;
-	}
+    const vector<uint32_t>* HistoMsg::get_histogram() const {
+        return &m_histogram;
+    }
 
         uint64_t HistoMsg::get_total_value() const{
             return m_total_value;
         }
 
         void HistoMsg::clear_histogram() {
-		m_histogram.clear();
-	}
+        m_histogram.clear();
+    }
 
 
     std::string HistoMsg::to_string() const
     {
         stringstream ss;
-		ss << "Histo timestamp: " << m_timestamp << " ; Feature ID: " << m_featureID
+        ss << "Histo timestamp: " << m_timestamp << " ; Feature ID: " << m_featureID
                    << " ; Number of unique users: " << m_nr_unique_users
                    << " ; Total value: " << m_total_value << "\nHistogram: ";
-		vector<uint32_t>::const_iterator it;
+        vector<uint32_t>::const_iterator it;
                 for (it = m_histogram.begin(); it != m_histogram.end(); it++) {
-			ss << (*it) << " " ;
-		}
+            ss << (*it) << " " ;
+        }
                 ss << "\n";
         return ss.str();
     }
@@ -105,13 +105,13 @@ namespace blockmon {
     std::string HistoMsg::to_string_file() const
     {
         stringstream ss;
-		ss << m_timestamp << "\t" << m_featureID
+        ss << m_timestamp << "\t" << m_featureID
                    << "\t" << m_nr_unique_users
                    << "\t" << m_total_value << "\t";
-		vector<uint32_t>::const_iterator it;
+        vector<uint32_t>::const_iterator it;
                 for (it = m_histogram.begin(); it != m_histogram.end(); it++) {
-			ss << (*it) << ";" ;
-		}
+            ss << (*it) << ";" ;
+        }
                 ss << "\n";
         return ss.str();
     }
