@@ -547,4 +547,3 @@ namespace blockmon
     REGISTER_BLOCK(HistoCalc,"HistoCalc");
 
 }
-

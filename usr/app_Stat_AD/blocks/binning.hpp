@@ -49,4 +49,3 @@ vector<uint64_t> unique_floor(std::vector<double> array);
 
 
 #endif    /* BINNING_HPP */
-

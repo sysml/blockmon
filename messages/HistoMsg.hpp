@@ -223,6 +223,3 @@ namespace blockmon
 
 
 #endif //_HISTO_MSG_H_PP_
-
-
-

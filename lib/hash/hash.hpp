@@ -112,4 +112,3 @@ private:
 
 }
 #endif    /* HASH_HPP */
-

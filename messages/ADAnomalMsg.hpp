@@ -273,5 +273,3 @@ namespace blockmon
 
 
 #endif //__AD_ANOMAL_MSG_H__
-
-

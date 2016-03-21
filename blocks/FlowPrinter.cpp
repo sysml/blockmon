@@ -162,4 +162,3 @@ namespace blockmon
     REGISTER_BLOCK(FlowPrinter,"FlowPrinter");
 #endif /* _BLOCKMON_DOXYGEN_SKIP_ */
 }
-

@@ -352,6 +352,3 @@ namespace blockmon
 
 
 #endif //__AD_RESULT_MSG_H__
-
-
-

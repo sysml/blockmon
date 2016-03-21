@@ -183,4 +183,3 @@ void Composition::install(const pugi::xml_node& config)
 
     initialize();
 }
-

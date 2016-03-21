@@ -338,4 +338,3 @@ namespace blockmon
     REGISTER_BLOCK(PcapSource,"PcapSource");
 #endif /* _BLOCKMON_DOXYGEN_SKIP_ */
 }
-

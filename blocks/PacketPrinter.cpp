@@ -180,4 +180,3 @@ namespace blockmon
     REGISTER_BLOCK(PacketPrinter,"PacketPrinter");
 #endif /* _BLOCKMON_DOXYGEN_SKIP_ */
 }
-

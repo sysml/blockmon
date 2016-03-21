@@ -122,4 +122,3 @@ double TEWMA::check(unsigned char *in, int len, time_t timestamp) {
     // finally return value.
     return minctr;
     }
-

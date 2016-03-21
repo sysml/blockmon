@@ -267,8 +267,3 @@ base_path = cp.get('DEFAULT', 'bm_basepath')
 parser = BlockInfoParser()
 
 parser.generate_blockinfo(blocks_paths, base_path)
-
-
-
-
-

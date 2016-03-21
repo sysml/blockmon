@@ -209,7 +209,3 @@ namespace blockmon
 
 
 #endif //__TICKET_MSG_HPP_
-
-
-
-

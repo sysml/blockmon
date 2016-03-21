@@ -150,4 +150,3 @@ private:
 
 
 #endif    /* HASH_SMOD_HPP */
-

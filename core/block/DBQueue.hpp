@@ -251,5 +251,3 @@ public:
 
 
 #endif //__DB_QUEUE_H__
-
-

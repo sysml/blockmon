@@ -51,5 +51,3 @@ void SHA1::compute(const unsigned char* key, int keylen, const unsigned char* in
 }
 
 }
-
-

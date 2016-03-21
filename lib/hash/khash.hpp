@@ -177,4 +177,3 @@ class KHASH {
 }
 
 #endif    /* KHASH_HPP */
-

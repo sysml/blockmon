@@ -189,4 +189,3 @@ namespace blockmon
 
     REGISTER_BLOCK(LogWriter,"LogWriter");
 }
-
