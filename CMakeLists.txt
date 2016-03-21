@@ -182,7 +182,7 @@ add_definitions(-D_GLIBCXX_USE_SCHED_YIELD -D_GLIBCXX_USE_NANOSLEEP)
 add_library(blockmoncore SHARED ${CORE_OBJ} ${MSG_OBJ} ${IPFIX_OBJ} ${LIB_OBJ} ${BLOCKS_OBJ} ${USR_OBJ})
 target_link_libraries(blockmoncore ${BLOCKMON_LINK_LIBS})
 
-add_executable(blockmon bin/blockmon.cpp)
+add_executable(blockmon core/blockmon.cpp)
 target_link_libraries(blockmon blockmoncore ${BLOCKMON_LINK_LIBS})
 
 if (WITH_DAEMON)
