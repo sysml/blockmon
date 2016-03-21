@@ -7,7 +7,8 @@ cmake 2.8 or higher. In addition, you will need several external libraries
 
 Python 2.5 or higher is required for using the blockmon CLI. The daemon and
 CLI further require the [twisted json-rpc package](http://pypi.python.org/pypi/txJSON-RPC/)
-and the [json pickle package](http://pypi.python.org/pypi/jsonpickle).
+, the [json pickle package](http://pypi.python.org/pypi/jsonpickle) and
+the [Twisted](https://pypi.python.org/pypi/Twisted).
 
 For more information on the CLI and daemon please check the [README](https://github.com/cnplab/blockmon/blob/master/README.md).
 
