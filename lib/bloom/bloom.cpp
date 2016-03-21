@@ -156,4 +156,3 @@ void test_bloomfilter() {
     int x = B.check((unsigned char*)in2,3);
     printf("check: %d\n", x);
     }
-

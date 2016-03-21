@@ -235,4 +235,3 @@ namespace more
 } // namespace more
 
 #endif /* _SHARED_QUEUE_HPP_ */
-

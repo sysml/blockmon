@@ -214,4 +214,3 @@ void khash::bitprint(unsigned char t, FILE* fp) {
         }
     fprintf(stderr," ");
     }
-

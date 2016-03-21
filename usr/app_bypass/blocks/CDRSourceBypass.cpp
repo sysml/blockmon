@@ -369,5 +369,3 @@ namespace blockmon
 
     REGISTER_BLOCK(CDRSourceBypass,"CDRSourceBypass");
 }
-
-

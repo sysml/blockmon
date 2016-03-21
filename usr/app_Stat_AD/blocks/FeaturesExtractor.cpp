@@ -786,4 +786,3 @@ namespace blockmon
     REGISTER_BLOCK(FeaturesExtractor,"FeaturesExtractor");
 
 }
-

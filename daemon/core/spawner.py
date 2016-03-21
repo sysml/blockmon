@@ -46,4 +46,3 @@ class ProcessSpawner:
             for a in arguments:
                 args.append(str(a))
         return subprocess.Popen(args)
-

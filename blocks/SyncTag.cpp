@@ -177,4 +177,3 @@ namespace blockmon
     REGISTER_BLOCK(SyncTag,"SyncTag");
 #endif /* _BLOCKMON_DOXYGEN_SKIP_ */
 }
-

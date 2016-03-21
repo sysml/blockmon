@@ -132,4 +132,3 @@ unsigned int ACHash31::get_b()
 }
 
 }
-
