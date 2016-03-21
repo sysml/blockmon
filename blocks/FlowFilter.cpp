@@ -421,9 +421,7 @@ namespace blockmon
 
 
     private:
-
         int m_ingate_id;
-
     };
 
 

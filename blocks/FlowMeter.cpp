@@ -98,17 +98,16 @@ namespace blockmon
     class FlowMeter: public Block
     {
 
-      static std::string ip_to_string(uint32_t ip)
-      {
+        static std::string ip_to_string(uint32_t ip)
+        {
+            char addr_buffer[INET_ADDRSTRLEN];
+            //inet_ntop expects network byte order
+            uint32_t flipped_ip=htonl(ip);
 
-    char addr_buffer[INET_ADDRSTRLEN];
-    //inet_ntop expects network byte order
-    uint32_t flipped_ip=htonl(ip);
-
-    if(!inet_ntop(AF_INET, &flipped_ip, addr_buffer, INET_ADDRSTRLEN))
-      throw std::runtime_error("cannot convert ip address");
-    return std::string (addr_buffer);
-      }
+            if(!inet_ntop(AF_INET, &flipped_ip, addr_buffer, INET_ADDRSTRLEN))
+                throw std::runtime_error("cannot convert ip address");
+            return std::string (addr_buffer);
+        }
         /**
           * callable object used to compute the hash of a FlowKey
           */
@@ -160,7 +159,7 @@ namespace blockmon
         {
             bool operator()(const FlowKey &lhs, const FlowKey &rhs) const
             {
-                return (lhs == rhs) ;
+                return (lhs == rhs);
             }
         };
         /**
@@ -188,8 +187,8 @@ namespace blockmon
         unsigned int m_queue_tail;
         int m_in_gate_id;
         int m_out_gate_id;
-        int  m_idle_timeout_ms;
-        unsigned int  m_active_timeout_ms;
+        int m_idle_timeout_ms;
+        unsigned int m_active_timeout_ms;
         bool m_store_packets;
 
         /**
@@ -226,7 +225,7 @@ namespace blockmon
 
         /**
          * Constructs a FlowMeter.
-     *
+         *
          * @param name         The name of the  block
          * @param invocation   Invocation type of the block (Indirect, Direct, Async) . This block can only be indirectly invoked, and will ignore any contrary configuration.
          */
@@ -239,8 +238,8 @@ namespace blockmon
         m_in_gate_id(register_input_gate("in_pkt")),
         m_out_gate_id(register_output_gate("out_flow")),
         m_idle_timeout_ms(500),
-    m_active_timeout_ms(100),
-    m_store_packets(false)
+        m_active_timeout_ms(100),
+        m_store_packets(false)
         {
             if (invocation != invocation_type::Indirect)
             {
@@ -248,10 +247,10 @@ namespace blockmon
             }
         }
 
-        FlowMeter(const FlowMeter&) = delete;
-        FlowMeter& operator=(const FlowMeter&) = delete;
         FlowMeter(FlowMeter&&) = delete;
+        FlowMeter(const FlowMeter&) = delete;
         FlowMeter& operator=(FlowMeter&&) = delete;
+        FlowMeter& operator=(const FlowMeter&) = delete;
 
         /**
          * @brief Configures the block: defines whether reports should only concern expired flows
@@ -308,7 +307,7 @@ namespace blockmon
                 if(cur_flow->end_time() < us_limit) //timeout expired for this flow+
                 {
                     m_flow_table.erase(cur_flow->key());
-            //printf("sending info out from handle_timer!\n");
+                    //printf("sending info out from handle_timer!\n");
                     send_out_through(std::move(cur_slot.flow_ptr),m_out_gate_id);
                 }
                 else
@@ -318,7 +317,6 @@ namespace blockmon
                     push_slot(std::move(cur_slot)); //enqueue again
                     if(last_slot)
                         return;
-
                 }
             }
         }
@@ -342,7 +340,7 @@ namespace blockmon
             {
                 Flow* new_flow = new Flow (packet->key());
 
-        /*printf("insert flow: <%s:%d -> %s:%d proto=%d>\n",
+             /*printf("insert flow: <%s:%d -> %s:%d proto=%d>\n",
                ip_to_string(new_flow->key().src_ip4).c_str(),
                new_flow->key().src_port,
                ip_to_string(new_flow->key().dst_ip4).c_str(),
@@ -352,8 +350,9 @@ namespace blockmon
                 new_flow->expand_interval (us_now);
                 new_flow->increment_bytes (packet->length());
                 new_flow->increment_packets (1);
-        if (m_store_packets)
-          new_flow->add_packet(std::dynamic_pointer_cast<const Packet>(m));
+                if (m_store_packets)
+                    new_flow->add_packet(std::dynamic_pointer_cast<const Packet>(m));
+
                 std::shared_ptr<const Msg> flow_sp (new_flow);
                 m_flow_table[packet->key()] = flow_sp;
                 queue_slot new_slot;
@@ -382,8 +381,9 @@ namespace blockmon
                 flow->expand_interval (us_now);
                 flow->increment_bytes (packet->length());
                 flow->increment_packets (1);
-        if (m_store_packets)
-          flow->add_packet(std::dynamic_pointer_cast<const Packet>(m));
+
+                if (m_store_packets)
+                    flow->add_packet(std::dynamic_pointer_cast<const Packet>(m));
 
             }
         }

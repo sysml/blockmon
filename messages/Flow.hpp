@@ -79,21 +79,21 @@ namespace blockmon
         m_list_sorted(false)
         {}
 
-      Flow(const FlowKey& key,
-       ustime_t stime,
-       ustime_t etime,
-       uint64_t bytes,
-       uint64_t packets,
-       std::list<std::shared_ptr<const Packet> >  packet_list,
-       bool list_sorted):
+        Flow(const FlowKey& key,
+        ustime_t stime,
+        ustime_t etime,
+        uint64_t bytes,
+        uint64_t packets,
+        std::list<std::shared_ptr<const Packet> >  packet_list,
+        bool list_sorted):
         Msg(MSG_ID(Flow)),
         m_stime(stime),
         m_etime(etime),
         m_key(key),
         m_bytes(bytes),
         m_packets(packets),
-    m_flow_packets(packet_list),
-    m_list_sorted(list_sorted)
+        m_flow_packets(packet_list),
+        m_list_sorted(list_sorted)
         {}
 
         const FlowKey& key() const {
@@ -170,8 +170,8 @@ namespace blockmon
             m_stime = 0;
             m_bytes = 0;
             m_packets = 0;
-        m_flow_packets.clear();
-        m_list_sorted = false;
+            m_flow_packets.clear();
+            m_list_sorted = false;
         }
 
       /** Gets the payload from this flow.
@@ -216,7 +216,7 @@ namespace blockmon
        * @return the number of bytes copied.  This will always be less
        *         than or equal to @a length.
        */
-      size_t get_payload(uint8_t* buffer, size_t offset, size_t nbytes);
+        size_t get_payload(uint8_t* buffer, size_t offset, size_t nbytes);
 
       /** Adds the packet to the flow.
        *
@@ -224,7 +224,7 @@ namespace blockmon
        *
        * @param p the packet to add
        */
-      void add_packet(std::shared_ptr<const Packet> p);
+        void add_packet(std::shared_ptr<const Packet> p);
     protected:
         ustime_t m_stime;
         ustime_t m_etime;

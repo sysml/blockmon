@@ -74,9 +74,9 @@ namespace blockmon
         : Block(name, invocation),
         m_pkt_cnt(0),
         m_byte_cnt(0),
-    m_pkt_rate(0),
-    m_byte_rate(0),
-    m_reset(0),
+        m_pkt_rate(0),
+        m_byte_rate(0),
+        m_reset(0),
         m_pkt_cnt_prev(0),
         m_byte_cnt_prev(0),
         m_last_t(std::chrono::system_clock::now()),
@@ -140,9 +140,9 @@ namespace blockmon
                 m_reset = 0;
             }
             const Flow* f = static_cast<const Flow*>(m.get());
-              m_flow_cnt++;
-              m_pkt_cnt += f->packets();
-              m_byte_cnt += f->bytes();
+            m_flow_cnt++;
+            m_pkt_cnt += f->packets();
+            m_byte_cnt += f->bytes();
         }
 
         virtual void _handle_timer(std::shared_ptr<Timer> &&t);
