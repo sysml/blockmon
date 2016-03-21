@@ -213,10 +213,11 @@ namespace blockmon
         {
             if(m->type()!=MSG_ID(Packet))
                 throw std::runtime_error("PeriodFlowMeter:: wrong message type");
+
             const Packet* packet = static_cast<const Packet*> (m.get());
             auto flow_it = m_flow_table.find( packet->key());
-            auto chrono_now =  std::chrono::system_clock::now();
-            ustime_t us_now =  (std::chrono::duration_cast<std::chrono::milliseconds> (chrono_now.time_since_epoch())).count();
+            ustime_t us_now =  get_BM_time();
+
             if (flow_it ==  m_flow_table.end())
             {
                 Flow* new_flow = new Flow (packet->key());
