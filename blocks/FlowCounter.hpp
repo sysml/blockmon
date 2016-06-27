@@ -32,10 +32,11 @@
 #ifndef _BLOCKS_FLOWCOUNTER_HPP
 #define _BLOCKS_FLOWCOUNTER_HPP
 
-#include<Block.hpp>
-#include<BlockFactory.hpp>
-#include<cstdio>
-#include<Flow.hpp>
+#include <Block.hpp>
+#include <BlockFactory.hpp>
+#include <cstdio>
+#include <Flow.hpp>
+#include <Packet.hpp>
 
 
 namespace blockmon
@@ -118,17 +119,16 @@ namespace blockmon
         }
 
         /**
-         * If the message received is not of type Flow throw an exception,
+         * If the message received is not of type Flow or Packet throw an exception,
          * otherwise count it
          * @param m     The message
          * @param index The index of the gate the message came on
          */
         virtual void _receive_msg(std::shared_ptr<const Msg>&& m, int /* index */)
         {
-            if(m->type()!=MSG_ID(Flow))
-            {
-                throw std::runtime_error("wrong message type in pkt counter");
-            }
+            if(m->type() != MSG_ID(Flow) || m->type() != MSG_ID(Packet))
+                throw std::runtime_error("wrong message type in counter");
+
             if(m_reset==1)
             {
                 m_flow_cnt = 0;
@@ -139,10 +139,20 @@ namespace blockmon
                 m_byte_rate = 0;
                 m_reset = 0;
             }
-            const Flow* f = static_cast<const Flow*>(m.get());
-            m_flow_cnt++;
-            m_pkt_cnt += f->packets();
-            m_byte_cnt += f->bytes();
+
+            if(m->type() == MSG_ID(Flow))
+            {
+                const Flow* f = static_cast<const Flow*>(m.get());
+                m_flow_cnt++;
+                m_pkt_cnt += f->packets();
+                m_byte_cnt += f->bytes();
+            }
+            else
+            {
+                const Packet* packet_ptr = static_cast<const Packet*>(m.get());
+                m_pkt_cnt++;
+                m_byte_cnt += packet_ptr->length();
+            }
         }
 
         virtual void _handle_timer(std::shared_ptr<Timer> &&t);

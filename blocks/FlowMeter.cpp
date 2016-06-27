@@ -270,6 +270,7 @@ namespace blockmon
                     throw std::runtime_error("FlowMeter: malformed timeout paramter");
             }
             pugi::xml_node active_timeout = n.child("active_timeout");
+
             if(active_timeout)
             {
                 if(active_timeout.attribute("ms"))
@@ -281,9 +282,7 @@ namespace blockmon
             set_periodic_timer( m_idle_timeout_ms * 1000,"flow_active_timeout",0);
             pugi::xml_attribute store_packets = n.attribute("store_packets");
             if(store_packets)
-            {
-            m_store_packets = store_packets.as_bool();
-        }
+                m_store_packets = store_packets.as_bool();
         }
         /**
           * Upon expiration of the idle timeout timer, it goes through the flows in the list and checks whether the timeout for them expired
