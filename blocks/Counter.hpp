@@ -29,8 +29,8 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
  */
 
-#ifndef _BLOCKS_FLOWCOUNTER_HPP
-#define _BLOCKS_FLOWCOUNTER_HPP
+#ifndef _BLOCKS_COUNTER_HPP
+#define _BLOCKS_COUNTER_HPP
 
 #include <Block.hpp>
 #include <BlockFactory.hpp>
@@ -46,8 +46,9 @@ namespace blockmon
      * Implements a block that logs the number of messages it has received every
      * 0.5 seconds.
      */
-    class FlowCounter: public Block
+    class Counter: public Block
     {
+    protected:
         unsigned long long  m_pkt_cnt;
         unsigned long long m_byte_cnt;
         unsigned long long m_flow_cnt;
@@ -68,10 +69,10 @@ namespace blockmon
 
         /**
          * @brief Constructor
-         * @param name         The name of the flow counter block
+         * @param name         The name of the counter block
          * @param invocation   Invocation type of the block (Indirect, Direct, Async)
          */
-        FlowCounter(const std::string &name, invocation_type invocation)
+        Counter(const std::string &name, invocation_type invocation)
         : Block(name, invocation),
         m_pkt_cnt(0),
         m_byte_cnt(0),
@@ -82,7 +83,7 @@ namespace blockmon
         m_byte_cnt_prev(0),
         m_last_t(std::chrono::system_clock::now()),
         m_timer(true),
-        m_ingate_id(register_input_gate("in_flow"))
+        m_ingate_id(register_input_gate("in_counter"))
         {
             register_variable("flowrate",make_rd_var(no_mutex_t(), m_flow_rate));
             register_variable("byterate",make_rd_var(no_mutex_t(), m_byte_rate));
@@ -96,7 +97,7 @@ namespace blockmon
         /**
          * @brief Destructor
          */
-        virtual ~FlowCounter() {}
+        virtual ~Counter() {}
 
         /**
          * @brief Configures the block, in this case the export time is hard-coded
@@ -114,9 +115,7 @@ namespace blockmon
         /**
          * @brief Initialize the block
          */
-        virtual void _initialize()
-        {
-        }
+        virtual void _initialize() {}
 
         /**
          * If the message received is not of type Flow or Packet throw an exception,
@@ -161,8 +160,8 @@ namespace blockmon
 
 
 #ifndef _BLOCKMON_DOXYGEN_SKIP_
-    REGISTER_BLOCK(FlowCounter,"FlowCounter");
+    REGISTER_BLOCK(Counter,"Counter");
 #endif /* _BLOCKMON_DOXYGEN_SKIP_ */
 
 }//blockmon
-#endif // _BLOCKS_FLOWCOUNTER_HPP
+#endif // _BLOCKS_COUNTER_HPP

@@ -30,16 +30,20 @@
  */
 
 /*
- * <blockinfo type="FlowCounter" invocation="direct" thread_exclusive="False">
+ * <blockinfo type="Counter" invocation="direct" thread_exclusive="False">
  *   <humandesc>
- *     Keeps flow, packet and byte counts of Flows going through it.
+ *     Keeps flow, packet and byte counts of Flows/Packets going through it.
  *     An xml parameter can be used in order to disable the timer mechanism.
  *   </humandesc>
  *
- *   <shortdesc>Keeps flow packet and byte counts of traffic going through it.</shortdesc>
+ *   <shortdesc>Keeps flow, packet and byte counts of traffic going through it.</shortdesc>
  *
  *   <gates>
  *     <gate type="input" name="in_pkt" msg_type="Flow" m_start="0" m_end="0" />
+ *   </gates>
+ *
+ *   <gates>
+ *     <gate type="input" name="in_pkt" msg_type="Packet" m_start="0" m_end="0" />
  *   </gates>
  *
  *   <paramsschema>
@@ -68,11 +72,11 @@
  *
  * </blockinfo>
  */
-#include <FlowCounter.hpp>
+#include <Counter.hpp>
 
 namespace blockmon
 {
-    void FlowCounter::_handle_timer(std::shared_ptr<Timer>&& )
+    void Counter::_handle_timer(std::shared_ptr<Timer>&& )
     {
         std::chrono::system_clock::time_point n= std::chrono::system_clock::now();
         auto d = std::chrono::duration_cast<std::chrono::microseconds>(n-m_last_t);
