@@ -259,32 +259,12 @@ namespace blockmon
                  PORT_LIST::iterator it_end = port_list.end();
 
                  bool is_mode_discard = (0 != (mode & (1<<FILTER_OUT)));
-                 if (is_mode_discard)
-                 {
-                     while (it != it_end)
-                     {
-                         if (*it == port)
-                         {
-                             return false;
-                         }
-
-                         it++;
+                 for (; it != it_end; it++) {
+                     if (*it == port) {
+                         return !is_mode_discard;
                      }
                  }
-                 else
-                 {
-                     while (it != it_end)
-                     {
-                         if (*it == port)
-                         {
-                             return true;
-                         }
-
-                         it++;
-                     }
-
-                     return false;
-                 }
+                 return is_mode_discard;
              }
 
              return true;
