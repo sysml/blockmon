@@ -125,7 +125,7 @@ namespace blockmon
          */
         virtual void _receive_msg(std::shared_ptr<const Msg>&& m, int /* index */)
         {
-            if(m->type() != MSG_ID(Flow) || m->type() != MSG_ID(Packet))
+            if(m->type() != MSG_ID(Flow) && m->type() != MSG_ID(Packet))
                 throw std::runtime_error("wrong message type in counter");
 
             if(m_reset==1)
