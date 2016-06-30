@@ -42,12 +42,11 @@
 #include <atomic>
 #endif
 
-#include <MpMcQueue.hpp>
 #include <pthread.h>
 #include <Block.hpp>
 #include <pthread.h>
 #include <signal.h>
-#include<Scheduler.hpp>
+#include <Scheduler.hpp>
 
 namespace blockmon
 {
@@ -169,36 +168,6 @@ namespace blockmon
             m_thread->join();
             m_thread.reset();
         }
-
-        /*
-         * Replaced with the code above
-         */
-        /*
-        void stop()
-        {
-            if (!m_stop.load())
-            {
-                m_stop.store(true);
-                if(torun)
-                {
-                    torun->set_running(false);
-                }
-                if (m_thread->joinable())
-                {
-                    m_thread->join();
-                }
-                m_thread.reset();
-            }
-
-        }
-
-        void join(){
-            if(!m_stop.load())
-                stop();
-            m_thread->join();
-            m_thread.reset();
-        }
-        */
 
     };
 
