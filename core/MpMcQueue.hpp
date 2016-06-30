@@ -29,8 +29,8 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
  */
 
-#ifndef _CORE_BLOCK_MPMCQUEUE_H_
-#define _CORE_BLOCK_MPMCQUEUE_H_
+#ifndef _CORE_MPMCQUEUE_H_
+#define _CORE_MPMCQUEUE_H_
 
 #include <list>
 #include <iostream>
@@ -147,4 +147,4 @@ namespace blockmon {
 } // namespace blockmon
 
 
-#endif /* _CORE_BLOCK_MPMCQUEUE_H_ */
+#endif /* _CORE_MPMCQUEUE_H_ */
