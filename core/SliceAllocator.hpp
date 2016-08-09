@@ -112,7 +112,11 @@ namespace blockmon {
             typedef typename std::remove_pointer<
                 typename std::tuple_element<0, Tp>::type>::type current_type;
             auto ptr = advance_ptr(std::get<0>(t),offset);
+#if __GNUC__ == 4 || (__GNUC__ == 5 && __GNUC_MINOR__ < 1)
             if (!std::has_trivial_default_constructor<current_type>::value)
+#else
+            if (!std::is_trivially_default_constructible<current_type>::value)
+#endif
             {
                 new (ptr) current_type(std::forward<Ts>(args)...); // only the first type can be constructed by passing arguments
             }
@@ -124,7 +128,11 @@ namespace blockmon {
             typedef typename std::remove_pointer<
                 typename std::tuple_element<N, Tp>::type>::type current_type;
             auto ptr = advance_ptr(std::get<N>(t),offset);
+#if __GNUC__ == 4 || (__GNUC__ == 5 && __GNUC_MINOR__ < 1)
             if (!std::has_trivial_default_constructor<current_type>::value)
+#else
+            if (!std::is_trivially_default_constructible<current_type>::value)
+#endif
             {
                 new (ptr) current_type;
             }
