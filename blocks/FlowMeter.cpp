@@ -32,19 +32,29 @@
 /*
  * <blockinfo type="FlowMeter" invocation="indirect" thread_exclusive="False">
  *   <humandesc>
- *       Receives packet messages and keeps a table of per-flow statistics, and, depending on the configuration, also the packets making up that flow.
- *       A circular queue is used to keep track of the last time a flow has been checked for
- *       expiration.
- *       Two timeout values are used. The first one is the idle timeout (default value is 500 ms): whenever a flow record has not been
- *       receiving a packet for more than such time interval, the flow is considered as expired, its associated
- *       record is sent out and its table entry erased
- *.      The second one, the active timeout (default value is 100 ms), is activated when a flow has been active for longer than the corresponding time
- *       interval. When such timeout expires, a record about the flow is sent out and the counters in the corresponding table entry
- *       are reset.
- *       Notice that, while the idle timeout is checked by using a Blockmon timer mechanism, the indirect timeout is checked upon
- *       arrival of a new packet belonging to the flow.
+ *       Receives packet messages and keeps a table of per-flow
+ *       statistics, and, depending on the configuration, also the
+ *       packets making up that flow.  A circular queue is used to
+ *       keep track of the last time a flow has been checked for
+ *       expiration.  Two timeout values are used. The first one is
+ *       the idle timeout (default value is 500 ms): whenever a flow
+ *       record has not been receiving a packet for more than such
+ *       time interval, the flow is considered as expired, its
+ *       associated record is sent out and its table entry erased.
+ *       The second one, the active timeout (default value is 100 ms),
+ *       is activated when a flow has been active for longer than the
+ *       corresponding time interval. When such timeout expires, a
+ *       record about the flow is sent out and the counters in the
+ *       corresponding table entry are reset.  Notice that, while the
+ *       idle timeout is checked by using a Blockmon timer mechanism,
+ *       the indirect timeout is checked upon arrival of a new packet
+ *       belonging to the flow.
  *   </humandesc>
- *   <shortdesc>Receives packet messages and keeps a table of per-flow statistics, and, depending on the configuration, also the packets making up that flow.</shortdesc>
+ *   <shortdesc>
+ *       Receives packet messages and keeps a table of per-flow
+ *       statistics, and, depending on the configuration, also the
+ *       packets making up that flow.
+ *   </shortdesc>
  *
  *   <gates>
  *     <gate type="output" name="out_flow" msg_type="Flow" m_start="0" m_end="0" />
@@ -91,8 +101,8 @@ namespace blockmon
 
     /**
       * Class implementing a flow table
-      * A hash table stores the flow entries while a circular list keeps track of which
-      * entries have to be checked for expiration
+      * A hash table stores the flow entries while a circular list
+      * keeps track of which entries have to be checked for expiration
       */
 
     class FlowMeter: public Block
@@ -115,8 +125,8 @@ namespace blockmon
         {
         private:
             /**
-              * general purpose hash function that computes the hash of a byte array
-              * @param b the byte array address
+              * general purpose hash function that computes the hash
+              * of a byte array @param b the byte array address
               * @param s the array size
               */
             static unsigned int simplehash(const char* b,size_t s)
@@ -138,8 +148,8 @@ namespace blockmon
             }
         public:
             /**
-              * computes the hash of a flow_key object
-              * First it copies the content of the key into a zeroed area so that
+              * computes the hash of a flow_key object First it copies
+              * the content of the key into a zeroed area so that
               * there is not random garbage in the padding bytes
               * @param t the flow key
               */
@@ -179,7 +189,7 @@ namespace blockmon
             }
         };
 
-        std::unordered_map<FlowKey, std::shared_ptr<const Msg>, my_hash, my_equal_to  > m_flow_table;
+        std::unordered_map<FlowKey, std::shared_ptr<const Msg>, my_hash, my_equal_to> m_flow_table;
         static const int Q_SIZE = 128*1024;
         //WARNING THS NEED TO BE POWER OF 2
         std::vector<queue_slot> m_flow_queue;
@@ -227,23 +237,28 @@ namespace blockmon
          * Constructs a FlowMeter.
          *
          * @param name         The name of the  block
-         * @param invocation   Invocation type of the block (Indirect, Direct, Async) . This block can only be indirectly invoked, and will ignore any contrary configuration.
+         * @param invocation   Invocation type of the block
+         *                     (Indirect, Direct, Async) . This block can only
+         *                     be indirectly invoked, and will ignore any
+         *                     contrary configuration.
          */
         FlowMeter(const std::string &name, invocation_type invocation)
-        :Block(name, invocation_type::Indirect), //ignore options, flow meter  must be indirect
-        m_flow_table(),
-        m_flow_queue(Q_SIZE),
-        m_queue_head(0),
-        m_queue_tail(0),
-        m_in_gate_id(register_input_gate("in_pkt")),
-        m_out_gate_id(register_output_gate("out_flow")),
-        m_idle_timeout_ms(500),
-        m_active_timeout_ms(100),
-        m_store_packets(false)
+            //ignore options, flow meter  must be indirect
+            :Block(name, invocation_type::Indirect),
+             m_flow_table(),
+             m_flow_queue(Q_SIZE),
+             m_queue_head(0),
+             m_queue_tail(0),
+             m_in_gate_id(register_input_gate("in_pkt")),
+             m_out_gate_id(register_output_gate("out_flow")),
+             m_idle_timeout_ms(500),
+             m_active_timeout_ms(100),
+             m_store_packets(false)
         {
             if (invocation != invocation_type::Indirect)
             {
-                blocklog("FlowMeter must be Indirect, ignoring configuration", log_warning);
+                blocklog("FlowMeter must be Indirect, ignoring configuration",
+                         log_warning);
             }
         }
 
@@ -253,10 +268,11 @@ namespace blockmon
         FlowMeter& operator=(const FlowMeter&) = delete;
 
         /**
-         * @brief Configures the block: defines whether reports should only concern expired flows
-         * and sets the timeout value.
-         * This routine also sets a periodic timer for checking the table for expired flows.
-         * The timer period is set to the value of the idle timeout.
+         * @brief Configures the block: defines whether reports should
+         * only concern expired flows and sets the timeout value.
+         * This routine also sets a periodic timer for checking the
+         * table for expired flows.  The timer period is set to the
+         * value of the idle timeout.
          * @param n The configuration parameters
          */
         virtual void _configure(const pugi::xml_node&  n )
@@ -285,14 +301,19 @@ namespace blockmon
                 m_store_packets = store_packets.as_bool();
         }
         /**
-          * Upon expiration of the idle timeout timer, it goes through the flows in the list and checks whether the timeout for them expired
-          * If so, it sends the flow report out and deletes the flow from the table
-          * Otherwise (if the option is set) it exports a flow report anyhow and inserts it back into the queue
-          * Notice that the timer is handled in the indirect block's context and not in the context of the timer thread
+          * Upon expiration of the idle timeout timer, it goes through
+          * the flows in the list and checks whether the timeout for
+          * them expired If so, it sends the flow report out and
+          * deletes the flow from the table Otherwise (if the option
+          * is set) it exports a flow report anyhow and inserts it
+          * back into the queue Notice that the timer is handled in
+          * the indirect block's context and not in the context of the
+          * timer thread
           */
         void _handle_timer(std::shared_ptr<Timer>&& )
         {
-            //flows whose last packet is older than this limit are considered as expired
+            //flows whose last packet is older than this limit are
+            //considered as expired
             ustime_t tnow = get_BM_time();
             ustime_t us_limit = tnow - m_idle_timeout_ms * 1000;
             while(1)
