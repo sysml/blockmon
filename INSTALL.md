@@ -10,7 +10,7 @@ CLI further require the [twisted json-rpc package](http://pypi.python.org/pypi/t
 , the [json pickle package](http://pypi.python.org/pypi/jsonpickle) and
 the [Twisted](https://pypi.python.org/pypi/Twisted).
 
-For more information on the CLI and daemon please check the [README](https://github.com/cnplab/blockmon/blob/master/README.md).
+For more information on the CLI and daemon please check the [README](https://github.com/sysml/blockmon/blob/master/README.md).
 
 EXTERNAL LIBRARIES
 ------------------
