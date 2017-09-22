@@ -55,7 +55,8 @@ static size_t decode_payoff(uint8_t payoff) {
 void Packet::parse_mac() const {
     // shortcut valid ethertype
     if (m_machdr_parsed) return;
-    m_machdr_parsed = true;
+    m_mutex_mac.lock();
+    if (m_machdr_parsed) { m_mutex_mac.unlock(); return; }
 
     const uint8_t *macbuf = m_buffer;
 
@@ -66,6 +67,8 @@ void Packet::parse_mac() const {
             m_iphdr_parsed = true;
             m_ports_parsed = true;
             m_l4hdr_parsed = true;
+            m_machdr_parsed = true;
+            m_mutex_mac.unlock();
             return;
         }
 
@@ -80,6 +83,8 @@ void Packet::parse_mac() const {
                 m_iphdr_parsed = true;
                 m_ports_parsed = true;
                 m_l4hdr_parsed = true;
+                m_machdr_parsed = true;
+                m_mutex_mac.unlock();
                 return;
             }
 
@@ -101,13 +106,17 @@ void Packet::parse_mac() const {
         m_ports_parsed = true;
         m_l4hdr_parsed = true;
     }
+
+    m_machdr_parsed = true;
+    m_mutex_mac.unlock();
 }
 
 /* parses IP header, populates m_ip*, m_sip, m_dip, m_key.proto */
 void Packet::parse_iphdr() const {
     // shortcut valid iphdr
     if (m_iphdr_parsed) return;
-    m_iphdr_parsed = true;
+    m_mutex_iphdr.lock();
+    if (m_iphdr_parsed) { m_mutex_iphdr.unlock(); return; }
 
     // make sure we've parsed the mac header
     parse_mac();
@@ -141,6 +150,9 @@ void Packet::parse_iphdr() const {
             m_l4hdr_parsed = true;
         }
     }
+
+    m_iphdr_parsed = true;
+    m_mutex_iphdr.unlock();
 }
 
 /* if protocol is UDP or TCP, populates m_key.src_port and m_key.dst_port;
@@ -148,7 +160,8 @@ void Packet::parse_iphdr() const {
 void Packet::parse_ports() const {
     // shortcut valid ports
     if (m_ports_parsed) return;
-    m_ports_parsed = true;
+    m_mutex_ports.lock();
+    if (m_ports_parsed) { m_mutex_ports.unlock(); return; }
 
     // make sure we've parsed the IP header
     parse_iphdr();
@@ -174,6 +187,9 @@ void Packet::parse_ports() const {
             m_l4hdr_parsed = true;
         }
     }
+
+    m_ports_parsed = true;
+    m_mutex_ports.unlock();
 }
 
    /* if protocol is TCP, m_tcp* */
@@ -181,7 +197,8 @@ void Packet::parse_ports() const {
 void Packet::parse_tcphdr() const {
     // shortcut valid ports
     if (m_l4hdr_parsed) return;
-    m_l4hdr_parsed = true;
+    m_mutex_tcphdr.lock();
+    if (m_l4hdr_parsed) { m_mutex_tcphdr.unlock(); return; }
 
     // insure IP parsed
     parse_iphdr();
@@ -216,6 +233,9 @@ void Packet::parse_tcphdr() const {
             m_pkttype = kPktTypeRuntL4;
         }
     }
+
+    m_l4hdr_parsed = true;
+    m_mutex_tcphdr.unlock();
 }
 
 }

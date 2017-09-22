@@ -510,6 +510,11 @@ public:
         timespec              m_tstamp;
         int                   m_mactype;
 
+        mutable std::mutex    m_mutex_mac;    // Used to coordinate write access to mutable mac member variables
+        mutable std::mutex    m_mutex_iphdr;  // Used to coordinate write access to mutable iphdr member variables
+        mutable std::mutex    m_mutex_ports;  // Used to coordinate write access to mutable ports member variables
+        mutable std::mutex    m_mutex_tcphdr; // Used to coordinate write access to mutable tcphdr member variables
+
         mutable const uint8_t* m_iphdr_ptr;
         mutable const uint8_t* m_l4hdr_ptr;
         mutable const uint8_t* m_l4payload_ptr;
