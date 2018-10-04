@@ -268,7 +268,3 @@ Two important points:
 ## CODE COMMENTING
 
 Please follow the format used in blocks/PktCounter.[hpp|cpp]
-
-## BUGS & QUESTIONS
-
-Please write to blockmon@neclab.eu
